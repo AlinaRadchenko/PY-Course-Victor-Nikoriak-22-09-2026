@@ -20,7 +20,7 @@
 **Ноутбук заняття:** [`note_lesson_35_drf.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) — серіалізатори й API з перевірками прямо в ноутбуці.
 
 !!! info "Місце в системі"
-    Це продовження проєкту [`hello_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_33_django_intro/hello_project) з уроку 33 — застосунку нотаток, що виросте до [Notes Chat App](https://github.com/NikoriakViktot/notes_chat_app). У маршруті [Zero to Hero](https://nikoriakviktot.github.io/notes_chat_app/tutorials/) Django-книги окремого кроку про API немає: цей урок його додає. Архітектурний погляд на серіалізатори (Input/Output-серіалізатори, сервіси) — у матеріалі викладача [Django Serializers — Transport Layer](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-23_02/blob/main/module_5/lesson_Django_Network_Architecture/DJANGO_SERIALIZERS.md).
+    Це продовження проєкту [`hello_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_33_django_intro/hello_project) з уроку 33 — застосунку нотаток, що виросте до [Notes Chat App](https://github.com/NikoriakViktot/notes_chat_app). Поглиблено — глава Django-книги [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/): як DRF працює всередині, і API для самого Notes Chat App поверх його selectors і services — з Input/Output-серіалізаторами й захистом від доступу до чужих нотаток. Архітектура серіалізаторів — глава [Serializers — Transport Layer](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/django_serializers_full/).
 
 ## Пригадай
 
@@ -211,7 +211,7 @@ False
 - Помилки зібрано **для всіх полів одразу** — клієнт виправить усе за один раз. Мова повідомлень — з `LANGUAGE_CODE = "uk"`.
 
 !!! tip "Поглиблено"
-    Порядок валідації, Input/Output-серіалізатори й перетворення помилок домену на HTTP-коди — [Django Serializers — Transport Layer](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-23_02/blob/main/module_5/lesson_Django_Network_Architecture/DJANGO_SERIALIZERS.md) (матеріал викладача); [DRF: Serializers](https://www.django-rest-framework.org/api-guide/serializers/).
+    Порядок валідації, Input/Output-серіалізатори й перетворення помилок домену на HTTP-коди — глава Django-книги [Serializers — Transport Layer](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/django_serializers_full/); [DRF: Serializers](https://www.django-rest-framework.org/api-guide/serializers/).
 
 ## ViewSet і роутер: CRUD одним класом
 
@@ -411,7 +411,7 @@ $ curl -s http://127.0.0.1:8000/api/schema/ | grep -E "^  /api/"
 Схема у форматі YAML. З неї Swagger UI будує інтерактивну документацію (`SpectacularSwaggerView`), а Postman імпортує всі запити (урок 37).
 
 !!! tip "Поглиблено"
-    [DRF: ViewSets](https://www.django-rest-framework.org/api-guide/viewsets/), [Routers](https://www.django-rest-framework.org/api-guide/routers/), [Generic views](https://www.django-rest-framework.org/api-guide/generic-views/), [Permissions](https://www.django-rest-framework.org/api-guide/permissions/), [Pagination](https://www.django-rest-framework.org/api-guide/pagination/), [drf-spectacular](https://drf-spectacular.readthedocs.io/).
+    Django-книга: [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/) — `APIView.dispatch()` зсередини, об'єктні права, API Notes Chat App на selectors/services. Документація: [DRF: ViewSets](https://www.django-rest-framework.org/api-guide/viewsets/), [Routers](https://www.django-rest-framework.org/api-guide/routers/), [Generic views](https://www.django-rest-framework.org/api-guide/generic-views/), [Permissions](https://www.django-rest-framework.org/api-guide/permissions/), [Pagination](https://www.django-rest-framework.org/api-guide/pagination/), [drf-spectacular](https://drf-spectacular.readthedocs.io/).
 
 ## Тести API
 
@@ -620,7 +620,7 @@ flowchart TD
 
 - **Одна модель — три входи.** HTML-сторінки, адмінка й API працюють з тією самою моделлю `Note`: правила даних (обмеження, `choices`) — в одному місці.
 - **Серіалізатор — межа API.** Він вирішує, що бачить і що може змінити клієнт. `fields = "__all__"` цю межу знімає — див. «Знайди помилку».
-- **Коли логіки стає більше** (права на чужі нотатки, сповіщення, групи), її виносять із ViewSet у сервіси й селектори — крок 3 Django-книги й урок 44.
+- **Коли логіки стає більше** (права на чужі нотатки, сповіщення, групи), її виносять із ViewSet у сервіси й селектори — крок 3 Django-книги й урок 44. Як це виглядає для Notes Chat App, де в кожної нотатки є власник і група, — у главі книги [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/).
 
 ## Практика { #practice }
 
@@ -819,4 +819,4 @@ pbkdf2_sha256$1000000$…
 - DRF: [Quickstart](https://www.django-rest-framework.org/tutorial/quickstart/), [Serializers](https://www.django-rest-framework.org/api-guide/serializers/), [ViewSets](https://www.django-rest-framework.org/api-guide/viewsets/), [Routers](https://www.django-rest-framework.org/api-guide/routers/), [Authentication](https://www.django-rest-framework.org/api-guide/authentication/), [Permissions](https://www.django-rest-framework.org/api-guide/permissions/), [Pagination](https://www.django-rest-framework.org/api-guide/pagination/), [Testing](https://www.django-rest-framework.org/api-guide/testing/), [Browsable API](https://www.django-rest-framework.org/topics/browsable-api/)
 - [drf-spectacular](https://drf-spectacular.readthedocs.io/) — OpenAPI 3 для DRF
 - FastAPI: [Tutorial](https://fastapi.tiangolo.com/tutorial/), [Alternatives, Inspiration and Comparisons](https://fastapi.tiangolo.com/alternatives/) (про DRF і Django)
-- Матеріал викладача: [Django Serializers — Transport Layer](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-23_02/blob/main/module_5/lesson_Django_Network_Architecture/DJANGO_SERIALIZERS.md); Django-книга: [Notes Chat App і Zero to Hero](https://nikoriakviktot.github.io/notes_chat_app/)
+- Django-книга: [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/), [Serializers — Transport Layer](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/django_serializers_full/), [Notes Chat App і Zero to Hero](https://nikoriakviktot.github.io/notes_chat_app/)
