@@ -294,7 +294,7 @@ def _info_card(title: str, stats: list[tuple]) -> html.Div:
         },
         children=[
             html.H4(title, style={"marginTop": "0", "marginBottom": "12px", "fontSize": "15px"}),
-            html.Table(rows, style={"fontSize": "13px", "width": "100%"}),
+            html.Table(html.Tbody(rows), style={"fontSize": "13px", "width": "100%"}),
         ],
     )
 
@@ -537,7 +537,7 @@ def _render_spatial(commodity: str, unit: str) -> html.Div:
     map_data["дата_str"] = map_data["дата"].dt.strftime("%d.%m.%Y")
 
     # Точкова карта ринків
-    fig_map = px.scatter_mapbox(
+    fig_map = px.scatter_map(   # scatter_mapbox прибрано в Plotly 6+; scatter_map — MapLibre, без ключа Mapbox
         map_data,
         lat="широта_карта",
         lon="довгота_карта",
@@ -563,7 +563,7 @@ def _render_spatial(commodity: str, unit: str) -> html.Div:
         zoom=5.2,
         center={"lat": 49.0, "lon": 32.0},   # центр України
         title=f"Ціни на {commodity} ({unit}) по ринках — остання дата",
-        mapbox_style=MAP_STYLE,
+        map_style=MAP_STYLE,
     )
     fig_map.update_layout(
         template=PLOTLY_TEMPLATE,
@@ -718,13 +718,13 @@ def _render_exchange() -> html.Div:
 
         html.Div([
             html.H4("Підсумкова статистика курсу"),
-            html.Table([
+            html.Table(html.Tbody([
                 html.Tr([
                     html.Td(label, style={"color": "#8b949e", "paddingRight": "16px"}),
                     html.Td(str(value), style={"fontWeight": "bold"}),
                 ])
                 for label, value in stat_items
-            ], style={"fontSize": "13px"}),
+            ]), style={"fontSize": "13px"}),
         ], style={
             "background": "#161b22",
             "border": "1px solid #30363d",

@@ -8,7 +8,7 @@ def create_food_map(commodity):
 
     dff = df[df["товар"] == commodity]
 
-    fig = px.scatter_mapbox(
+    fig = px.scatter_map(   # scatter_mapbox прибрано в Plotly 6+
         dff,
         lat="широта",
         lon="довгота",
@@ -19,7 +19,7 @@ def create_food_map(commodity):
     )
 
     fig.update_layout(
-        mapbox_style="carto-darkmatter",
+        map_style="carto-darkmatter",
         template="plotly_dark"
     )
 
