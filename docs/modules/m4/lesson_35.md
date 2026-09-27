@@ -1,574 +1,432 @@
 # Урок 35. DRF overview + Django vs FastAPI
 
-У застосунку нотаток з уроку 33 є сторінки для людей і адмінка. Але нотатки потрібні й **програмам**: мобільному застосунку, Streamlit-дашборду, Telegram-боту (урок 47). Їм не потрібен HTML — їм потрібен JSON і REST API, як у метео-сервісу з уроку 32.
+Після уроку 34 застосунок нотаток уміє все для людей: сторінки, форми, dashboard, вхід. Але нотатки потрібні й **програмам** — мобільному застосунку, Streamlit-дашборду, Telegram-боту (урок 47). Їм не потрібен HTML, їм потрібен JSON і REST API, як у метео-сервісу з уроку 32.
 
-Писати API на «голому» Django можна, але довелося б самому перетворювати моделі на JSON, розбирати тіло запиту, перевіряти дані, повертати правильні коди. Усе це вже зроблено в **Django REST Framework** (DRF) — найпопулярнішому пакеті для API на Django. Сьогодні додамо API до нотаток, а наприкінці порівняємо Django + DRF із FastAPI, на якому ми писали Meteo API.
+Сьогодні — **третій рефакторинг** того самого проєкту: додаємо REST API на Django REST Framework (DRF), **не змінюючи** ні моделей, ні сторінок. Наприкінці порівнюємо Django + DRF із FastAPI, яким далі піде FastAPI-гілка курсу.
 
-**Що потрібно з попередніх уроків:** Django-проєкт `hello_project`, модель `Note`, ORM, адмінка (урок 33), REST: ресурси, методи, коди, пагінація (урок 32), `requests` і `curl` (урок 31).
+| Етап | Проєкт | Що змінюємо |
+|---|---|---|
+| урок 33 | `hello_project` | модель, адмінка, сторінка списку |
+| урок 34, рефакторинг 1 | `django_bootstrap_project` | форми, CRUD, PRG, Bootstrap |
+| урок 34, рефакторинг 2 | `crispy_notes_project` | crispy, dashboard, services/selectors, вхід |
+| **урок 35, рефакторинг 3** | [`crispy_notes_project` + API](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_35_drf_fastapi/crispy_notes_project) | **DRF: `/api/notes/` поверх тих самих services і selectors** |
+
+Код API — з Django-книги ([`notes_app/api.py`](https://github.com/NikoriakViktot/notes_chat_app/blob/main/notes_app/api.py) застосунку Notes Chat App), доповнений до повного CRUD; теорія DRF — у главі книги [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/).
+
+**Що потрібно з попередніх уроків:** проєкт `crispy_notes_project` (урок 34: форми, services/selectors, `@login_required`), REST: ресурси, методи, коди (урок 32), `requests` і `curl` (урок 31).
 
 **Після уроку ти зможеш:**
 
-- підключити DRF до Django-проєкту й налаштувати його в `settings.py`;
-- описати **серіалізатор**: модель ↔ JSON, валідація вхідних даних, поля лише для читання;
-- побудувати CRUD API на `ModelViewSet` і роутері, з пагінацією, фільтрами й власною дією;
-- обмежити запис автентифікованим користувачам;
+- прочитати рефакторинг «+ API» як diff: що додалося, що лишилося незмінним;
+- описати **серіалізатор**: вхідний (що клієнт може надіслати) і вихідний (що клієнт бачить);
+- побудувати `ViewSet` і роутер поверх наявних services/selectors;
+- закрити API для анонімів і не віддавати чужі нотатки (IDOR);
 - отримати OpenAPI-схему API;
 - порівняти Django + DRF і FastAPI і обрати інструмент під задачу.
 
-**Задача розділу.** API нотаток `/api/notes/`: список, фільтри, створення, зміна, видалення, «закріпити». Повний приклад — у розділі [«Практика»](#practice).
-
-**Ноутбук заняття:** [`note_lesson_35_drf.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) — серіалізатори й API з перевірками прямо в ноутбуці.
-
-!!! info "Місце в системі"
-    Це продовження проєкту [`hello_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_33_django_intro/hello_project) з уроку 33 — застосунку нотаток, що виросте до [Notes Chat App](https://github.com/NikoriakViktot/notes_chat_app). Поглиблено — глава Django-книги [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/): як DRF працює всередині, і API для самого Notes Chat App поверх його selectors і services — з Input/Output-серіалізаторами й захистом від доступу до чужих нотаток. Архітектура серіалізаторів — глава [Serializers — Transport Layer](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/django_serializers_full/).
+**Ноутбук заняття:** [`note_lesson_35_drf.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) — серіалізатори й API з перевірками.
 
 ## Пригадай
 
-1. Який код повертає REST API, коли створено ресурс? Коли дані не пройшли перевірку (урок 32)?
-2. Що повертає `Note.objects.filter(...)` і коли йде запит у базу (урок 33)?
-3. Чим `PATCH` відрізняється від `PUT`?
+1. Який код повертає REST API, коли створено ресурс? Коли видалено? Коли дані не пройшли перевірку (урок 32)?
+2. Навіщо в уроці 34 `NoteForm(user=request.user)`?
+3. Що робить view `note_create` з перевіреними даними форми в `crispy_notes_project`?
 
 ??? success "Відповіді"
 
-    1. `201 Created` (+ `Location`). Для неправильних даних у Meteo API був `422`; DRF за замовчуванням повертає `400 Bad Request` — обидва варіанти поширені, головне — однаково в усьому API.
-    2. Лінивий QuerySet; SQL іде, коли потрібні дані.
-    3. `PATCH` змінює передані поля, `PUT` замінює ресурс цілком.
+    1. `201 Created`, `204 No Content`; для неправильних даних Meteo API повертав `422`, DRF за замовчуванням повертає `400` — головне, однаково в усьому API.
+    2. Щоб у списку записників були лише записники цього користувача — чужий не підставиш навіть підробленим `POST`.
+    3. Передає їх у `services.create_note(...)`: view лише координує, зберігає сервіс.
 
-## Підключення DRF
+## Рефакторинг 3. Сторінки → сторінки + JSON API { #refactor-3 }
 
-Беремо проєкт з уроку 33 і встановлюємо два пакети: сам DRF і `drf-spectacular` — генератор OpenAPI-схеми:
+### Що змінилося
 
-```bash
-pip install djangorestframework drf-spectacular
+| Файл | Зміна | Навіщо |
+|---|---|---|
+| `requirements.txt` | + `djangorestframework`, `drf-spectacular` | DRF і OpenAPI-схема |
+| `settings.py` | + `rest_framework`, `drf_spectacular` в `INSTALLED_APPS`; словник `REST_FRAMEWORK` | автентифікація й права API за замовчуванням |
+| `hello_project/urls.py` | + `DefaultRouter`, `/api/`, `/api/schema/` | адреси API |
+| `hello_app/api.py` | **новий** — `NoteOutputSerializer`, `NoteInputSerializer`, `NoteViewSet` | увесь API в одному файлі |
+| `hello_app/tests_api.py` | **новий** — 10 тестів | права, IDOR, валідація, CRUD, схема |
+| `hello_app/services.py` | `update_note` зберігає й `updated_at` | баг, який показав API — див. [«Знайди помилку»](#find-bug) |
+| `models.py`, `views.py`, `forms.py`, шаблони | **без змін** | сторінки працюють як раніше; 6 тестів уроку 34 проходять |
+
+Останній рядок — головне: API додався **поруч** зі сторінками, бо логіка вже живе в services і selectors. Views сторінок і ViewSet API — два «входи» до тих самих функцій.
+
+```mermaid
+flowchart TD
+    classDef step     fill:#eceff1,stroke:#546e7a,stroke-width:1px;
+    classDef decision fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
+    classDef success  fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef error    fill:#ffebee,stroke:#c62828,stroke-width:3px;
+    classDef warning  fill:#fff8e1,stroke:#e65100,stroke-width:2px;
+
+    subgraph IN ["два входи"]
+        direction LR
+        BR["браузер<br>HTML-форми"] --> HV["views.py<br>NoteForm"]
+        CL["бот, Streamlit, curl<br>JSON"] --> AV["api.py<br>NoteViewSet + серіалізатори"]
+    end
+    subgraph CORE ["одне ядро з уроку 34"]
+        direction LR
+        SV["services<br>create, update, delete, pin"] --> M["моделі<br>Note, Notebook, Tag"]
+        SL["selectors<br>get_user_notes, get_note_detail"] --> M
+    end
+    IN --> CORE
+
+    class BR,CL step
+    class HV step
+    class AV success
+    class SV,SL warning
+    class M decision
 ```
 
-```text
-$ python -c "import rest_framework, drf_spectacular; print(rest_framework.VERSION, drf_spectacular.__version__)"
-3.18.1 0.30.0
+### Налаштування
+
+```diff title="hello_project/settings.py"
+ INSTALLED_APPS = [
+     ...
+     "crispy_forms",
+     "crispy_bootstrap5",
++    "rest_framework",     # Django REST Framework: серіалізатори, ViewSet, роутер
++    "drf_spectacular",    # OpenAPI-схема з ViewSet і серіалізаторів
+     "debug_toolbar",
+     "hello_app",
+ ]
++
++REST_FRAMEWORK = {
++    "DEFAULT_AUTHENTICATION_CLASSES": [
++        "rest_framework.authentication.SessionAuthentication",
++        "rest_framework.authentication.BasicAuthentication",
++    ],
++    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
++    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
++}
++SPECTACULAR_SETTINGS = {"TITLE": "CrispyNotes API", "VERSION": "1.0.0"}
 ```
 
-Обидва — Django-застосунки, тож додаємо їх в `INSTALLED_APPS`, а налаштування DRF збираємо в одному словнику `REST_FRAMEWORK`:
+- **Автентифікація** — хто робить запит: `SessionAuthentication` бере вхід із cookie сесії (той самий вхід, що на сторінках), `BasicAuthentication` — логін і пароль у заголовку (для `curl` і скриптів). Токени для мобільних застосунків — урок 40.
+- **Права** — що йому можна: `IsAuthenticated` — без входу API не віддає нічого, нотатки приватні.
 
-```python title="hello_project/settings.py (фрагмент)"
-INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "rest_framework",
-    "drf_spectacular",
-    "hello_app",
-]
+```diff title="hello_project/urls.py"
++from drf_spectacular.views import SpectacularAPIView
++from rest_framework.routers import DefaultRouter
++
++from hello_app.api import NoteViewSet
++
++router = DefaultRouter()
++router.register("notes", NoteViewSet, basename="note")
 
-REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 3,
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticatedOrReadOnly"],
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-}
-
-SPECTACULAR_SETTINGS = {"TITLE": "Notes API", "VERSION": "1.0.0"}
+ urlpatterns = [
+     path("admin/", admin.site.urls),
+     path("accounts/", include("django.contrib.auth.urls")),
++    path("api/", include(router.urls)),
++    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+     path("", include("hello_app.urls", namespace="hello_app")),
+ ] + debug_toolbar_urls()
 ```
 
-| Налаштування | Що дає |
-|---|---|
-| `PageNumberPagination`, `PAGE_SIZE: 3` | кожен список — сторінками по 3 записи: `?page=2` |
-| `SessionAuthentication` | вхід через сесію браузера — як в адмінці |
-| `BasicAuthentication` | логін і пароль у заголовку `Authorization` — зручно для `curl` (у production — лише через HTTPS, а частіше токени, урок 40) |
-| `IsAuthenticatedOrReadOnly` | читати може будь-хто, змінювати — лише користувач, що увійшов |
-| `AutoSchema` від drf-spectacular | OpenAPI-схема з коду, як у FastAPI |
+### Серіалізатори: що бачить клієнт і що може надіслати
 
-Створимо базу з міграцій уроку 33, суперкористувача і кілька нотаток:
+**Серіалізатор** для API — те саме, що форма для сторінки: перетворює дані й перевіряє їх. Лише замість HTML — JSON. Беремо **два**:
 
-```text
-$ python manage.py migrate
-Operations to perform:
-  Apply all migrations: admin, auth, contenttypes, hello_app, sessions
-Running migrations:
-  Applying contenttypes.0001_initial... OK
-  Applying auth.0001_initial... OK
-  Applying admin.0001_initial... OK
-  Applying admin.0002_logentry_remove_auto_add... OK
-  Applying admin.0003_logentry_add_action_flag_choices... OK
-  Applying contenttypes.0002_remove_content_type_name... OK
-  Applying auth.0002_alter_permission_name_max_length... OK
-  Applying auth.0003_alter_user_email_max_length... OK
-  Applying auth.0004_alter_user_username_opts... OK
-  Applying auth.0005_alter_user_last_login_null... OK
-  Applying auth.0006_require_contenttypes_0002... OK
-  Applying auth.0007_alter_validators_add_error_messages... OK
-  Applying auth.0008_alter_user_username_max_length... OK
-  Applying auth.0009_alter_user_last_name_max_length... OK
-  Applying auth.0010_alter_group_name_max_length... OK
-  Applying auth.0011_update_proxy_permissions... OK
-  Applying auth.0012_alter_user_first_name_max_length... OK
-  Applying hello_app.0001_initial... OK
-  Applying hello_app.0002_alter_note_options_note_is_pinned... OK
-  Applying hello_app.0003_note_priority... OK
-  Applying sessions.0001_initial... OK
-$ python manage.py createsuperuser --noinput --username admin --email admin@example.com
-Superuser created successfully.
-```
-
-```python
-from hello_app.models import Note
-
-Note.objects.create(title="Купити молоко", content="2 л")
-Note.objects.create(title="Вивчити DRF", content="serializers, viewsets", priority=3)
-Note.objects.create(title="Пароль від Wi-Fi", content="coffee2026", is_pinned=True)
-Note.objects.create(title="Ідея: бот для нотаток", priority=1)
-print(Note.objects.count())
-```
-
-```text
-4
-```
-
-## Серіалізатор: модель ↔ JSON
-
-**Серіалізатор** робить дві роботи:
-
-- **серіалізація** — об'єкт моделі → словник → JSON для відповіді;
-- **десеріалізація** — JSON із запиту → перевірка → дані для збереження в модель.
-
-`ModelSerializer` бере поля й обмеження прямо з моделі — як `ModelForm` для HTML-форм (урок 34):
-
-```python title="hello_app/serializers.py"
-from rest_framework import serializers
-
-from .models import Note
-
-
-class NoteSerializer(serializers.ModelSerializer):
+```python title="hello_app/api.py — серіалізатори"
+class NoteOutputSerializer(serializers.ModelSerializer):
+    """Що бачить клієнт: явний список полів, без user."""
     priority_label = serializers.CharField(source="get_priority_display", read_only=True)
+    notebook = serializers.CharField(source="notebook.title", default=None, read_only=True)
+    tags = serializers.SlugRelatedField(many=True, read_only=True, slug_field="name")
 
     class Meta:
         model = Note
-        fields = ["id", "title", "content", "is_pinned", "priority", "priority_label", "created_at"]
-        read_only_fields = ["id", "created_at"]
+        fields = ["id", "title", "content", "priority", "priority_label", "is_pinned",
+                  "notebook", "tags", "updated_at"]
 
-    def validate_title(self, value):
-        value = value.strip()
-        if len(value) < 3:
-            raise serializers.ValidationError("Заголовок має містити щонайменше 3 символи.")
-        return value
+
+class NoteInputSerializer(serializers.Serializer):
+    """Що клієнт може надіслати. Власника задає сервер, а не клієнт."""
+    title = serializers.CharField(max_length=200)
+    content = serializers.CharField(required=False, allow_blank=True, default="")
+    priority = serializers.ChoiceField(choices=Note.PRIORITY_CHOICES, default=Note.PRIORITY_LOW)
+    is_pinned = serializers.BooleanField(required=False, default=False)
+    notebook = serializers.PrimaryKeyRelatedField(queryset=Notebook.objects.none(), required=False,
+                                                  allow_null=True, default=None)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # як NoteForm(user=...): записник можна вибрати лише зі своїх
+        request = self.context.get("request")
+        if request is not None:
+            self.fields["notebook"].queryset = Notebook.objects.filter(user=request.user)
 ```
 
-- `fields` — **явний** список полів у JSON. Що не в списку — не потрапить у відповідь і не прийметься із запиту.
-- `read_only_fields` — поля лише для відповіді: `id` і час створення клієнт не задає.
-- `priority_label` — обчислене поле: `source` вказує на метод моделі `get_priority_display()` (урок 33).
-- `validate_<поле>` — власна перевірка одного поля; повертає очищене значення.
+| | `NoteForm` (урок 34) | `NoteInputSerializer` | `NoteOutputSerializer` |
+|---|---|---|---|
+| Напрям | браузер → сервер | клієнт → сервер | сервер → клієнт |
+| Формат | поля HTML-форми | JSON | JSON |
+| Перевірка | `is_valid()` → `cleaned_data` | `is_valid()` → `validated_data` | — |
+| Чужий записник | `queryset` за `user` | `queryset` за `user` | — |
+| `user` | немає в `fields` | немає в полях | немає в `fields` |
 
-Спробуємо в `python manage.py shell`. Серіалізація:
+Чому два, а не один `ModelSerializer` на все: вихід показує більше, ніж клієнт може змінити (`id`, `priority_label`, назву записника, теги, `updated_at`), а вхід приймає лише дозволене. Поле `user` не з'являється **ніде** — власника бере сервер з `request.user`.
 
-```python
-from hello_app.models import Note
-from hello_app.serializers import NoteSerializer
+### ViewSet: один клас — усі дії
 
-note = Note.objects.get(title="Вивчити DRF")
-data = NoteSerializer(note).data
-print(data)
-print(NoteSerializer(Note.objects.filter(is_pinned=True), many=True).data)
+```python title="hello_app/api.py — NoteViewSet (без list і опису схеми)"
+class NoteViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Note.objects.none()   # лише для схеми: тип {id} у шляху; дані беруть selectors
+
+    def _get_note(self, request, pk):
+        try:
+            return selectors.get_note_detail(request.user, pk)
+        except Note.DoesNotExist:
+            raise NotFound("Нотатку не знайдено.")
+
+    def _input(self, request, **kwargs):
+        data = NoteInputSerializer(data=request.data, context={"request": request}, **kwargs)
+        data.is_valid(raise_exception=True)
+        return data.validated_data
+
+    def retrieve(self, request, pk=None):
+        return Response(NoteOutputSerializer(self._get_note(request, pk)).data)
+
+    def create(self, request):
+        note = services.create_note(user=request.user, **self._input(request))
+        return Response(NoteOutputSerializer(note).data, status=status.HTTP_201_CREATED)
+
+    def partial_update(self, request, pk=None):
+        note = self._get_note(request, pk)
+        note = services.update_note(note, **self._input(request, partial=True))
+        return Response(NoteOutputSerializer(note).data)
+
+    def destroy(self, request, pk=None):
+        services.delete_note(self._get_note(request, pk))
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=["post"])
+    def pin(self, request, pk=None):
+        note = services.toggle_pin_note(self._get_note(request, pk))
+        return Response(NoteOutputSerializer(note).data)
 ```
 
-Приклад виводу (час `created_at` у тебе інший):
+Роутер перетворює методи класу на адреси:
 
-```text
-{'id': 2, 'title': 'Вивчити DRF', 'content': 'serializers, viewsets', 'is_pinned': False, 'priority': 3, 'priority_label': 'Високий', 'created_at': '2026-09-27T07:08:46.876031+03:00'}
-[{'id': 3, 'title': 'Пароль від Wi-Fi', 'content': 'coffee2026', 'is_pinned': True, 'priority': 2, 'priority_label': 'Звичайний', 'created_at': '2026-09-27T07:08:46.877381+03:00'}]
-```
+| Запит | Метод ViewSet | Виклик ядра | Успіх |
+|---|---|---|---|
+| `GET /api/notes/` | `list` | `selectors.get_user_notes` | `200` |
+| `POST /api/notes/` | `create` | `services.create_note` | `201` |
+| `GET /api/notes/{id}/` | `retrieve` | `selectors.get_note_detail` | `200` |
+| `PATCH /api/notes/{id}/` | `partial_update` | `services.update_note` | `200` |
+| `DELETE /api/notes/{id}/` | `destroy` | `services.delete_note` | `204` |
+| `POST /api/notes/{id}/pin/` | `pin` (`@action`) | `services.toggle_pin_note` | `200` |
 
-`many=True` — серіалізувати колекцію (QuerySet або список). Результат — звичайні словники, які DRF перетворить на JSON.
-
-Десеріалізація і валідація — **спершу `is_valid()`**, лише потім `save()`:
-
-```python
-good = NoteSerializer(data={"title": "  Прочитати про REST  ", "priority": 4, "id": 999})
-print(good.is_valid(), good.validated_data)
-created = good.save()
-print(created.id, repr(created.title), created.get_priority_display())
-
-bad = NoteSerializer(data={"title": "ok", "priority": 7})
-print(bad.is_valid())
-print(bad.errors)
-```
-
-```text
-True {'title': 'Прочитати про REST', 'priority': 4}
-5 'Прочитати про REST' Терміновий
-False
-{'title': [ErrorDetail(string='Заголовок має містити щонайменше 3 символи.', code='invalid')], 'priority': [ErrorDetail(string='"7" не є коректним вибором.', code='invalid_choice')]}
-```
-
-- `id: 999` у вхідних даних **проігноровано**: поле лише для читання. Інакше клієнт міг би перезаписати чужу нотатку.
-- Пробіли навколо заголовка прибрав `validate_title`.
-- Помилки зібрано **для всіх полів одразу** — клієнт виправить усе за один раз. Мова повідомлень — з `LANGUAGE_CODE = "uk"`.
-
-!!! tip "Поглиблено"
-    Порядок валідації, Input/Output-серіалізатори й перетворення помилок домену на HTTP-коди — глава Django-книги [Serializers — Transport Layer](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/django_serializers_full/); [DRF: Serializers](https://www.django-rest-framework.org/api-guide/serializers/).
-
-## ViewSet і роутер: CRUD одним класом
-
-У DRF є три рівні view — від ручного до автоматичного:
-
-| Рівень | Приклад | Коли |
-|---|---|---|
-| `APIView` / `@api_view` | методи `get`, `post` пишемо самі | нестандартна логіка, один-два ендпоінти |
-| generic views | `ListCreateAPIView`, `RetrieveUpdateDestroyAPIView` | стандартний CRUD, але окремими класами |
-| **`ModelViewSet` + роутер** | один клас → усі 5 операцій, роутер сам будує адреси | ресурс з повним CRUD — як наші нотатки |
-
-```python title="hello_app/api.py"
-from rest_framework import viewsets
-
-from .models import Note
-from .serializers import NoteSerializer
-
-
-class NoteViewSet(viewsets.ModelViewSet):
-    queryset = Note.objects.all()
-    serializer_class = NoteSerializer
-```
-
-Два рядки — і в нас список, створення, одна нотатка, зміна, заміна й видалення. Роутер перетворює ViewSet на маршрути:
-
-```python title="hello_project/urls.py"
-from django.contrib import admin
-from django.urls import include, path
-from drf_spectacular.views import SpectacularAPIView
-from rest_framework.routers import DefaultRouter
-
-from hello_app.api import NoteViewSet
-
-router = DefaultRouter()
-router.register("notes", NoteViewSet, basename="note")
-
-urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api/", include(router.urls)),
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("", include("hello_app.urls")),
-]
-```
-
-| Запит | Метод ViewSet | Що робить |
-|---|---|---|
-| `GET /api/notes/` | `list` | список (сторінками) |
-| `POST /api/notes/` | `create` | створити → `201` |
-| `GET /api/notes/{id}/` | `retrieve` | одна нотатка |
-| `PUT /api/notes/{id}/` | `update` | замінити цілком |
-| `PATCH /api/notes/{id}/` | `partial_update` | змінити частину |
-| `DELETE /api/notes/{id}/` | `destroy` | видалити → `204` |
-
-```mermaid
-sequenceDiagram
-    participant C as клієнт
-    participant R as router /api/notes/
-    participant V as NoteViewSet
-    participant P as permissions
-    participant S as NoteSerializer
-    participant M as Note / ORM
-    C->>R: POST /api/notes/ {"title": …}
-    R->>V: create(request)
-    V->>P: IsAuthenticatedOrReadOnly
-    P-->>V: дозволено (користувач увійшов)
-    V->>S: NoteSerializer(data=request.data)
-    S->>S: is_valid(): поля, validate_title
-    alt дані неправильні
-        S-->>C: 400 + errors
-    else дані правильні
-        S->>M: save() → INSERT
-        M-->>S: нова нотатка
-        S-->>C: 201 + JSON нотатки
-    end
-```
+- **ViewSet, а не ModelViewSet.** `ModelViewSet` сам робить `Note.objects…` і `serializer.save()` — він обійшов би services. Тут ViewSet лише координує, як view сторінок.
+- **IDOR** (Insecure Direct Object Reference) — отримати чужий об'єкт, підставивши його `id`. `get_note_detail(request.user, pk)` шукає нотатку **серед нотаток користувача**; чужа — `404`, ніби її немає.
+- `raise_exception=True` — помилки валідації одразу стають відповіддю `400` з помилками за полями.
+- Над класом у файлі стоїть `@extend_schema_view(...)`: звичайний `ViewSet` не знає, які серіалізатори в нього на вході й виході, тож для OpenAPI-схеми їх описано явно (`request=NoteInputSerializer`, `responses=NoteOutputSerializer`). Без цього drf-spectacular попереджає «unable to guess serializer» і будує схему без тіл запитів.
 
 ### API в роботі
 
-Запускаємо сервер (в окремому терміналі) і пробуємо API через `curl`. `python -m json.tool --no-ensure-ascii` лише гарно форматує JSON і показує кирилицю як є.
-
-Приклад виводу (дата й час у тебе інші):
+База, двоє користувачів, записник і нотатки — через ті самі services (у папці `crispy_notes_project`):
 
 ```text
-$ python manage.py runserver
-Watching for file changes with StatReloader
-Performing system checks...
-
-System check identified no issues (0 silenced).
-September 27, 2026 - 07:08:47
-Django version 5.2.17, using settings 'hello_project.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CONTROL-C.
+$ python manage.py migrate -v 0
 ```
 
-Приклад виводу (тут і далі час `created_at` у тебе інший):
-
-```text
-$ curl -s "http://127.0.0.1:8000/api/notes/" | python -m json.tool --no-ensure-ascii
-{
-    "count": 5,
-    "next": "http://127.0.0.1:8000/api/notes/?page=2",
-    "previous": null,
-    "results": [
-        {
-            "id": 3,
-            "title": "Пароль від Wi-Fi",
-            "content": "coffee2026",
-            "is_pinned": true,
-            "priority": 2,
-            "priority_label": "Звичайний",
-            "created_at": "2026-09-27T07:08:46.877381+03:00"
-        },
-        {
-            "id": 5,
-            "title": "Прочитати про REST",
-            "content": "",
-            "is_pinned": false,
-            "priority": 4,
-            "priority_label": "Терміновий",
-            "created_at": "2026-09-27T07:08:47.014036+03:00"
-        },
-        {
-            "id": 4,
-            "title": "Ідея: бот для нотаток",
-            "content": "",
-            "is_pinned": false,
-            "priority": 1,
-            "priority_label": "Низький",
-            "created_at": "2026-09-27T07:08:46.878745+03:00"
-        }
-    ]
-}
-```
-
-Відповідь — сторінка: `count` — скільки всього, `next` / `previous` — посилання на сусідні сторінки, `results` — нотатки. Як у Meteo API уроку 32, тільки назви полів інші. Порядок — з `Meta.ordering` моделі: закріплені першими.
-
-Читати може будь-хто, а **змінювати** — лише користувач, що увійшов:
-
-```text
-$ curl -s -X POST http://127.0.0.1:8000/api/notes/ -H "Content-Type: application/json" -d '{"title": "Без входу"}' -w "\n%{http_code}\n"
-{"detail":"Реквізити перевірки достовірності не надані."}
-403
-$ curl -s -u admin:lesson33-pass -X POST http://127.0.0.1:8000/api/notes/ -H "Content-Type: application/json" -d '{"title": "Зустріч о 15:00", "priority": 3}' -w "\n%{http_code}\n"
-{"id":6,"title":"Зустріч о 15:00","content":"","is_pinned":false,"priority":3,"priority_label":"Високий","created_at":"2026-09-27T07:08:55.493994+03:00"}
-201
-$ curl -s -u admin:lesson33-pass -X POST http://127.0.0.1:8000/api/notes/ -H "Content-Type: application/json" -d '{"title": "ok", "priority": 9}' -w "\n%{http_code}\n"
-{"title":["Заголовок має містити щонайменше 3 символи."],"priority":["\"9\" не є коректним вибором."]}
-400
-```
-
-- `403` без логіна: «Реквізити перевірки достовірності не надані» — облікових даних немає. `401` DRF повертає, лише коли **перший** клас у `DEFAULT_AUTHENTICATION_CLASSES` уміє попросити облікові дані заголовком `WWW-Authenticate` (як `BasicAuthentication`). У нас першою стоїть сесійна автентифікація, тому `403`. Переставиш класи місцями — отримаєш `401`.
-- `-u admin:пароль` — Basic-автентифікація: `curl` сам додає заголовок `Authorization: Basic …`.
-- `400` — перевірка серіалізатора; тіло пояснює кожне поле.
-
-Зміна, видалення і неіснуюча нотатка:
-
-```text
-$ curl -s -u admin:lesson33-pass -X PATCH http://127.0.0.1:8000/api/notes/1/ -H "Content-Type: application/json" -d '{"content": "2 л і хліб"}'
-{"id":1,"title":"Купити молоко","content":"2 л і хліб","is_pinned":false,"priority":2,"priority_label":"Звичайний","created_at":"2026-09-27T07:08:46.873207+03:00"}
-$ curl -s -u admin:lesson33-pass -X DELETE http://127.0.0.1:8000/api/notes/4/ -o /dev/null -w "%{http_code}\n"
-204
-$ curl -s http://127.0.0.1:8000/api/notes/4/ -w "\n%{http_code}\n"
-{"detail":"No Note matches the given query."}
-404
-```
-
-### Browsable API
-
-Відкрий `http://127.0.0.1:8000/api/notes/` у **браузері** — DRF замість сирого JSON покаже HTML-сторінку: відповідь, заголовки, посилання на сторінки, а після входу — форму для `POST`. Це та сама відповідь, просто для людини (DRF дивиться на заголовок `Accept` браузера):
-
-![Browsable API DRF: сторінка списку нотаток з JSON-відповіддю](img/lesson_35_browsable.png)
-
-### OpenAPI-схема
-
-drf-spectacular будує опис API за стандартом OpenAPI з ViewSet і серіалізаторів — те саме, що FastAPI робить сам (урок 32):
-
-```text
-$ curl -s http://127.0.0.1:8000/api/schema/ | head -n 12
-openapi: 3.0.3
-info:
-  title: Notes API
-  version: 1.0.0
-paths:
-  /api/notes/:
-    get:
-      operationId: notes_list
-      parameters:
-      - name: page
-        required: false
-        in: query
-$ curl -s http://127.0.0.1:8000/api/schema/ | grep -E "^  /api/"
-  /api/notes/:
-  /api/notes/{id}/:
-  /api/schema/:
-```
-
-Схема у форматі YAML. З неї Swagger UI будує інтерактивну документацію (`SpectacularSwaggerView`), а Postman імпортує всі запити (урок 37).
-
-!!! tip "Поглиблено"
-    Django-книга: [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/) — `APIView.dispatch()` зсередини, об'єктні права, API Notes Chat App на selectors/services. Документація: [DRF: ViewSets](https://www.django-rest-framework.org/api-guide/viewsets/), [Routers](https://www.django-rest-framework.org/api-guide/routers/), [Generic views](https://www.django-rest-framework.org/api-guide/generic-views/), [Permissions](https://www.django-rest-framework.org/api-guide/permissions/), [Pagination](https://www.django-rest-framework.org/api-guide/pagination/), [drf-spectacular](https://drf-spectacular.readthedocs.io/).
-
-## Тести API
-
-DRF має `APITestCase` і `APIClient` — тестовий клієнт, як у Django, але з JSON і автентифікацією. Тести отримують **окрему** тестову базу, яка створюється й видаляється сама (урок 41):
-
-```python title="hello_app/tests_api.py"
+```python
 from django.contrib.auth.models import User
-from rest_framework import status
-from rest_framework.test import APITestCase
+from hello_app import services
+from hello_app.models import Notebook
 
-from .models import Note
-
-
-class NoteApiTests(APITestCase):
-    def setUp(self):
-        self.user = User.objects.create_user("alice", password="alice-pass")
-        Note.objects.create(title="Перша нотатка")
-
-    def test_list_is_public(self):
-        response = self.client.get("/api/notes/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["count"], 1)
-
-    def test_create_requires_login(self):
-        response = self.client.post("/api/notes/", {"title": "Без входу"}, format="json")
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_create_and_validation(self):
-        self.client.force_authenticate(self.user)
-        created = self.client.post("/api/notes/", {"title": "Нова", "priority": 4}, format="json")
-        self.assertEqual(created.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(created.data["priority_label"], "Терміновий")
-        bad = self.client.post("/api/notes/", {"title": "x"}, format="json")
-        self.assertEqual(bad.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("title", bad.data)
+olena = User.objects.create_user("olena", password="pass-12345")
+bob = User.objects.create_user("bob", password="pass-12345")
+study = Notebook.objects.create(user=olena, title="Навчання")
+services.create_note(user=olena, title="Вивчити DRF", content="serializers, viewsets", priority=3, notebook=study)
+services.create_note(user=olena, title="Купити квитки", priority=2)
+services.create_note(user=bob, title="Нотатка Боба")
+print(olena.notes.count(), bob.notes.count())
 ```
 
-Приклад виводу (час виконання у тебе інший):
+```text
+2 1
+```
+
+Запити — тестовим клієнтом DRF `APIClient` (новий shell). `force_authenticate` — «увійти» без пароля, лише для тестів:
+
+```python
+from django.test.utils import setup_test_environment
+from rest_framework.test import APIClient
+
+from hello_app.models import Note, Notebook
+
+setup_test_environment()
+api = APIClient()
+
+r = api.get("/api/notes/")
+print("анонім        →", r.status_code, r.data)
+
+olena = Note.objects.get(title="Вивчити DRF").user
+api.force_authenticate(olena)
+r = api.get("/api/notes/")
+print("список        →", r.status_code, [(n["title"], n["priority_label"], n["notebook"]) for n in r.data])
+
+r = api.post("/api/notes/", {"title": "Здати проєкт", "priority": 4, "user": 999}, format="json")
+created = r.data
+print("створено      →", r.status_code, {k: v for k, v in created.items() if k != "updated_at"})
+print("власник       →", Note.objects.get(pk=created["id"]).user)
+
+r = api.post("/api/notes/", {"title": "", "priority": 9}, format="json")
+print("помилки       →", r.status_code, {field: [str(e) for e in errors] for field, errors in r.data.items()})
+
+bob_notebook = Notebook.objects.create(user=Note.objects.get(title="Нотатка Боба").user, title="Записник Боба")
+r = api.post("/api/notes/", {"title": "Чужий записник", "notebook": bob_notebook.pk}, format="json")
+print("чужий записник→", r.status_code, [str(e) for e in r.data["notebook"]])
+
+bob_note = Note.objects.get(title="Нотатка Боба")
+print("чужа нотатка  →", api.get(f"/api/notes/{bob_note.pk}/").status_code, api.delete(f"/api/notes/{bob_note.pk}/").status_code)
+
+r = api.patch(f"/api/notes/{created['id']}/", {"title": "Здати проєкт до п'ятниці"}, format="json")
+print("PATCH         →", r.status_code, r.data["title"], r.data["priority"])
+r = api.post(f"/api/notes/{created['id']}/pin/")
+print("pin           →", r.status_code, r.data["is_pinned"])
+r = api.delete(f"/api/notes/{created['id']}/")
+print("DELETE        →", r.status_code, Note.objects.filter(pk=created["id"]).exists())
+```
 
 ```text
-$ python manage.py test hello_app
-Found 6 test(s).
+Forbidden: /api/notes/
+анонім        → 403 {'detail': ErrorDetail(string='Реквізити перевірки достовірності не надані.', code='not_authenticated')}
+список        → 200 [('Вивчити DRF', '🟠 Високий', 'Навчання'), ('Купити квитки', '🟡 Середній', None)]
+створено      → 201 {'id': 4, 'title': 'Здати проєкт', 'content': '', 'priority': 4, 'priority_label': '🔴 Терміново', 'is_pinned': False, 'notebook': None, 'tags': []}
+власник       → olena
+Bad Request: /api/notes/
+помилки       → 400 {'title': ['Це поле не може бути порожнім.'], 'priority': ['"9" не є коректним вибором.']}
+Bad Request: /api/notes/
+чужий записник→ 400 ['Недопустимий первинний ключ "2" - об\'єкт не існує.']
+Not Found: /api/notes/3/
+Not Found: /api/notes/3/
+чужа нотатка  → 404 404
+PATCH         → 200 Здати проєкт до п'ятниці 4
+pin           → 200 True
+DELETE        → 204 False
+```
+
+- рядки `Forbidden: …`, `Bad Request: …`, `Not Found: …` — журнал Django, не `print` (урок 34): кожна відповідь 4xx потрапляє в термінал;
+- анонім — `403`: перший клас автентифікації, `SessionAuthentication`, не вміє «попросити» облікові дані. Якби першим стояв `BasicAuthentication`, відповідь була б `401` із заголовком `WWW-Authenticate`;
+- `"user": 999` у тілі проігноровано: такого поля у вхідному серіалізаторі немає, власника задав сервер;
+- чужий записник — `400`, чужа нотатка — `404` і на читання, і на видалення;
+- `PATCH` змінив лише `title`, `priority` лишився `4`: `partial=True` не підставляє значень за замовчуванням;
+- `pin` — власна дія (`@action`), роутер сам додав адресу `/api/notes/{id}/pin/`.
+
+### Browsable API і OpenAPI-схема
+
+Відкрий `http://127.0.0.1:8000/api/notes/` у **браузері** після входу на сайт — DRF замість сирого JSON покаже HTML-сторінку з відповіддю й заголовками (він дивиться на заголовок `Accept` браузера). Вхід — той самий, що на сторінках, завдяки `SessionAuthentication`:
+
+![Browsable API DRF: список нотаток Олени у форматі JSON](img/lesson_35_browsable.png)
+
+drf-spectacular будує опис API за стандартом OpenAPI з ViewSet і серіалізаторів — те, що FastAPI робить сам (урок 32):
+
+```python
+r = api.get("/api/schema/")
+schema = r.content.decode()
+print(r.status_code, r["Content-Type"])
+print([line.strip() for line in schema.splitlines() if line.startswith("  /api/")])
+```
+
+```text
+200 application/vnd.oai.openapi; charset=utf-8
+['/api/notes/:', '/api/notes/{id}/:', '/api/notes/{id}/pin/:', '/api/schema/:']
+```
+
+Зі схеми Swagger UI будує інтерактивну документацію, а Postman імпортує всі запити (урок 37).
+
+### Тести
+
+`tests_api.py` перевіряє права (анонім, чужа нотатка, чужий записник), валідацію, створення з власником від сервера, `PATCH`, `DELETE`, `pin`, фільтр за записником і схему. Разом з тестами сторінок уроку 34 — це доказ, що рефакторинг нічого не зламав:
+
+Приклад виводу (час залежить від машини):
+
+```text
+$ python manage.py test
+Found 16 test(s).
 System check identified no issues (0 silenced).
 Creating test database for alias 'default'...
-......
+................
 ----------------------------------------------------------------------
-Ran 6 tests in 0.684s
+Ran 16 tests in 8.687s
 
 OK
 Destroying test database for alias 'default'...
 ```
 
+!!! tip "Поглиблено"
+    - Django-книга: [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/) — `APIView.dispatch()` зсередини, об'єктні права, Input/Output-серіалізатори; [Serializers — Transport Layer](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/django_serializers_full/); [Services і Selectors](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/services_selectors_full/)
+    - DRF: [Serializers](https://www.django-rest-framework.org/api-guide/serializers/), [ViewSets](https://www.django-rest-framework.org/api-guide/viewsets/), [Routers](https://www.django-rest-framework.org/api-guide/routers/), [Permissions](https://www.django-rest-framework.org/api-guide/permissions/); [drf-spectacular](https://drf-spectacular.readthedocs.io/)
+
 ## Django + DRF чи FastAPI { #architecture }
 
-Той самий API нотаток на FastAPI — для порівняння. Дані тут у словнику в пам'яті: база даних для FastAPI (SQLAlchemy / SQLModel) — урок 38.
+Той самий API нотаток на FastAPI — [`fastapi_notes.py`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/fastapi_notes.py) у папці уроку: ті самі поля, обмеження й адреси. Дані тут у словнику в пам'яті — база для FastAPI (SQLAlchemy) — урок 38.
 
-```python title="fastapi_notes.py"
-from datetime import datetime, timezone
-from typing import Optional
-
-from fastapi import FastAPI, HTTPException, Response
-from pydantic import BaseModel, Field, field_validator
-
-app = FastAPI(title="Notes API (FastAPI)")
-NOTES: dict[int, dict] = {}
-
-
+```python title="fastapi_notes.py (скорочено)"
 class NoteIn(BaseModel):
-    title: str
+    title: str = Field(min_length=1, max_length=200)
     content: str = ""
+    priority: int = Field(1, ge=1, le=4)
     is_pinned: bool = False
-    priority: int = Field(2, ge=1, le=4)
-
-    @field_validator("title")
-    @classmethod
-    def title_min_length(cls, value):
-        value = value.strip()
-        if len(value) < 3:
-            raise ValueError("Заголовок має містити щонайменше 3 символи.")
-        return value
 
 
-class NotePatch(BaseModel):
-    title: Optional[str] = None
-    content: Optional[str] = None
-    is_pinned: Optional[bool] = None
-    priority: Optional[int] = Field(None, ge=1, le=4)
+class NoteOut(NoteIn):
+    id: int
 
 
-@app.get("/api/notes/")
-def list_notes(page: int = 1, size: int = 3):
-    items = sorted(NOTES.values(), key=lambda n: (not n["is_pinned"], n["id"]))
-    return {"count": len(items), "results": items[(page - 1) * size:page * size]}
-
-
-@app.post("/api/notes/", status_code=201)
+@app.post("/api/notes/", status_code=201, response_model=NoteOut)
 def create_note(body: NoteIn):
     note_id = max(NOTES, default=0) + 1
-    NOTES[note_id] = {"id": note_id, **body.model_dump(), "created_at": datetime.now(timezone.utc)}
+    NOTES[note_id] = {"id": note_id, **body.model_dump()}
     return NOTES[note_id]
 
 
-@app.get("/api/notes/{note_id}/")
+@app.get("/api/notes/{note_id}/", response_model=NoteOut)
 def get_note(note_id: int):
     if note_id not in NOTES:
-        raise HTTPException(404, "Не знайдено.")
+        raise HTTPException(404, "Нотатку не знайдено.")
     return NOTES[note_id]
-
-
-@app.patch("/api/notes/{note_id}/")
-def patch_note(note_id: int, body: NotePatch):
-    note = get_note(note_id)
-    note.update(body.model_dump(exclude_unset=True))
-    return note
-
-
-@app.delete("/api/notes/{note_id}/", status_code=204)
-def delete_note(note_id: int):
-    get_note(note_id)
-    del NOTES[note_id]
-    return Response(status_code=204)
 ```
 
-Перевіримо тестовим клієнтом FastAPI — ті самі запити, що й до DRF:
+Ті самі запити тестовим клієнтом FastAPI (у папці уроку `lesson_35_drf_fastapi`, де лежить `fastapi_notes.py`):
 
 ```python
 from fastapi.testclient import TestClient
 
 from fastapi_notes import app
 
-client = TestClient(app)
-print(client.post("/api/notes/", json={"title": "Вивчити FastAPI", "priority": 3}).status_code)
-bad = client.post("/api/notes/", json={"title": "ok", "priority": 9})
-print(bad.status_code, [(e["loc"][-1], e["msg"]) for e in bad.json()["detail"]])
-print(client.get("/api/notes/").json()["count"], client.get("/api/notes/7/").status_code)
-print(sorted(path for path in app.openapi()["paths"]))
+fast = TestClient(app)
+r = fast.post("/api/notes/", json={"title": "Вивчити FastAPI", "priority": 4})
+print("створено  →", r.status_code, r.json())
+bad = fast.post("/api/notes/", json={"title": "", "priority": 9})
+print("помилки   →", bad.status_code, [(e["loc"][-1], e["msg"]) for e in bad.json()["detail"]])
+print("pin       →", fast.post("/api/notes/1/pin/").json()["is_pinned"], "| немає →", fast.get("/api/notes/7/").status_code)
+print("схема     →", sorted(app.openapi()["paths"]))
 ```
 
 ```text
-201
-422 [('title', 'Value error, Заголовок має містити щонайменше 3 символи.'), ('priority', 'Input should be less than or equal to 4')]
-1 404
-['/api/notes/', '/api/notes/{note_id}/']
+створено  → 201 {'title': 'Вивчити FastAPI', 'content': '', 'priority': 4, 'is_pinned': False, 'id': 1}
+помилки   → 422 [('title', 'String should have at least 1 character'), ('priority', 'Input should be less than or equal to 4')]
+pin       → True | немає → 404
+схема     → ['/api/notes/', '/api/notes/{note_id}/', '/api/notes/{note_id}/pin/']
 ```
 
 | | Django + DRF | FastAPI |
 |---|---|---|
 | Що це | повний вебфреймворк + пакет для API | мікрофреймворк для API |
-| База даних | вбудований ORM + міграції | обираєш сам: SQLAlchemy / SQLModel + Alembic (урок 38) |
-| Валідація | серіалізатори (DRF) | Pydantic-моделі за анотаціями типів (урок 36) |
-| CRUD | `ModelViewSet` + роутер — кілька рядків | кожен ендпоінт — окрема функція |
-| Адмінка, auth, сесії | є з коробки | немає: окремі пакети або свій код |
-| Документація API | drf-spectacular (пакет) | `/docs` з коробки |
+| База даних | вбудований ORM + міграції | обираєш сам: SQLAlchemy + Alembic (урок 38) |
+| Валідація | серіалізатори | Pydantic-моделі за анотаціями типів (урок 36) |
 | Помилка валідації | `400`, помилки за полями | `422`, список `detail` з `loc` |
-| Async | частково (Django async views, урок 45) | від початку async (урок 27) |
-| Швидкість | достатня для більшості сайтів | вища на великій кількості одночасних запитів |
-| Коли обрати | сайт + адмінка + API над однією базою; багато «стандартного» CRUD | окремий API-сервіс, мікросервіс, ML-модель за API, багато I/O |
+| Адмінка, вхід, сесії, форми | є з коробки | немає: окремі пакети або свій код |
+| Документація API | drf-spectacular (пакет) | `/docs` з коробки |
+| Async | частково (урок 45) | від початку async (урок 27) |
+| Коли обрати | сайт + адмінка + API над однією базою — як наші нотатки | окремий API-сервіс, парсер, ML-модель за API, багато I/O |
 
 ```mermaid
 flowchart TD
@@ -582,7 +440,7 @@ flowchart TD
     A -- так --> D["Django<br>+ DRF для API"]
     A -- ні --> B{"вже є Django-проєкт<br>з цими даними?"}
     B -- так --> D
-    B -- ні --> C{"окремий API-сервіс:<br>ML, мікросервіс, багато I/O?"}
+    B -- ні --> C{"окремий API-сервіс:<br>парсер, ML, багато I/O?"}
     C -- так --> F["FastAPI"]
     C -- "ні, простий CRUD" --> E["будь-який:<br>обирай, що знає команда"]
 
@@ -592,231 +450,148 @@ flowchart TD
     class E warning
 ```
 
-**Архітектура API нотаток** — шари, як у Meteo API (урок 32), але частину з них дає фреймворк:
-
-```mermaid
-flowchart TD
-    classDef step     fill:#eceff1,stroke:#546e7a,stroke-width:1px;
-    classDef decision fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
-    classDef success  fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-    classDef error    fill:#ffebee,stroke:#c62828,stroke-width:3px;
-    classDef warning  fill:#fff8e1,stroke:#e65100,stroke-width:2px;
-
-    CL["клієнти: браузер, curl,<br>Streamlit, бот"] --> RT["DefaultRouter<br>/api/notes/"]
-    RT --> VS["NoteViewSet<br>queryset, фільтри, дії"]
-    VS --> PM["permissions, authentication<br>з REST_FRAMEWORK"]
-    VS --> SR["NoteSerializer<br>JSON ↔ модель, валідація"]
-    SR --> MD["Note<br>модель уроку 33"]
-    MD --> DB[("SQLite / PostgreSQL")]
-    AD["адмінка і HTML-сторінки<br>урок 33–34"] --> MD
-
-    class CL step
-    class RT,VS success
-    class PM warning
-    class SR warning
-    class MD,AD step
-    class DB decision
-```
-
-- **Одна модель — три входи.** HTML-сторінки, адмінка й API працюють з тією самою моделлю `Note`: правила даних (обмеження, `choices`) — в одному місці.
-- **Серіалізатор — межа API.** Він вирішує, що бачить і що може змінити клієнт. `fields = "__all__"` цю межу знімає — див. «Знайди помилку».
-- **Коли логіки стає більше** (права на чужі нотатки, сповіщення, групи), її виносять із ViewSet у сервіси й селектори — крок 3 Django-книги й урок 44. Як це виглядає для Notes Chat App, де в кожної нотатки є власник і група, — у главі книги [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/).
+**Куди далі.** Django-гілка курсу продовжує нотатки: вхід і спільний доступ (урок 40), тести (41), архітектура services/selectors (44), чат на WebSocket (45). FastAPI-гілка з уроку 36 будує **новинний агрегатор** — парсер новин зі старого курсу, який крок за кроком обростає Pydantic-моделями, FastAPI, базою, кешем, підсумками від Gemini і Telegram-ботом.
 
 ## Практика { #practice }
 
-### Розібраний приклад: фільтри і дія «закріпити»
+### Розібраний приклад: фільтр за записником
 
-Клієнтам потрібні закріплені нотатки окремо й пошук за заголовком, а мобільному застосунку — кнопка «📌». Фільтри читаємо з `query_params` у `get_queryset`, а «закріпити» — **власна дія** ViewSet:
+Клієнту потрібні нотатки одного записника: `GET /api/notes/?notebook=<id>`. Писати новий ORM-запит не треба — `selectors.get_user_notes` уже вміє фільтр `notebook=` (ним користується sidebar сторінок). У `list` лише перевіряємо параметр:
 
-```python title="hello_app/api.py"
-from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
-
-from .models import Note
-from .serializers import NoteSerializer
-
-
-class NoteViewSet(viewsets.ModelViewSet):
-    serializer_class = NoteSerializer
-
-    def get_queryset(self):
-        notes = Note.objects.all()
-        pinned = self.request.query_params.get("pinned")
-        if pinned is not None:
-            notes = notes.filter(is_pinned=pinned.lower() in ("1", "true", "yes"))
-        search = self.request.query_params.get("search")
-        if search:
-            notes = notes.filter(title__icontains=search)
-        return notes
-
-    @action(detail=True, methods=["post"])
-    def pin(self, request, pk=None):
-        note = self.get_object()
-        note.is_pinned = True
-        note.save(update_fields=["is_pinned"])
-        return Response(self.get_serializer(note).data)
+```diff title="hello_app/api.py — list"
+     def list(self, request):
+-        notes = selectors.get_user_notes(request.user, search=request.query_params.get("search"))
++        params = request.query_params
++        notebook = None
++        if "notebook" in params:                       # ?notebook=<id> — лише свій записник
++            if params["notebook"].isdigit():
++                notebook = Notebook.objects.filter(user=request.user, pk=params["notebook"]).first()
++            if notebook is None:
++                raise NotFound("Записник не знайдено.")
++        notes = selectors.get_user_notes(request.user, notebook=notebook, search=params.get("search"))
+         return Response(NoteOutputSerializer(notes, many=True).data)
 ```
-
-```text
-$ curl -s "http://127.0.0.1:8000/api/notes/?pinned=true" | python -m json.tool --no-ensure-ascii
-{
-    "count": 1,
-    "next": null,
-    "previous": null,
-    "results": [
-        {
-            "id": 3,
-            "title": "Пароль від Wi-Fi",
-            "content": "coffee2026",
-            "is_pinned": true,
-            "priority": 2,
-            "priority_label": "Звичайний",
-            "created_at": "2026-09-27T07:08:46.877381+03:00"
-        }
-    ]
-}
-$ curl -s "http://127.0.0.1:8000/api/notes/?search=drf" | python -m json.tool --no-ensure-ascii
-{
-    "count": 1,
-    "next": null,
-    "previous": null,
-    "results": [
-        {
-            "id": 2,
-            "title": "Вивчити DRF",
-            "content": "serializers, viewsets",
-            "is_pinned": false,
-            "priority": 3,
-            "priority_label": "Високий",
-            "created_at": "2026-09-27T07:08:46.876031+03:00"
-        }
-    ]
-}
-$ curl -s -u admin:lesson33-pass -X POST http://127.0.0.1:8000/api/notes/2/pin/
-{"id":2,"title":"Вивчити DRF","content":"serializers, viewsets","is_pinned":true,"priority":3,"priority_label":"Високий","created_at":"2026-09-27T07:08:46.876031+03:00"}
-$ curl -s -X POST http://127.0.0.1:8000/api/notes/2/pin/ -w "\n%{http_code}\n"
-{"detail":"Реквізити перевірки достовірності не надані."}
-403
-```
-
-- `get_queryset()` замість атрибута `queryset`: запит будується **для кожного** HTTP-запиту з його параметрами. Пагінація й `get_object()` працюють поверх відфільтрованого набору.
-- `@action(detail=True)` — дія над **одним** об'єктом: роутер сам додав адресу `/api/notes/{id}/pin/`. `detail=False` дає дію над колекцією (`/api/notes/стат/`).
-- Дія — `POST`, бо змінює стан; права ті самі: без входу — `403`.
-- `update_fields=["is_pinned"]` — `UPDATE` лише однієї колонки.
-- `search=drf` знайшов «Вивчити DRF»: латиниця в SQLite шукається без регістру (урок 33).
-
-### Зміни приклад: сортування
-
-Додай параметр `?ordering=`: `priority`, `-priority`, `title`, `-created_at`. Невідоме значення — ігнорувати (лишати порядок за замовчуванням).
-
-**Критерії перевірки:**
-
-- `GET /api/notes/?ordering=-priority` — першою нотатка з пріоритетом 4;
-- `?ordering=hack` не падає і не дає `500`;
-- сортування працює разом з `?pinned=` і пагінацією.
-
-??? tip "Підказка"
-    Дозволені значення — у множині; `notes.order_by(value)`, лише якщо `value in ALLOWED`. Готовий інструмент — `rest_framework.filters.OrderingFilter` з `ordering_fields`.
-
-### Спробуй самостійно: API блокнотів
-
-Якщо в уроці 33 ти додав модель `Notebook`, зроби для неї API: `NotebookSerializer`, `NotebookViewSet`, маршрут `/api/notebooks/`. У `NoteSerializer` додай поле `notebook` (id блокнота).
-
-**Критерії перевірки:**
-
-- `POST /api/notebooks/` створює блокнот, `GET /api/notebooks/{id}/` повертає його;
-- нотатку можна створити з `"notebook": <id>`; неіснуючий id — `400` з поясненням;
-- `GET /api/notes/?notebook=<id>` — нотатки лише цього блокнота;
-- у відповіді блокнота є кількість нотаток (`serializers.IntegerField(source="notes.count", read_only=True)`).
-
-### Знайди помилку
-
-Колега швидко зробив API для списку користувачів:
 
 ```python
-from django.contrib.auth.models import User
-from rest_framework import serializers
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = "__all__"
-
-
-data = UserSerializer(User.objects.get(username="admin")).data
-print(sorted(data))
-print(data["password"][:22] + "…")
+study = Notebook.objects.get(title="Навчання")
+for query in ({"notebook": study.pk}, {"notebook": bob_notebook.pk}, {"notebook": "abc"}, {"search": "квитки"}):
+    r = api.get("/api/notes/", query)
+    print(query, "→", r.status_code, [n["title"] for n in r.data] if r.status_code == 200 else r.data)
 ```
 
 ```text
-['date_joined', 'email', 'first_name', 'groups', 'id', 'is_active', 'is_staff', 'is_superuser', 'last_login', 'last_name', 'password', 'user_permissions', 'username']
-pbkdf2_sha256$1000000$…
+{'notebook': 1} → 200 ['Вивчити DRF']
+Not Found: /api/notes/
+{'notebook': 2} → 404 {'detail': ErrorDetail(string='Записник не знайдено.', code='not_found')}
+Not Found: /api/notes/
+{'notebook': 'abc'} → 404 {'detail': ErrorDetail(string='Записник не знайдено.', code='not_found')}
+{'search': 'квитки'} → 200 ['Купити квитки']
 ```
 
-Що не так і чим це небезпечно?
+- записник шукаємо **серед своїх** — чужий `id` дає `404`, як чужа нотатка;
+- `"abc"` не падає з `500`: `isdigit()` відсікає нечислове значення до запиту в базу;
+- `search` уже був у selector — у API він з'явився одним рядком.
+
+### Зміни приклад: архівні нотатки
+
+`selectors.get_user_notes` має й параметр `archived=`. Додай у `list` параметр `?archived=true`: без нього — звичайні нотатки, з ним — архівні. Перевір: нотатка, архівована через `services.archive_note(note)`, зникає зі списку й з'являється за `?archived=true`.
+
+### Спробуй самостійно: API записників
+
+Зроби `/api/notebooks/` за тим самим рецептом: `NotebookOutputSerializer` (`id`, `title`, `color`, `is_default`, кількість нотаток), `NotebookInputSerializer`, `NotebookViewSet` з `list` і `create`.
+
+**Критерії перевірки:**
+
+- читання — через `selectors.get_user_notebooks`, створення — через `services.create_notebook`;
+- `GET /api/notebooks/` показує лише свої записники; анонім — `403`;
+- другий записник з `"is_default": true` знімає прапорець з першого (це вже робить сервіс);
+- тест у `tests_api.py` на кожен пункт.
+
+### Знайди помилку { #find-bug }
+
+API повертає поле `updated_at`. Перевіримо його на **старій** версії `services.update_note` з уроку 34 (у shell, де вже є `olena`):
+
+```python
+import time
+
+from hello_app.models import Note
+
+note = Note.objects.create(user=olena, title="Стара назва")
+before = note.updated_at
+time.sleep(0.01)
+
+note.title = "Нова назва"
+note.save(update_fields=["title"])                 # як у старому update_note
+note.refresh_from_db()
+print("лише title        → змінився updated_at?", note.updated_at != before)
+
+note.title = "Ще новіша назва"
+note.save(update_fields=["title", "updated_at"])   # як після виправлення
+note.refresh_from_db()
+print("title + updated_at → змінився updated_at?", note.updated_at != before)
+```
+
+```text
+лише title        → змінився updated_at? False
+title + updated_at → змінився updated_at? True
+```
+
+Чому `updated_at = models.DateTimeField(auto_now=True)` не оновився в першому випадку і чим це шкодить застосунку?
 
 ??? success "Відповідь"
-    `fields = "__all__"` віддає **всі** колонки моделі — разом із хешем пароля, прапорцями `is_superuser` / `is_staff` і правами. Хеш не є паролем, але його можна підбирати офлайн (урок 16), а список суперкористувачів — підказка для атаки. Гірше: той самий серіалізатор на запис дозволив би клієнту надіслати `"is_superuser": true`.
 
-    Правило — **завжди явний список полів** і окремі серіалізатори для читання й запису:
+    `auto_now` виставляє час у `pre_save()` — але Django викликає `pre_save()` і записує в базу **лише поля з `update_fields`**. Стара `update_note` збирала `changed_fields` (`title`, `content`, …) і не додавала `updated_at`, тож час зміни назавжди лишався часом створення.
 
-    ```python
-    class UserSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = User
-            fields = ["id", "username", "first_name", "last_name"]
-    ```
+    Шкода реальна: `selectors.get_user_notes` сортує за `-updated_at` — щойно відредагована нотатка не піднімалася вгору списку, а клієнт API отримував неправдивий час зміни. Помилка тиха: жодного винятку, лише неправильні дані.
+
+    Виправлення в коді уроку — одне слово: `note.save(update_fields=changed_fields + ['updated_at'])`. Тест `test_patch_changes_only_sent_fields_and_updated_at` у `tests_api.py` його закріплює. Сторінка редагування уроку 34 мала ту саму помилку — API лише зробив її видимою.
 
 ## Підсумок
 
 | Поняття | Що запам'ятати |
 |---|---|
-| DRF | пакет для REST API на Django: серіалізатори, ViewSet, роутери, auth, permissions, пагінація |
-| Налаштування | `rest_framework` в `INSTALLED_APPS`; словник `REST_FRAMEWORK` |
-| Серіалізатор | модель ↔ JSON; `fields` — явно; `read_only_fields`; `validate_<поле>`; `is_valid()` → `save()` |
-| `many=True` | серіалізувати колекцію |
-| `ModelViewSet` | `list`, `create`, `retrieve`, `update`, `partial_update`, `destroy` одним класом |
-| Роутер | `DefaultRouter().register("notes", NoteViewSet)` → адреси й кореневий `/api/` |
-| `get_queryset` | фільтри з `request.query_params` для кожного запиту |
-| `@action` | власна дія: `detail=True` → `/api/notes/{id}/pin/` |
-| Permissions | `IsAuthenticatedOrReadOnly`: читати всім, змінювати — після входу; без входу `403` (або `401`, залежно від першого класу автентифікації) |
-| Коди DRF | `200`, `201`, `204`, `400` (валідація), `401`/`403`, `404` |
-| Browsable API | та сама відповідь як HTML для браузера |
+| Рефакторинг «+ API» | новий вхід до тих самих services/selectors; моделі й сторінки не змінюються, старі тести проходять |
+| DRF | пакет для REST API на Django: серіалізатори, ViewSet, роутер, auth, permissions |
+| `REST_FRAMEWORK` | автентифікація (хто) і права (що можна) за замовчуванням |
+| Серіалізатор | для API те саме, що форма для сторінки: JSON ↔ дані + перевірка |
+| Input / Output | вхід приймає лише дозволене; вихід показує більше; `user` задає сервер |
+| `fields` | завжди явний список; `"__all__"` відкриває приховані колонки |
+| ViewSet + роутер | методи `list`, `create`, `retrieve`, `partial_update`, `destroy` → адреси; `@action` → власна дія |
+| IDOR | шукати об'єкт серед об'єктів користувача → чужий `id` дає `404` |
+| Коди DRF | `200`, `201`, `204`, `400`, `403` (або `401`), `404` |
 | OpenAPI | drf-spectacular: `/api/schema/` |
-| Тести | `APITestCase`, `force_authenticate`, `format="json"` |
-| DRF vs FastAPI | «батарейки» й одна модель для сайту, адмінки й API — проти легкого async API-сервісу з Pydantic |
+| DRF vs FastAPI | «батарейки» й одна база для сайту, адмінки й API — проти легкого async API-сервісу з Pydantic |
 
 ### Самоперевірка
 
-1. Які дві роботи виконує серіалізатор?
-2. Навіщо `read_only_fields`? Що станеться з `"id": 999` у тілі `POST`?
-3. Які адреси й методи дає `router.register("notes", NoteViewSet)`?
-4. Чому фільтри пишуть у `get_queryset()`, а не в атрибут `queryset`?
-5. Чому без входу `POST` отримує `403`? Коли було б `401`?
-6. Чим небезпечний `fields = "__all__"`?
+1. Що змінилося в проєкті в рефакторингу 3, а що — ні? Як це перевірити?
+2. Навіщо два серіалізатори замість одного `ModelSerializer`?
+3. Що станеться з `"user": 999` у тілі `POST`?
+4. Чому `ViewSet`, а не `ModelViewSet`?
+5. Чому чужа нотатка — `404`, а не `403`?
+6. Чому без входу `403`, а не `401`?
 7. Коли обрати Django + DRF, а коли FastAPI?
 
 ??? success "Відповіді"
 
-    1. Серіалізація (об'єкт → JSON) і десеріалізація з валідацією (JSON → перевірені дані → модель).
-    2. Щоб клієнт не міг задати поля, які визначає сервер. `id` буде проігноровано.
-    3. `GET/POST /api/notes/`, `GET/PUT/PATCH/DELETE /api/notes/{id}/`, плюс кореневий `/api/` від `DefaultRouter` і адреси дій `@action`.
-    4. Атрибут обчислюється один раз при імпорті, а фільтри залежать від параметрів кожного запиту; `get_queryset()` викликається на кожен запит.
-    5. Облікових даних немає, а перший клас автентифікації — сесійний — не вміє їх попросити, тому `403`. `401` з `WWW-Authenticate` буде, якщо першим стоїть клас, що вміє попросити облікові дані, наприклад `BasicAuthentication`.
-    6. Відкриває всі колонки, зокрема приховані (хеш пароля, `is_superuser`), і дозволяє їх змінювати, якщо серіалізатор приймає запис.
-    7. Django + DRF — коли потрібні сайт, адмінка, користувачі й API над однією базою. FastAPI — окремий API-сервіс, де важливі async і легкість: мікросервіс, модель машинного навчання за API.
+    1. Додалися DRF, налаштування, `api.py`, адреси `/api/…` і тести API; моделі, views, форми й шаблони — без змін. Перевірка — усі тести, і старі (сторінки), і нові (API), проходять.
+    2. Клієнт бачить більше, ніж може змінити (`id`, `priority_label`, `updated_at`, назву записника). Окремий вхідний серіалізатор приймає лише дозволені поля.
+    3. Нічого: поля `user` у вхідному серіалізаторі немає, його проігноровано; власника задає `request.user`.
+    4. `ModelViewSet` сам робить ORM-запити й `save()` і обійшов би services/selectors — правила застосунку довелося б дублювати.
+    5. `404` не підтверджує, що об'єкт з таким `id` взагалі існує, — зловмисник не може перебирати чужі `id`.
+    6. Перший клас автентифікації — сесійний — не вміє попросити облікові дані (`WWW-Authenticate`), тому `403`. З `BasicAuthentication` першим було б `401`.
+    7. Django + DRF — коли потрібні сайт, адмінка, користувачі й API над однією базою. FastAPI — окремий API-сервіс: парсер, мікросервіс, ML-модель, багато I/O.
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_35_drf.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) — серіалізатори, ViewSet, права й фільтри з перевірками.
-- Проєкт уроку — [`hello_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_35_drf_fastapi/hello_project) з API і тестами; порівняльний [`fastapi_notes.py`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/hello_project/fastapi_notes.py).
-- Наступні уроки: 36 — типізація й Pydantic (основа FastAPI), 37 — FastAPI, Postman і OpenAPI, 38 — FastAPI + база даних. Вхід за токенами для API — урок 40, тестування API — урок 41.
+- Ноутбук заняття: [`note_lesson_35_drf.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb).
+- Урок 36 — типізація й Pydantic на першому кроці новинного агрегатора; урок 37 — FastAPI, Postman і OpenAPI.
+- Урок 40 — вхід за токенами для API й спільний доступ до нотаток.
 
 ## Документація і джерела
 
-- DRF: [Quickstart](https://www.django-rest-framework.org/tutorial/quickstart/), [Serializers](https://www.django-rest-framework.org/api-guide/serializers/), [ViewSets](https://www.django-rest-framework.org/api-guide/viewsets/), [Routers](https://www.django-rest-framework.org/api-guide/routers/), [Authentication](https://www.django-rest-framework.org/api-guide/authentication/), [Permissions](https://www.django-rest-framework.org/api-guide/permissions/), [Pagination](https://www.django-rest-framework.org/api-guide/pagination/), [Testing](https://www.django-rest-framework.org/api-guide/testing/), [Browsable API](https://www.django-rest-framework.org/topics/browsable-api/)
-- [drf-spectacular](https://drf-spectacular.readthedocs.io/) — OpenAPI 3 для DRF
-- FastAPI: [Tutorial](https://fastapi.tiangolo.com/tutorial/), [Alternatives, Inspiration and Comparisons](https://fastapi.tiangolo.com/alternatives/) (про DRF і Django)
-- Django-книга: [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/), [Serializers — Transport Layer](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/django_serializers_full/), [Notes Chat App і Zero to Hero](https://nikoriakviktot.github.io/notes_chat_app/)
+- Код: [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_35_drf_fastapi/crispy_notes_project) — проєкт уроку 34 (старий курс, `module_5/lesson_HTML_CSS_Bootstrap`) + `api.py` з Django-книги ([`notes_app/api.py`](https://github.com/NikoriakViktot/notes_chat_app/blob/main/notes_app/api.py)), доповнений до CRUD; у курсі виправлено `updated_at` в `services.update_note`. Порівняльний [`fastapi_notes.py`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/fastapi_notes.py).
+- Django-книга: [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/), [Serializers — Transport Layer](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/django_serializers_full/)
+- DRF: [Quickstart](https://www.django-rest-framework.org/tutorial/quickstart/), [Serializers](https://www.django-rest-framework.org/api-guide/serializers/), [ViewSets](https://www.django-rest-framework.org/api-guide/viewsets/), [Routers](https://www.django-rest-framework.org/api-guide/routers/), [Authentication](https://www.django-rest-framework.org/api-guide/authentication/), [Permissions](https://www.django-rest-framework.org/api-guide/permissions/), [Testing](https://www.django-rest-framework.org/api-guide/testing/), [Browsable API](https://www.django-rest-framework.org/topics/browsable-api/)
+- Django: [`Model.save(update_fields=…)`](https://docs.djangoproject.com/en/5.2/ref/models/instances/#specifying-which-fields-to-save), [`DateField.auto_now`](https://docs.djangoproject.com/en/5.2/ref/models/fields/#django.db.models.DateField.auto_now)
+- [drf-spectacular](https://drf-spectacular.readthedocs.io/); FastAPI: [Tutorial](https://fastapi.tiangolo.com/tutorial/), [Alternatives, Inspiration and Comparisons](https://fastapi.tiangolo.com/alternatives/)
