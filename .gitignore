@@ -224,6 +224,8 @@ generator/
 dashboard/
 
 data/
+# дані уроку 32 (фікстура й знімок ogimet) — публікуємо
+!module_4/lessons/lesson_32_rest_api_design/meteo_api/data/
 
 module_2/lessons/lesson_21_module2_review/amazon_ecommerce_1M.csv
 

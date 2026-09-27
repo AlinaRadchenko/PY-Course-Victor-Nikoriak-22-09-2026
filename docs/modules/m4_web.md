@@ -5,6 +5,7 @@
 Уроки модуля:
 
 - [Урок 31. HTTP: requests, httpx, aiohttp](m4/lesson_31.md) — шлях запиту: URL, IP і DNS, порти, TCP-рукостискання, TLS; HTTP як текст (запит сокетом), методи й статус-коди; `requests`: `params`, `json`, заголовки й токен, `raise_for_status`, тайм-аути й ієрархія винятків, повторні спроби з backoff і чому не для `POST`, `Session`; справжній API PyPI; `httpx` і `AsyncClient` + `gather`, `aiohttp`, потоки; архітектура: свій клієнт до API з доменними винятками, вибір бібліотеки. Практика — на навчальному API диспетчерської `smachno_api.py`.
+- [Урок 32. REST: принципи дизайну API](m4/lesson_32.md) — метео-API викладача (телеграми SYNOP з ogimet.com, `pymetdecoder`): усі типи API на одних даних — HTTP+CSV, JSON-RPC, GraphQL, SOAP, gRPC, WebSocket, SSE, webhook з підписом HMAC — і як обрати; REST: ресурси й URL, методи й ідемпотентність, статус-коди й формат помилок, фільтри, `fields`, пагінація, `PATCH`, `202 Accepted`, OpenAPI; кейс v1 → v2; архітектура: репозиторій → FastAPI → клієнт-клас → Streamlit-карта погоди, Docker Compose.
 
 Решта уроків — 🚧 у розробці.
 
