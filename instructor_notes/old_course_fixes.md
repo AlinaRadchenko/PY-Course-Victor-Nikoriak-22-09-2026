@@ -1,7 +1,7 @@
 # Виправлення старого коду — нотатки викладача
 
 > Файл для викладача, у книгу курсу (`docs/`) не входить. Тут — усе, що довелося змінити в коді й
-> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–42,
+> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–43,
 > бонус-урок pandas, довідники. На сторінках уроків цих списків немає — студенти бачать лише
 > правильний код і пояснення «чому так».
 
@@ -114,6 +114,29 @@
 | 10 | папка `ui/pages/` — Streamlit автоматично додає 5 порожніх сторінок у меню | Streamlit AppTest | `ui/views/` |
 
 А ще: пороги ризику в UI (0,3 / 0,5) не збігались з бекендом (0,5 / 0,75); `delta="vs overall"` — підпис без порівняння; `requirements.txt` з `==` під Python 3.11, без колес для 3.13. Усе виправлено й перелічено в [README проєкту](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/depression_dashboard/README.md). Streamlit-дашборд після змін пройдено через `streamlit.testing.AppTest` проти живого бекенду: 5 розділів, форма прогнозу, жодного винятку.
+
+## Урок 43. Інтеграція LLM API
+
+Джерела: `module_5/lesson_46_Telegram_API/ai_bot/app/services/ai_service.py` (+ `handlers/chat.py`, `config/settings.py`) і `module_4/lessons/lesson_34_asyncio/news_dashboard/app/nlp.py`.
+
+| Де | Було | Як перевірено | Стало (`news_hub/llm.py`, `analysis.py`) |
+|---|---|---|---|
+| `ai_service.py`, docstring | «google-genai SDK НЕ підтримує native async» → `asyncio.to_thread` | `client.aio.models.generate_content` є в google-genai з 1.x | асинхронний клієнт, без потоків |
+| `_call_gemini_sync` | новий `genai.Client` на кожен виклик («Client не thread-safe») | потоків більше немає | один клієнт на застосунок (`lifespan`) |
+| `_classify_error` | класифікація за словами в тексті винятку; результат ніде не використовується — **будь-яка** помилка веде до наступної моделі | невалідний ключ: Gemini відповідає `400 INVALID_ARGUMENT` «API key not valid» — старий код пробував усі 4 моделі й рахував збій | `APIError.code`; 400/401/403 — одразу `LLMUnavailable`, без перебору пулу; тест `test_gemini_client_error_stops_at_once` |
+| `_circuit_record_failure` | `GET` + `SETEX` — не атомарно: одночасні збої перезаписують лічильник | Redis 7: 20 одночасних збоїв → лічильник 3 (на fakeredis гонки не видно — урок 41; у ноутбуці — Redis із затримкою мережі) | `INCR` + `EXPIRE … NX` у транзакції; тест `test_breaker_counts_concurrent_failures` |
+| `ask()` + `handlers/chat.py` | збій повертався **рядком** («😔 AI сервіс наразі недоступний…»), а `chat.py` перевіряв `is None` — текст помилки зберігався в історію як відповідь асистента й ішов у наступні промпти | читання коду: `ask()` ніде не повертає `None` | винятки `LLMUnavailable` / `CircuitOpen` → 502 / 503 |
+| `nlp.py` | тональність за основами слів («загин» −, «перемог» +), ключові слова — частота, тема — з URL (у знімку rbc.ua всі 168 новин мають категорію «Новини») | знімок | `NewsAnalysis` від LLM, перевірка Pydantic; розділ сайту лишився в `category`, тема — `ai_category` |
+
+Знахідки в новому коді уроку (під час перевірки, до коміту) — «Знайди помилку» й розділ «Контракт з провайдером» уроку побудовано на першій:
+
+| Що | Як знайдено | Стало |
+|---|---|---|
+| `response_schema=NewsAnalysis` з `extra="forbid"` → у схемі `additionalProperties`, Gemini відповідає `400 Unknown name "additional_properties"`; усі тести з FakeLLM зелені | `pytest -m llm` з невалідним ключем: Google перевіряє структуру запиту раніше за ключ | `response_json_schema`; контрактний тест `test_gemini_accepts_request_shape` |
+| тайм-аут ловився як `httpx.TransportError`, а SDK з встановленим aiohttp кидає `TimeoutError` / `aiohttp.ClientError` → 500 замість наступної моделі | `timeout=0.001` проти справжнього API | `NETWORK_ERRORS`; параметризований тест на 4 типи |
+| `google-genai>=1.21` у першій версії requirements — там немає `response_json_schema` у `GenerateContentConfig`, до 1.39 — `client.aio.aclose()` | прогін на мінімальних версіях | `>=1.39`; `httpx>=0.28.1` (вимога google-genai), `typing-extensions>=4.14` (anthropic 1.x) |
+| aiohttp 3.10.0–3.10.9: google-genai при помилці запиту звертається до `aiohttp.ClientConnectorDNSError` → `AttributeError` замість `LLMUnavailable` | контрактний тест на мінімальних версіях | `aiohttp>=3.10.10` |
+| клієнт Gemini не закривав aiohttp-сесію → на 3.10 `RuntimeError: Event loop is closed` при виході | прогін ноутбука на 3.10 | `LLMClient.aclose()`, виклик у `lifespan` |
 
 ## Довідник Claude Code (`CLAUDE_DOC.md` старого курсу)
 
