@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Видалити «{{ note.title }}»{% endblock %}
+
+{% block content %}
+<h1 class="h4">Видалити нотатку «{{ note.title }}»?</h1>
+<p class="text-muted">Цю дію не можна скасувати.</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Так, видалити</button>
+  <a class="btn btn-secondary" href="{% url 'hello_app:note_detail' note.pk %}">Скасувати</a>
+</form>
+{% endblock %}

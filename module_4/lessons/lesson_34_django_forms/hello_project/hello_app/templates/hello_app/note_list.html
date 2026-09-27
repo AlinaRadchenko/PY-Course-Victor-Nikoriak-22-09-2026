@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Нотатки ({{ notes|length }}){% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">Нотатки <span class="badge bg-secondary">{{ notes|length }}</span></h1>
+<form method="get" class="mb-3 d-flex gap-2">
+  <input class="form-control" type="search" name="q" value="{{ search.q.value|default:'' }}" placeholder="Пошук за заголовком">
+  <button class="btn btn-outline-primary" type="submit">Знайти</button>
+</form>
+<div class="row row-cols-1 row-cols-md-3 g-3">
+  {% for note in notes %}
+    <div class="col">
+      <div class="card h-100 {% if note.is_pinned %}border-warning{% endif %}">
+        <div class="card-body">
+          <h2 class="h5 card-title">
+            {% if note.is_pinned %}📌{% endif %}
+            <a href="{% url 'hello_app:note_detail' note.pk %}">{{ note.title }}</a>
+          </h2>
+          <p class="card-text text-muted">{{ note.content|default:"без тексту"|truncatechars:80 }}</p>
+          <span class="badge text-bg-info">{{ note.get_priority_display }}</span>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">Нічого не знайдено.</p>
+  {% endfor %}
+</div>
+{% endblock %}

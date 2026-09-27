@@ -21,7 +21,7 @@
   | Урок курсу | Крок Zero to Hero | Проєкт |
   |---|---|---|
   | 33 Django intro | 1–2 | `hello_project` (`Note`: title, content, is_pinned, priority) — **зроблено** |
-  | 34 forms, HTML | 4 (+ CRUD з кроку 2) | `bootstrap_notes` / `crispy_notes` |
+  | 34 forms, HTML | 4 (+ CRUD з кроку 2) | `hello_project` з 33 + форми, CRUD, Bootstrap, crispy — **зроблено** (імена views/шаблонів — як у кроці 2 книги) |
   | 35 DRF | — (нове: API до нотаток) | `hello_project` з 33 + DRF, `fastapi_notes.py` — **зроблено** (урок 34 поки пропущено на прохання викладача: «потрібно зробити drf») |
   | 38 FastAPI CRUD / 44 архітектура | 3 (services/selectors, PostgreSQL) | `notes_project` |
   | 40 auth | 5 | notes_chat_app |

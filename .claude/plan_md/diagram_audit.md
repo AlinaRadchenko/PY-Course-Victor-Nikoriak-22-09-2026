@@ -41,6 +41,7 @@
 | 31 | 8 | шлях запиту URL → DNS → TCP/TLS → HTTP покроково, TCP/TLS-рукостискання і HTTP-обмін (`sequenceDiagram`), що може піти не так (винятки), retry з backoff покроково, по черзі vs `gather`, шари клієнта до API, вибір requests/httpx/aiohttp | — | ок |
 | 32 | 7 | хто кого питає: polling / WebSocket / webhook (`sequenceDiagram`), як обрати тип API, дерево ресурсів, як обрати статус-код, пагінація покроково (3 запити, `next`), `202 Accepted` + опитування (`sequenceDiagram`), архітектура ogimet → знімок → репозиторій → FastAPI → клієнт → Streamlit | — | ок |
 | 33 | 4 | MVT: шлях `GET /notes/` (`sequenceDiagram`), міграції покроково (models → makemigrations → migrate), архітектура проєкт/застосунки, маршрут Zero to Hero ↔ уроки курсу; + 2 реальні скріншоти адмінки | — | ок |
+| 34 | 2 | PRG покроково (`sequenceDiagram`: GET форма → POST з помилками → POST успіх → 302 → GET), архітектура запиту форми (CSRF → view → form → ORM → redirect); + 2 реальні скріншоти (список на Bootstrap, форма з помилкою crispy) | — | ок |
 | 35 | 3 | запит `POST /api/notes/` через router → ViewSet → permissions → serializer → ORM (`sequenceDiagram` з гілкою 400/201), як обрати Django + DRF чи FastAPI, шари API нотаток; + скріншот browsable API | — | ок |
 
 Уроки 18–25 перевірено: алгоритми (рекурсія, merge sort, backtracking у 22) і архітектурні рішення мають схеми. Урок 14 — за потреби додати схему входу/виходу `with`.
