@@ -125,6 +125,7 @@ nav:
       - "31. HTTP: requests, httpx, aiohttp": modules/m4/lesson_31.md
       - "32. REST: принципи дизайну API": modules/m4/lesson_32.md
       - "33. Django intro: MVT, ORM, admin": modules/m4/lesson_33.md
+      - "35. DRF overview + Django vs FastAPI": modules/m4/lesson_35.md
     - "М5. Production": modules/m5_production.md
     - "М6. Капстоун": modules/m6_capstone.md
     - "Self-paced. AI для розробників (бонус)": modules/bonus_ai.md
