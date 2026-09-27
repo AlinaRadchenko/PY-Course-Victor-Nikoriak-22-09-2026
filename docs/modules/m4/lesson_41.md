@@ -7,7 +7,7 @@
 - парсер і модель перевірено окремо, кожен на своїх даних, — а разом їх не запускав ніхто;
 - звіт покриття показує 88%, і навіть ця цифра неточна.
 
-Сьогодні `news_hub` не змінюється ззовні — змінюються його **тести**: шість рефакторингів папки `tests/`. Нові тести знайшли в коді уроків 36–39 **чотири справжні помилки**; їх виправлено в копії проєкту, і кожна розібрана нижче.
+Сьогодні `news_hub` не змінюється ззовні — змінюються його **тести**: шість рефакторингів папки `tests/`. Нові тести знаходять у коді уроків 36–39 **чотири помилки**, які старі тести пропускали, — кожну розберемо нижче.
 
 | Урок | Крок агрегатора |
 |---|---|
@@ -161,7 +161,7 @@ def test_every_parsed_item_passes_the_model(html, page, expected) -> None:
     assert rejected == []
 ```
 
-На коді уроку 39 цей тест упав: обидві новини з `demo_newsline` модель **відхилила**. Тести парсера й моделі при цьому були зелені. Чому так сталося — розбір у «[Знайди помилку](#find-bug)»; виправлення — `field_validator` у `models.py`.
+На коді уроку 39 цей тест упав: обидві новини з `demo_newsline` модель **відхилила**. Тести парсера й моделі при цьому були зелені. Чому так сталося — розбір у «[Знайди помилку](#find-bug)»; правильне рішення — `field_validator` у `models.py`.
 
 ## Рефакторинг 3. Мок мережі: patch where used { #refactor-3 }
 
@@ -341,14 +341,14 @@ resp.text(): UnicodeDecodeError; це aiohttp.ClientError? False
 урок 41: [('/broken/', 1, None), ('/good/', 1, None)]
 ```
 
-`fetch_one` ловить лише `aiohttp.ClientError` і `asyncio.TimeoutError`. `UnicodeDecodeError` пролітав повз, `asyncio.gather` передавав його нагору, і `POST /api/scrape` відповідав `500`: новини **решти шести** сторінок губилися через один байт. Виправлення — один аргумент:
+`fetch_one` ловить лише `aiohttp.ClientError` і `asyncio.TimeoutError`. `UnicodeDecodeError` пролітав повз, `asyncio.gather` передавав його нагору, і `POST /api/scrape` відповідав `500`: новини **решти шести** сторінок губилися через один байт. Правильно — один аргумент:
 
 ```diff title="news_hub/scraper.py: fetch_one"
 -            html = await resp.text()
 +            html = await resp.text(errors="replace")   # один битий байт ≠ втрачена сторінка
 ```
 
-Під моком цієї помилки не видно в принципі: `response.text` там — `AsyncMock(return_value=html)`, готовий рядок, декодування немає. Без виправлення тест `test_undecodable_page_does_not_kill_scrape` падає, а всі шість мок-тестів — зелені.
+Під моком цієї помилки не видно в принципі: `response.text` там — `AsyncMock(return_value=html)`, готовий рядок, декодування немає. Без `errors="replace"` тест `test_undecodable_page_does_not_kill_scrape` падає, а всі шість мок-тестів — зелені.
 
 Ще два тести на фейковому сервері, неможливі з моком: заголовок `User-Agent` справді дійшов до сервера; `scrape_all_async` дві «повільні» сторінки бере за ~0,3 с, а `scrape_sequential` — за ~0,6 с (урок 27 — тепер як тест).
 
@@ -561,7 +561,7 @@ fakerbc.ua       endswith('rbc.ua'): True   is_rbc_host: False
 rbc.ua.evil.com  endswith('rbc.ua'): False  is_rbc_host: False
 ```
 
-`POST /api/scrape` з `{"pages": ["https://fakerbc.ua/"]}` змушував сервер завантажити чужий сайт на прохання будь-кого — і те саме пропускала модель `NewsItem`. Виправлення — одна функція для обох місць:
+`POST /api/scrape` з `{"pages": ["https://fakerbc.ua/"]}` змушував сервер завантажити чужий сайт на прохання будь-кого — і те саме пропускала модель `NewsItem`. Правильно — одна функція для обох місць:
 
 ```diff title="news_hub/models.py"
 +def is_rbc_host(host: str | None) -> bool:
@@ -690,16 +690,6 @@ Success: no issues found in 12 source files
 
 Було 41 тест у трьох файлах, стало 86 у десяти; покриття 88% (рядки, без greenlet) → 99% (рядки й гілки).
 
-## Що виправлено в коді { #fixes }
-
-| Де | Було | Хто знайшов | Стало |
-|---|---|---|---|
-| `models.py` (урок 36) | `published_time` приймав лише «HH:MM»; ISO-час з `<time datetime>` → новину відхилено | тест конвеєра на збереженій сторінці | `field_validator`: з ISO береться час |
-| `scraper.py` (урок 37, `news_dashboard`) | `resp.text()` на битому байті — `UnicodeDecodeError` повз `except`, `gather` губив усі сторінки | фейковий HTTP-сервер | `resp.text(errors="replace")` |
-| `models.py`, `api.py` (36–37) | `host.endswith("rbc.ua")` пропускав `fakerbc.ua`: сервер завантажував чужий сайт на запит | покриття гілок → тест межових значень | `is_rbc_host` |
-| `parser.py` (урок 36) | з beautifulsoup4 4.12 `_classes` падав на тезі без `class` | прогін на мінімальних версіях | порожні значення відкидаються |
-| `tests/` (урок 39) | один рівень, HTML у рядках, мережа й `get_db` не тестувались, покриття занижене | — | unit / integration, фікстури, мок і фейк, `aclient`, `.coveragerc` |
-
 ## Практика { #practice }
 
 ### Розібраний приклад: тест ключа кешу
@@ -799,7 +789,7 @@ for item in raw:
 
     Ловить **тест конвеєра** (`tests/unit/test_pipeline.py`): вихід парсера на збереженій сторінці → модель, `rejected == []`. Правило: коли дві частини з'єднані даними, потрібен хоча б один тест, у якому дані з однієї справді йдуть у другу. Спільна фікстура (`demo_newsline.html`) для обох тестів дала б те саме.
 
-    Виправлення — `field_validator("published_time", mode="before")` у `NewsItem`: з ISO-рядка береться час.
+    Правильно — `field_validator("published_time", mode="before")` у `NewsItem`: з ISO-рядка береться час.
 
 ## Підсумок
 

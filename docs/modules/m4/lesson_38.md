@@ -301,8 +301,8 @@ sequenceDiagram
     F-->>C: 200 {"id": 7, "category": "Економіка", …}
 ```
 
-!!! danger "Знахідка: з FastAPI 0.118 COMMIT за замовчуванням іде вже після відповіді"
-    У старому `production_bot` зафіксовано FastAPI 0.115.5 — там код після `yield` виконувався **до** відповіді. З версії 0.118 за замовчуванням — **після**: клієнт отримує `200`/`201` ще до COMMIT. Якщо COMMIT не вдасться (обрив з'єднання, обмеження бази, що перевіряється при COMMIT), клієнт уже почув «збережено», а даних немає.
+!!! danger "З FastAPI 0.118 COMMIT за замовчуванням іде вже після відповіді"
+    До FastAPI 0.118 код після `yield` виконувався **до** відповіді. З версії 0.118 за замовчуванням — **після**: клієнт отримує `200`/`201` ще до COMMIT. Якщо COMMIT не вдасться (обрив з'єднання, обмеження бази, що перевіряється при COMMIT), клієнт уже почув «збережено», а даних немає.
 
     Перевірили однією залежністю, що падає після `yield` (`raise` замість COMMIT):
 
@@ -314,7 +314,7 @@ sequenceDiagram
     FastAPI 0.141.1, Depends(dep, scope="function") → 500 Internal Server Error
     ```
 
-    Виправлення — `Depends(get_db, scope="function")` (є з FastAPI 0.121): залежність завершується **до** відправлення відповіді. Тест `test_failed_commit_is_500_not_200` закріплює це: без `scope="function"` він падає.
+    Тому — `Depends(get_db, scope="function")` (є з FastAPI 0.121): залежність завершується **до** відправлення відповіді. Тест `test_failed_commit_is_500_not_200` закріплює це: без `scope="function"` він падає.
 
 ## Рефакторинг 3. Повний CRUD { #refactor-3 }
 
@@ -462,7 +462,7 @@ INFO  [alembic.runtime.migration] Running upgrade  -> 0001, news table — та�
 ```
 
 !!! warning "Autogenerate — чернетка, а не готова міграція"
-    Alembic записав `server_default=sa.text('now()')`: текст функції PostgreSQL. На SQLite такої функції немає — міграція там падала. Виправлено вручну на `sa.func.now()`: SQLAlchemy підставляє правильний SQL для кожної бази (`now()` для PostgreSQL, `CURRENT_TIMESTAMP` для SQLite). Правило: **кожну автоміграцію читай перед комітом**, а `alembic check` покаже, чи збігаються моделі з базою.
+    Alembic записав `server_default=sa.text('now()')`: текст функції PostgreSQL. На SQLite такої функції немає — міграція там падала. Тому в міграції — `sa.func.now()`: SQLAlchemy підставляє правильний SQL для кожної бази (`now()` для PostgreSQL, `CURRENT_TIMESTAMP` для SQLite). Правило: **кожну автоміграцію читай перед комітом**, а `alembic check` покаже, чи збігаються моделі з базою.
 
 ## Архітектура: було → стало { #architecture }
 
@@ -524,17 +524,6 @@ Success: no issues found in 9 source files
 ```
 
 `tests/conftest.py` створює для кожного тесту окремий engine і порожні таблиці (`Base.metadata.create_all`) і підміняє `get_db`; за замовчуванням — SQLite у пам'яті, з `TEST_DATABASE_URL` — PostgreSQL. Додалось 9 тестів CRUD: `201`, `409`, `422`, `404`, `PATCH` і збереження змін, `204`, `GROUP BY`, пошук, «COMMIT не вдався → `500`».
-
-## Що виправлено в старому коді { #fixes }
-
-| Де (`production_bot`) | Було | Стало |
-|---|---|---|
-| `core/database.py`, `get_db` | COMMIT після `yield` — з FastAPI ≥ 0.118 після відповіді: клієнт бачить успіх, навіть якщо COMMIT не вдався | `Depends(get_db, scope="function")`; `fastapi>=0.121`; тест |
-| `core/database.py`, `get_db` | анотація `-> AsyncSession`, хоча це генератор (mypy `--strict` — помилка) | `-> AsyncIterator[AsyncSession]` |
-| `core/database.py`, `alembic.ini` | адреса лише PostgreSQL, у `alembic.ini` — ще й окремо, з паролем | одна `DATABASE_URL` зі змінної середовища для застосунку й міграцій; без неї — SQLite |
-| `repositories/base.py`, `user_repo.py` | `from sqlalchemy import func, select` усередині методів; `datetime` — теж | імпорти вгорі модуля |
-| міграція, згенерована autogenerate | `server_default=sa.text('now()')` — лише PostgreSQL | `sa.func.now()` — PostgreSQL і SQLite |
-| — (нове в уроці) | SQLite `lower()` знає лише латиницю: пошук «ЗЕЛЕНСЬК» не знаходив «Зеленськ» | `lower()` з Unicode для SQLite (`db.py`); тест пошуку на обох базах |
 
 ## Практика { #practice }
 

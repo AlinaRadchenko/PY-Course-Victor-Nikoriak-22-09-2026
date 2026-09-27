@@ -278,7 +278,7 @@ print("409:  ", again.status_code, api.get("/api/news/stats").headers["X-Cache"]
 +return count <= self.limit, count, max(ttl, 0)
 ```
 
-Навіщо: у старому коді `INCR` і `EXPIRE` — **два окремі** запити. Якщо процес упаде (перезапуск, обрив з'єднання) між ними, ключ залишиться **без TTL**: наступні `INCR` дадуть 2, 3, 4… — і умова `count == 1` більше ніколи не спрацює. Користувача заблоковано назавжди. Перевіримо — «падіння» імітуємо, просто не викликаючи `EXPIRE`:
+Навіщо: якщо `INCR` і `EXPIRE` — **два окремі** запити, і процес упаде (перезапуск, обрив з'єднання) між ними, ключ залишиться **без TTL**: наступні `INCR` дадуть 2, 3, 4… — і умова `count == 1` більше ніколи не спрацює. Користувача заблоковано назавжди. Перевіримо — «падіння» імітуємо, просто не викликаючи `EXPIRE`:
 
 ```python
 from news_hub.middleware import RateLimiter
@@ -288,16 +288,16 @@ async def old_vs_new() -> None:
     redis = Redis.from_url("redis://localhost:6379/0", decode_responses=True)
     await redis.delete("rate:old", "rate:scrape:crashed")
 
-    await redis.incr("rate:old")                   # старий код: INCR… і процес «упав» до EXPIRE
+    await redis.incr("rate:old")                   # INCR… і процес «упав» до EXPIRE
     for _ in range(3):
         count = await redis.incr("rate:old")
         if count == 1:                             # ніколи не виконається
             await redis.expire("rate:old", 60)
-    print("старий код: count =", await redis.get("rate:old"), "| TTL =", await redis.ttl("rate:old"))
+    print("окремо:     count =", await redis.get("rate:old"), "| TTL =", await redis.ttl("rate:old"))
 
     await redis.set("rate:scrape:crashed", 99)     # той самий «залишок» без TTL
     allowed, count, ttl = await RateLimiter(redis).hit("crashed", "scrape")
-    print("новий код:  count =", count, "| дозволено:", allowed, "| TTL =", ttl)
+    print("транзакція: count =", count, "| дозволено:", allowed, "| TTL =", ttl)
     await redis.aclose()
 
 
@@ -305,8 +305,8 @@ asyncio.run(old_vs_new())
 ```
 
 ```text
-старий код: count = 4 | TTL = -1
-новий код:  count = 100 | дозволено: False | TTL = 60
+окремо:     count = 4 | TTL = -1
+транзакція: count = 100 | дозволено: False | TTL = 60
 ```
 
 `TTL = -1` — ключ без часу життя: блокування назавжди. `EXPIRE … NX` ставить TTL, **якщо його немає**, і робить це в тій самій транзакції, що `INCR`, — навіть «залишок» після збою сам зникне за хвилину.
@@ -491,17 +491,6 @@ Success: no issues found in 12 source files
 ```
 
 Додалось 9 тестів у `tests/test_redis.py`: hit/miss, інвалідація після запису і її відсутність після `409`, заголовки middleware, `429` з `Retry-After`, «ключ без TTL лікується» (зі старою логікою `ai_bot` цей тест падає), фоновий збір — `done`, `failed` з текстом помилки, `404` невідомої задачі. Redis у тестах — `fakeredis`; ті самі тести на справжніх серверах: `TEST_DATABASE_URL=… TEST_REDIS_URL=redis://localhost:6379/15 pytest`.
-
-## Що виправлено в старому коді { #fixes }
-
-| Де | Було | Стало |
-|---|---|---|
-| `ai_bot/…/rate_limit_repo.py` | `INCR`, потім окремий `EXPIRE` лише при `count == 1`: збій між ними — ключ без TTL, блокування назавжди | транзакція `INCR` + `EXPIRE … NX`; «залишок» без TTL лікується |
-| `ai_bot/…/rate_limit.py` | алгоритм названо «Sliding Window Counter», а це фіксоване вікно | назву виправлено; межу вікна показано вимірюванням |
-| `production_bot/…/redis.py` | глобальна змінна `_redis_pool`, не підміниш у тестах | клієнт у `app.state` з `lifespan`, `Depends(get_redis)`; `fakeredis://` для тестів |
-| `news_dashboard/…/main.py`, `/api/scrape/archive` | у фонову задачу передавали `db` запиту; статус задач — у базі новин | своя сесія бази в задачі; статус — Redis-hash з TTL; помилка → `failed` |
-| — (урок 39) | рядки журналу `news_hub` нікуди не виводились: uvicorn налаштовує лише свої логери | `setup_logging()` у `lifespan` |
-| — (урок 39) | інвалідація кешу в ендпоінті йшла б до COMMIT | middleware `invalidate_cache` — після COMMIT |
 
 ## Практика { #practice }
 

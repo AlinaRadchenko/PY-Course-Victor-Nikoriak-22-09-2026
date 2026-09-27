@@ -688,7 +688,7 @@ class NotebookForm(forms.ModelForm):
 
 Це `note_create` з `crispy_notes_project` у тому вигляді, як він був у старому курсі. Користувачка ставить прапорець «Закріпити нотатку», натискає «Зберегти» — нотатка створюється, але **не закріплена**. Форма валідна, помилок немає. Чому?
 
-```python title="hello_app/views.py — note_create (стара версія, фрагмент)"
+```python title="hello_app/views.py — note_create (фрагмент)"
 if form.is_valid():
     tags = form.cleaned_data.get('tags')
     tag_ids = [t.id for t in tags] if tags else None
@@ -706,7 +706,7 @@ if form.is_valid():
 
     View збирає аргументи для `services.create_note` **вручну**, поле за полем, — і пропустив `is_pinned`. Форма його прийняла (`cleaned_data["is_pinned"] == True`), але до сервісу воно не дійшло, а сам `create_note` такого параметра й не мав. Тихий баг: помилки немає, дані втрачено.
 
-    Виправлення в коді курсу — параметр `is_pinned=False` у `services.create_note` і `is_pinned=form.cleaned_data.get('is_pinned', False)` у view. Тест `test_is_pinned_is_saved_on_create` у `hello_app/tests.py` ловить цю помилку.
+    Правильно — параметр `is_pinned=False` у `services.create_note` і `is_pinned=form.cleaned_data.get('is_pinned', False)` у view. Тест `test_is_pinned_is_saved_on_create` у `hello_app/tests.py` перевіряє саме це.
 
     Урок ширший за один прапорець: коли view перекладає `cleaned_data` у сервіс, кожне нове поле форми треба додати у **трьох** місцях — `Meta.fields`, виклик сервісу, сигнатура сервісу. Тест на кожне поле — надійний захист (урок 41).
 
@@ -750,7 +750,7 @@ if form.is_valid():
 
 ## Документація і джерела
 
-- Код: [`django_bootstrap_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_34_django_forms/django_bootstrap_project) і [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_34_django_forms/crispy_notes_project) — зі старого курсу (`module_5/lesson_HTML_CSS_Bootstrap`); у курсі додано тести, виправлено збереження `is_pinned` і SRI-хеш Bootstrap JS у `base.html` bootstrap-проєкту (старий хеш не відповідав версії 5.3.3, і браузер блокував скрипт: не працювали меню й модальні вікна).
+- Код: [`django_bootstrap_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_34_django_forms/django_bootstrap_project) і [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_34_django_forms/crispy_notes_project) — зі старого курсу (`module_5/lesson_HTML_CSS_Bootstrap`); у курсі додано тести.
 - Django-книга: [крок 2](https://nikoriakviktot.github.io/notes_chat_app/tutorials/02_first_model/), [крок 4](https://nikoriakviktot.github.io/notes_chat_app/tutorials/04_templates_and_forms/), [Django Forms](https://nikoriakviktot.github.io/notes_chat_app/04_forms_and_validation/django_forms_full/), [Crispy Forms](https://nikoriakviktot.github.io/notes_chat_app/04_forms_and_validation/crispy_forms_full/), [Bootstrap 5](https://nikoriakviktot.github.io/notes_chat_app/05_frontend_and_templates/bootstrap_5_full/)
 - Django: [Working with forms](https://docs.djangoproject.com/en/5.2/topics/forms/), [ModelForm](https://docs.djangoproject.com/en/5.2/topics/forms/modelforms/), [The messages framework](https://docs.djangoproject.com/en/5.2/ref/contrib/messages/), [Template inheritance](https://docs.djangoproject.com/en/5.2/ref/templates/language/#template-inheritance), [Context processors](https://docs.djangoproject.com/en/5.2/ref/templates/api/#writing-your-own-context-processors), [CSRF protection](https://docs.djangoproject.com/en/5.2/ref/csrf/)
 - [Bootstrap 5.3](https://getbootstrap.com/docs/5.3/getting-started/introduction/), [django-crispy-forms](https://django-crispy-forms.readthedocs.io/), [crispy-bootstrap5](https://github.com/django-crispy-forms/crispy-bootstrap5), [Post/Redirect/Get](https://en.wikipedia.org/wiki/Post/Redirect/Get)

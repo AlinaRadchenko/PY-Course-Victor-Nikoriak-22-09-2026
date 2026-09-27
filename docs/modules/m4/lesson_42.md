@@ -44,7 +44,7 @@
 
 | Звідки | Що там | Куди |
 |---|---|---|
-| `module_5/lesson_53_claude_code/CLAUDE_DOC.md` | довідник Claude Code (2025-05, 1153 рядки) | [довідник книги](ai/claude_code.md): звірено з документацією, застаріле виправлено |
+| `module_5/lesson_53_claude_code/CLAUDE_DOC.md` | довідник Claude Code (2025-05, 1153 рядки) | [довідник книги](ai/claude_code.md): звірено з документацією |
 | той самий урок: `IDEA.md`, `ROADMAP.md`, `Prompts_Roadmap.md` + `depression_dashboard/` | промпти й проєкт Flask + Streamlit + scikit-learn, який AI за ними згенерував | `lesson_42_ai_dev_tools/depression_dashboard/` — кейс рецензії (рефакторинг 3) |
 | `Data_Science_Course_SSWU/task_11/analysis_tonality_2.py` | розбір RSS «Української правди» через `feedparser` | нове джерело `news_hub` — його пише AI (рефакторинг 2) |
 | урок 25 курсу | чекліст валідації AI-коду | розширюємо для агентів |
@@ -249,7 +249,7 @@ FAILED tests/unit/test_pravda_review.py::test_rss_module_imports_without_system_
 3 failed, 18 passed in 0.34s
 ```
 
-Виправлення — кілька рядків, позначених у коді «Рецензія»:
+Правильний варіант — кілька рядків, позначених у коді «Рецензія»:
 
 ```diff title="news_hub/rss.py і models.py: код агента → після рецензії"
  def _kyiv_datetime(pub_date: str) -> str:
@@ -334,7 +334,7 @@ flowchart TD
 У старому курсі AI отримав рольові промпти («You are a Senior Python Architect and Data Scientist…», 12 етапів від EDA до Docker) і згенерував **Depression Analytics Platform**: Flask API, Streamlit-дашборд, RandomForest, KMeans, IsolationForest, 57-мегабайтний pickle моделі. Застосунок запускався, усі ендпоінти відповідали `200`, дашборд малював графіки. У промптах жодного разу не попрошено тестів чи критеріїв прийняття; про витік даних сказано одним рядком — і він у коді є.
 
 !!! warning "Чутлива тема"
-    Застосунок оцінює ризик депресії й питає про суїцидальні думки. У курсі це **кейс рецензії коду**, а не інструмент. У копію уроку додано застереження й номер лінії підтримки. Модель на відкритому датасеті не є діагнозом.
+    Застосунок оцінює ризик депресії й питає про суїцидальні думки. У курсі це **кейс рецензії коду**, а не інструмент. Застосунок показує застереження й номер лінії підтримки. Модель на відкритому датасеті не є діагнозом.
 
 Рецензія — тестами на синтетичних даних з колонками справжнього датасету (сам датасет у репозиторій не входить). Кожен тест — одна знахідка. На коді старого курсу:
 
@@ -387,11 +387,11 @@ Flask за замовчуванням: {"Academic Pressure":0.11,"Age":0.03,"Ris
 sort_keys = False:      {"Suicidal_enc":0.27,"Risk_Score":0.14,"Academic Pressure":0.11,"Age":0.03}
 ```
 
-Графік «Top Feature Importances» показував перші 12 ознак **за абеткою**. Блок «Strongest positive predictors» — `Academic Pressure`, `Age`, `CGPA`. Жодної помилки, жодного попередження, гарний графік. Виправлення — `sort_keys = False` у власному JSON-провайдері, а UI тепер сортує сам, не покладаючись на порядок ключів.
+Графік «Top Feature Importances» показував перші 12 ознак **за абеткою**. Блок «Strongest positive predictors» — `Academic Pressure`, `Age`, `CGPA`. Жодної помилки, жодного попередження, гарний графік. Правильно — `sort_keys = False` у власному JSON-провайдері, а UI сортує сам, не покладаючись на порядок ключів.
 
 ### Усі знахідки
 
-| # | Знахідка | Як доведено | Виправлення в копії |
+| # | Знахідка | Як доведено | Як правильно |
 |---|---|---|---|
 | 1 | «топ-ознаки» й «найсильніші предиктори» — за абеткою | тест порядку після `jsonify` | `StrictJSONProvider(sort_keys=False)`, сортування в UI |
 | 2 | назви кластерів вшиті в UI: «Sleep Deprived» — кластер, що спить **найбільше** (8,15 год), «Financially Stressed» — кластер з 2 людей | центроїди моделі старого курсу; тест «назва відповідає профілю» | назву дає профіль кластера порівняно з середнім |
@@ -404,7 +404,7 @@ sort_keys = False:      {"Suicidal_enc":0.27,"Risk_Score":0.14,"Academic Pressur
 | 9 | невідоме значення у стовпці → `NaN` у відповіді — невалідний JSON | тест зі строгим парсером JSON | `null`, `allow_nan=False` |
 | 10 | папка `ui/pages/` — Streamlit автоматично додає 5 порожніх сторінок у меню | Streamlit AppTest | `ui/views/` |
 
-А ще: пороги ризику в UI (0,3 / 0,5) не збігались з бекендом (0,5 / 0,75); `delta="vs overall"` — підпис без порівняння; `requirements.txt` з `==` під Python 3.11, без колес для 3.13. Усе виправлено й перелічено в [README проєкту](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/depression_dashboard/README.md). Streamlit-дашборд після змін пройдено через `streamlit.testing.AppTest` проти живого бекенду: 5 розділів, форма прогнозу, жодного винятку.
+А ще: пороги ризику в UI (0,3 / 0,5) не збігались з бекендом (0,5 / 0,75); `delta="vs overall"` — підпис без порівняння; `requirements.txt` з `==` під Python 3.11, без колес для 3.13. Streamlit-дашборд після змін пройдено через `streamlit.testing.AppTest` проти живого бекенду: 5 розділів, форма прогнозу, жодного винятку.
 
 Жодна з десяти вад не падає з помилкою. Кожна дає **правдоподібну неправду**: відсортований не за тим графік, упевнену назву кластера, прогноз, що реагує на підроблене поле. Це головний ризик AI-коду.
 
@@ -444,17 +444,6 @@ sequenceDiagram
 5. **«Що буде, якщо…»** — порожнє, відсутнє, битий формат, інший часовий пояс, інша ОС.
 6. **Мінімальні версії й інші платформи** — `requirements.txt` мусить казати правду.
 7. **Нічого не пропадає мовчки** — кожна відмова видна: `rejected`, `422`, запис у журналі.
-
-## Що виправлено в коді { #fixes }
-
-| Де | Було | Хто знайшов | Стало |
-|---|---|---|---|
-| `news_hub/CLAUDE.md` | приклад старого курсу описував MongoDB, `nlp.py`, Streamlit | звірка з кодом | команди перевірки й правила проєкту |
-| `news_hub/rss.py` (код агента) | новина без `<pubDate>` валила всю стрічку; `-0000` — як час сервера | тест рецензента | новина без часу; `-0000` = UTC |
-| `news_hub/models.py` (код агента) | без `<category>` категорія «2026» | тест рецензента | розділ — перший сегмент шляху для не-rbc доменів |
-| `news_hub/requirements.txt` | `zoneinfo` без `tzdata` — у Windows модуль не імпортується | тест рецензента (без бази поясів) | `tzdata>=2024.1` |
-| `depression_dashboard` | 10 вад з таблиці вище + пороги, підписи, залежності | `tests/test_review.py`, AppTest | див. таблицю й README |
-| [довідник Claude Code](ai/claude_code.md#fixes) | моделі, режими, події hooks, Agent SDK, CI — станом на 2025-05 | звірка з документацією й `claude --help` | виправлено; AI-аудитор помилився в 4 пунктах, їх відкинуто |
 
 ## Практика { #practice }
 
@@ -564,7 +553,7 @@ def test_pravda_rss_broken_xml_is_empty_list() -> None:
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_42_ai_dev_tools/news_hub) — `rss.py` і зміни `models.py` написав Claude Code за специфікацією, виправлення рецензії позначено; ідея RSS-джерела — `task_11/analysis_tonality_2.py` з `Data_Science_Course_SSWU`. [`depression_dashboard`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_42_ai_dev_tools/depression_dashboard) — з `module_5/lesson_53_claude_code/` старого курсу, разом з промптами (`prompts/`).
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_42_ai_dev_tools/news_hub) — `rss.py` і зміни `models.py` написав Claude Code за специфікацією, правки рецензента позначено; ідея RSS-джерела — `task_11/analysis_tonality_2.py` з `Data_Science_Course_SSWU`. [`depression_dashboard`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_42_ai_dev_tools/depression_dashboard) — з `module_5/lesson_53_claude_code/` старого курсу, разом з промптами (`prompts/`).
 - [Довідник: Claude Code](ai/claude_code.md) — з `CLAUDE_DOC.md` старого курсу, звірений з документацією.
 - Урок 25 — [валідація AI-коду](../m2/lesson_25.md); урок 41 — [тест конвеєра, мок і фейк, мінімальні версії](lesson_41.md).
 - Claude Code: [Best practices](https://code.claude.com/docs/en/best-practices), [Memory (CLAUDE.md)](https://code.claude.com/docs/en/memory), [Permissions](https://code.claude.com/docs/en/permissions), [Hooks](https://code.claude.com/docs/en/hooks), [Headless (`-p`)](https://code.claude.com/docs/en/headless), [Security](https://code.claude.com/docs/en/security).

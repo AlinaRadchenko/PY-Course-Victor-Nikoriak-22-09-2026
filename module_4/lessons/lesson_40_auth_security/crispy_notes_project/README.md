@@ -2,7 +2,7 @@
 > `lesson_Django_authentication_and_security` старого курсу (туторіал нижче — без змін): спільний доступ через `Group`, зміна й скидання пароля,
 > блок налаштувань безпеки. Урок 40 додає JWT для API (`djangorestframework-simplejwt`: `/api/token/`, `/api/token/refresh/`),
 > throttle на видачу токена, `SECRET_KEY`/`DEBUG` зі змінних середовища і тести `hello_app/tests_auth.py`.
-> Виправлено: через API учасник групи міняв і видаляв чужі нотатки (HTML-views перевіряли автора, API — ні) → `403`.
+> Змінювати й видаляти нотатку — і на сторінках, і через API — може лише її автор (`403` для учасника групи).
 > Розбір змін: [урок 40 у книзі курсу](https://nikoriakviktot.github.io/PY-Course-Victor-Nikoriak-22-09-2026/modules/m4/lesson_40/).
 >
 > ```bash
