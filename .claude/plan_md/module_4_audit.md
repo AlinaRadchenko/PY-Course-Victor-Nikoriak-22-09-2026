@@ -22,7 +22,7 @@
   |---|---|---|
   | 33 Django intro | 1–2 | `hello_project` (`Note`: title, content, is_pinned, priority) — **зроблено** |
   | 34 forms, HTML | 4 (+ CRUD з кроку 2) | `bootstrap_notes` / `crispy_notes` |
-  | 35 DRF | — (нове: API до нотаток) | |
+  | 35 DRF | — (нове: API до нотаток) | `hello_project` з 33 + DRF, `fastapi_notes.py` — **зроблено** (урок 34 поки пропущено на прохання викладача: «потрібно зробити drf») |
   | 38 FastAPI CRUD / 44 архітектура | 3 (services/selectors, PostgreSQL) | `notes_project` |
   | 40 auth | 5 | notes_chat_app |
   | 41 тестування API | 6 | notes_chat_app |
