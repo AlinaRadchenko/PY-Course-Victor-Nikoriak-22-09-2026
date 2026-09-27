@@ -37,7 +37,7 @@
 
   | Урок | Що додаємо | Джерело коду |
   |---|---|---|
-  | 36 Typing + Pydantic | спарсене → `NewsItem(BaseModel)`; брудні дані → `ValidationError` | `scraper._parse_page`, моделі `news_dashboard` |
+  | 36 Typing + Pydantic | спарсене → `NewsItem(BaseModel)`; брудні дані → `ValidationError` — **зроблено**: `news_hub/` (типізований `parse_rbc_news` з `note_lesson_31_web_scraping.ipynb`, `NewsItem`, знімок `rbc_news.json` — 168 новин); rbc.ua заблоковано → працює на знімку | `parse_rbc_news` старого ноутбука, категорії й моделі `news_dashboard` |
   | 37 FastAPI + Postman + OpenAPI | `GET /api/news`, `POST /api/scrape`, `/docs`, колекція Postman | `news_dashboard/app/main.py` (спрощений) |
   | 38 SQLAlchemy CRUD | Mongo → SQLAlchemy 2 async; унікальний `url` | репозиторії `lesson_46_Telegram_API/production_bot` |
   | 39 Middleware + Redis | кеш стрічки, rate limit `/scrape`, timing-middleware, фоновий парсинг | `production_bot/core/redis.py`, `ai_bot/app/middlewares/rate_limit.py` |

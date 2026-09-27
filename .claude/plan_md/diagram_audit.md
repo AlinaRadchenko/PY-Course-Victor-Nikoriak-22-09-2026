@@ -43,5 +43,6 @@
 | 33 | 4 | MVT: шлях `GET /notes/` (`sequenceDiagram`), міграції покроково (models → makemigrations → migrate), архітектура проєкт/застосунки, маршрут Zero to Hero ↔ уроки курсу; + 2 реальні скріншоти адмінки | — | ок |
 | 34 | 4 | стан після уроку 33; PRG покроково (`sequenceDiagram`: GET форма → POST з помилками → POST успіх → 302 → GET); 3 рівні шаблонів (base → dashboard → сторінка); архітектура до/після двох рефакторингів; + 2 реальні скріншоти (`django_bootstrap_project` — список, `crispy_notes_project` — форма в dashboard) | — | ок |
 | 35 | 2 | два входи (views сторінок і ViewSet API) до одного ядра services/selectors — архітектура рефакторингу; як обрати Django + DRF чи FastAPI; + скріншот browsable API | — | ок |
+| 36 | 2 | покрокова перевірка `NewsItem` на справжній новині з `auto.rbc.ua` (subgraph на кожен етап: from_raw → before-валідатор → поля → after-валідатор → модель); межа довіри: старий курс (`list[dict]` скрізь) → урок 36 (`RawNews` → `NewsItem`/`validate_news` → перевірені й відхилені) → наступні уроки агрегатора (API, база, Gemini, бот) | — | ок |
 
 Уроки 18–25 перевірено: алгоритми (рекурсія, merge sort, backtracking у 22) і архітектурні рішення мають схеми. Урок 14 — за потреби додати схему входу/виходу `with`.
