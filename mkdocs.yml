@@ -118,6 +118,9 @@ nav:
       - "28. П6. Stack, Queue, Heap, Trie + LRU → ООП-пакет": modules/m2/lesson_28.md
     - "М3. Бази даних":
       - Огляд модуля: modules/m3_databases.md
+      - "Бонус. Pandas: аналіз даних, графіки і Dash":
+          - "Довідник: аналіз даних": modules/m3/pandas/data_analytics.md
+          - "Довідник: архітектура Dash": modules/m3/pandas/dash_architecture.md
       - "29. Основи SQL (PostgreSQL)": modules/m3/lesson_29.md
       - "30. Redis overview": modules/m3/lesson_30.md
     - "М4. Web (+ Web Advanced)":
