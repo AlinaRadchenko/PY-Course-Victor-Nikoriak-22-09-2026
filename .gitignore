@@ -232,4 +232,6 @@ module_2/lessons/lesson_21_module2_review/amazon_ecommerce_1M.csv
 
 
 .idea/
-module_3/lessons/data_foods/wfpvam_foodprices.csv
+# дані бонус-уроку М3 — у репозиторії (правило data/ вище їх не стосується)
+!module_3/bonus/pandas_data_analysis/data/
+module_3/bonus/pandas_data_analysis/data/wfpvam_foodprices.csv
