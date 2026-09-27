@@ -31,6 +31,29 @@
 
   Джерела в старому курсі 23_02: `module_5/lesson_Django_Network_Architecture/simple_django_project` (= крок 1), `lesson_Django_ORM_Database/notes_project*`, `lesson_HTML_CSS_Bootstrap/crispy_notes_project`.
 
+- **Правило викладача (2026-09-27): «не переписувати наявне».** Код кожного уроку — зі старого курсу (`module_5/…`, `module_4/lessons/lesson_34_asyncio/…`), скопійований у папку уроку разом з README; сторінка уроку = **рефакторинг** проєкту попереднього уроку: таблиця «що змінилося / навіщо», діфи ключових файлів, архітектура до/після, реальний вивід, «Поглиблено» → книга. Баги старого коду, знайдені під час перевірки, виправляються в копії курсу й згадуються на сторінці. Урок 34 переписано за цим правилом.
+
+- **FastAPI-гілка — наскрізний кейс «новинний агрегатор» (рішення викладача 2026-09-27: «залиш парсингову програму … має бути парсинг», «лишити Gemini»).** Основа — `module_4/lessons/lesson_34_asyncio/news_dashboard/` старого курсу (FastAPI + async-парсер rbc.ua на aiohttp/BeautifulSoup, архівний парсер, NLP, MongoDB, Streamlit, Docker); `news_portal/parse_rbc.py` (синхронна версія), `note_lesson_31_web_scraping.ipynb` + `rbc_news.csv` (168 реальних новин). Кожен урок — рефакторинг агрегатора:
+
+  | Урок | Що додаємо | Джерело коду |
+  |---|---|---|
+  | 36 Typing + Pydantic | спарсене → `NewsItem(BaseModel)`; брудні дані → `ValidationError` | `scraper._parse_page`, моделі `news_dashboard` |
+  | 37 FastAPI + Postman + OpenAPI | `GET /api/news`, `POST /api/scrape`, `/docs`, колекція Postman | `news_dashboard/app/main.py` (спрощений) |
+  | 38 SQLAlchemy CRUD | Mongo → SQLAlchemy 2 async; унікальний `url` | репозиторії `lesson_46_Telegram_API/production_bot` |
+  | 39 Middleware + Redis | кеш стрічки, rate limit `/scrape`, timing-middleware, фоновий парсинг | `production_bot/core/redis.py`, `ai_bot/app/middlewares/rate_limit.py` |
+  | 41 Тестування API | тести парсера на збереженому HTML, API через httpx, мок мережі | `lesson_Django_Testing/MOCKING_AND_PATCHING.md` |
+  | 42 AI-інструменти | Claude Code додає парсер нового джерела, перевірка тестами | `lesson_53_claude_code/` |
+  | 43 LLM API — **Gemini** | підсумок, категорія, тональність → Pydantic замість `nlp.py` | `ai_bot/app/services/ai_service.py` (`google-genai`) |
+  | 46 Security advanced | SSRF при парсингу чужих URL, `robots.txt`, тайм-аути, webhook secret, JWT адмін-ендпоінтів | `production_bot`, `OWASP_TOP_10.md` |
+  | 47 Telegram Bot | `echo_bot` → бот агрегатора: `/news`, `/digest` (Gemini), підписки на ключові слова, webhook у FastAPI | `echo_bot`, `ai_bot`, `production_bot` |
+  | 48–50 Docker, Compose, CI/CD | api + worker + Postgres + Redis + бот у compose; GitHub Actions | Dockerfile/compose старого курсу, `CI_CD.md` |
+  | 51–52 фінальний проєкт | своє джерело (новини, вакансії, ціни, погода) → парсер → API → бот | книга `12_final_project/` |
+
+  Django-гілка паралельно: 40 auth (крок 5), 44 архітектура (крок 3; порівняння з шарами агрегатора handler → service → repository), 45 чат (крок 7).
+  **Обмеження середовища:** `www.rbc.ua` і `api.telegram.org` заблоковані мережевою політикою — для реального виводу парсера потрібен доступ до сайту новин (один раз зберегти HTML-знімок); бот — на локальному двійнику Telegram API; Gemini — потрібен ключ (без нього — мок, вивід позначати «Приклад виводу»).
+
+- **Linux — обов'язково в книзі курсу (рішення викладача 2026-09-27):** бонус-урок у М5 перед уроком 48 — «Бонус. Linux для розробника» (`module_5/bonus/linux_basics/`, `docs/modules/m5/bonus_linux.md`), розділи 01–10 з `module_5/lesson_Linux_DevOps_Basics/` старого курсу переносяться як є; 11–13 (деплой Django, nginx/gunicorn/uvicorn, логи) — в урок 49, 14–15 (Docker, Compose) — у 48–49, 16–18 — огляд наприкінці М5. Відповідні розділи книги: `10_linux_and_devops/`, `11_deployment/`.
+
 ## 1. Облік навантаження М4
 
 Усі 17 позицій М4 — типу «Урок», практикумів немає:
