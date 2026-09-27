@@ -16,6 +16,20 @@
   - `lesson_Django_ORM_Database/` — для 33 і 38; `lesson_HTML_CSS_Bootstrap/` — для 34; `lesson_Django_Async/` (`07_async_http_clients.md` використано в уроці 31); `lesson_Django_authentication_and_security/` — для 40/46; `lesson_Django_Testing/` — для 41; `lesson_46_Telegram_API/` — для 47; `lesson_Linux_DevOps_Basics/` — для М5.
 - **Позиція 31 — готова:** `docs/modules/m4/lesson_31.md` + `module_4/lessons/lesson_31_http_requests/note_lesson_31_http.ipynb` + `smachno_api.py` (локальний навчальний API на `http.server`). Питання «чи вводити httpx/aiohttp повноцінно» закрито: обидві — з асинхронним `gather`, таблиця й схема вибору. Web scraping (старий `note_lesson_31_web_scraping.ipynb`) не перенесено: не в назві позиції v5.0, а сайт-джерело не перевірити.
 - **Позиція 32 — рішення викладача (2026-09-27):** REST розбираємо на його метео-API (телеграми SYNOP з ogimet.com): `NikoriakViktot/ogimet` (v1, 2024) → `ogimet-main/` у старому курсі (FastAPI + Mongo + Streamlit + Docker) → клієнт `TelegramDataLoader` у `Data_Science_Course_SSWU`. Показати **всі типи API**; Streamlit-карта погоди — клієнт до API. Зроблено: `docs/modules/m4/lesson_32.md`, `module_4/lessons/lesson_32_rest_api_design/` (`meteo_api/` — FastAPI v2, `api_types.py` — HTTP+CSV, JSON-RPC, GraphQL, SOAP, WebSocket, SSE, webhook; `grpc_meteo.py` + `meteo.proto`; `weather_map/` — Streamlit; `tests/`; `docker-compose.yml`; `legacy/` — код v1 для розбору). **Відкрито:** знімок телеграм і координат станцій з ogimet.com (`fetch_snapshot.py`) — хост `www.ogimet.com` заблоковано мережевою політикою середовища; до того API працює на фікстурі з однієї справжньої телеграми 34504, 02.09.2024 18 UTC.
+- **Django-уроки — рішення викладача (2026-09-27):** «все через нотатки … є репозиторій з книгою по Django — потрібно ув'язати в одну систему». Книга — `NikoriakViktot/notes_chat_app` (MkDocs, опублікована в `gh-pages`: https://nikoriakviktot.github.io/notes_chat_app/), маршрут Zero to Hero, кроки 0–9 до Notes Chat App. Формат: сторінка курсу = стислий урок з реальним виводом і практикою + «Поглиблено» на розділи книги; код кроку — у папці уроку курсу.
+
+  | Урок курсу | Крок Zero to Hero | Проєкт |
+  |---|---|---|
+  | 33 Django intro | 1–2 | `hello_project` (`Note`: title, content, is_pinned, priority) — **зроблено** |
+  | 34 forms, HTML | 4 (+ CRUD з кроку 2) | `bootstrap_notes` / `crispy_notes` |
+  | 35 DRF | — (нове: API до нотаток) | |
+  | 38 FastAPI CRUD / 44 архітектура | 3 (services/selectors, PostgreSQL) | `notes_project` |
+  | 40 auth | 5 | notes_chat_app |
+  | 41 тестування API | 6 | notes_chat_app |
+  | 45 WebSockets | 7 | notes_chat_app (груповий чат) |
+  | 48–49 Docker, деплой | 8–9 | notes_chat_app |
+
+  Джерела в старому курсі 23_02: `module_5/lesson_Django_Network_Architecture/simple_django_project` (= крок 1), `lesson_Django_ORM_Database/notes_project*`, `lesson_HTML_CSS_Bootstrap/crispy_notes_project`.
 
 ## 1. Облік навантаження М4
 
