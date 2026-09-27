@@ -12,7 +12,7 @@ Python сьогодні — насамперед **data science**: більші�
 | 4 | [`note_bonus_extra_datasets.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/bonus/pandas_data_analysis/note_bonus_extra_datasets.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/bonus/pandas_data_analysis/note_bonus_extra_datasets.ipynb) | «брудний» CSV Держстату, зарплата проти хліба, `pivot`, порти й `resample`, ціни у світі |
 | 5 | [`dash_API/`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_3/bonus/pandas_data_analysis/dash_API) | дашборд на Dash: 7 вкладок, фільтри, карта ринків, кореляції |
 
-Теорія — у двох довідниках, перенесених зі старого курсу: [**аналіз даних: патерни й мислення**](pandas/data_analytics.md) (рівні аналітики, «дані = інформація + шум», вісім патернів — агрегація, фільтрація, групування, порівняння, час, простір, зв'язки, розподіл — повний цикл, типові помилки, метрики) і [**архітектура Dash**](pandas/dash_architecture.md). На цій сторінці — маршрут уроку, ключові результати на справжніх даних і що довелося виправити в старому коді.
+Теорія — у двох довідниках, перенесених зі старого курсу: [**аналіз даних: патерни й мислення**](pandas/data_analytics.md) (рівні аналітики, «дані = інформація + шум», вісім патернів — агрегація, фільтрація, групування, порівняння, час, простір, зв'язки, розподіл — повний цикл, типові помилки, метрики) і [**архітектура Dash**](pandas/dash_architecture.md). На цій сторінці — маршрут уроку й ключові результати на справжніх даних.
 
 **Що потрібно з попередніх уроків:** списки й словники (М1), функції та `lambda` (уроки 7, 18), класи й методи (19–23), файли й CSV (14), модулі й pip (12).
 
@@ -174,9 +174,9 @@ flowchart TD
 
 `groupby` — ліниве: поки не викликано агрегацію (`mean`, `sum`, `agg`), він лише запам'ятовує, як розбити дані. Докладно — у ноутбуці (розділ 7) і в довіднику, [патерн «Групування»](pandas/data_analytics.md#33-grouping).
 
-### Що змінилося в даних: «National Average» після 2017 року
+### «National Average» після 2017 року
 
-Старий код брав «ціну по Україні» як рядки без області: `admin1.isna()` — це записи з ринком **National Average**, які WFP рахує сам. Подивимось, які роки вони покривають у свіжому файлі:
+«Ціну по Україні» WFP публікує як ринок **National Average** — це рядки без області, `admin1.isna()`. Подивимось, які роки вони покривають:
 
 ```python
 national = food[food["admin1"].isna()]
@@ -192,9 +192,9 @@ National Average: 2014-03-15 — 2017-12-15 (986 рядків)
 Bread (wheat) на рівні країни: 0
 ```
 
-З 2018 року WFP публікує ціни **лише по регіональних ринках**. Код, написаний на старішій версії файлу, на свіжих даних або падав (`KeyError: "['Bread (wheat)'] not in index"` у ноутбуці 3), або мовчки обривав графіки на 2017 році — і «злам 2022», про який розповідає ноутбук, просто не було б видно.
+З 2018 року WFP публікує ціни **лише по регіональних ринках**. Графік по рядках National Average обривався б на 2017 році — і «зламу 2022» просто не було б видно.
 
-Виправлення — одна нова клітинка в кожному ноутбуці одразу після завантаження; старі клітинки не змінено. Вона дораховує національне середнє як **просте середнє по всіх ринках** — тим самим Split-Apply-Combine:
+Тому в ноутбуках 1–3 одразу після завантаження національне середнє дораховується як **просте середнє по всіх ринках** — тим самим Split-Apply-Combine:
 
 ```python title="клітинка «🆕 National Average» у ноутбуках 1–3"
 def add_national_average(df):
@@ -416,15 +416,6 @@ sequenceDiagram
 
 ![Dash, вкладка «Ціни та курс валюти»: цукор проти курсу UAH/USD, r = 0,863](img/bonus_pandas_dash_correlation.png)
 
-**Що довелося виправити в `dash_API`, щоб він запрацював на поточних бібліотеках** (зміни в копії курсу, код старого курсу не змінювався):
-
-| Проблема | Причина | Виправлення |
-|---|---|---|
-| вкладка «Просторовий аналіз»: помилка 500 | `px.scatter_mapbox` прибрано в Plotly 6+ | `px.scatter_map` (MapLibre, без ключа Mapbox), `map_style=` замість `mapbox_style=` |
-| попередження React у консолі | `html.Tr` безпосередньо в `html.Table` | `html.Table(html.Tbody(rows))` |
-
-Решта вкладок відпрацювала на свіжих даних без змін: `dash_API` від початку не покладався на «National Average» — він рахує по ринках сам.
-
 ## Практика { #practice }
 
 ### Розібраний приклад: індекс замість двох осей
@@ -540,7 +531,7 @@ KeyError: "['Bread (wheat)'] not in index"
 
 ## Документація і джерела
 
-- Код: [`module_3/bonus/pandas_data_analysis`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_3/bonus/pandas_data_analysis) — ноутбуки 1–3 і `dash_API` зі старого курсу (`module_5/lesson_52_pandas_dash`) з виправленнями під свіжі дані й бібліотеки; ноутбук 4 — новий.
+- Код: [`module_3/bonus/pandas_data_analysis`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_3/bonus/pandas_data_analysis) — ноутбуки 1–3 і `dash_API` зі старого курсу (`module_5/lesson_52_pandas_dash`); ноутбук 4 — новий.
 - pandas: [10 minutes to pandas](https://pandas.pydata.org/docs/user_guide/10min.html), [Group by: split-apply-combine](https://pandas.pydata.org/docs/user_guide/groupby.html), [Reshaping and pivot tables](https://pandas.pydata.org/docs/user_guide/reshaping.html), [Time series](https://pandas.pydata.org/docs/user_guide/timeseries.html), [Merge, join, concatenate](https://pandas.pydata.org/docs/user_guide/merging.html)
 - [Matplotlib](https://matplotlib.org/stable/users/index.html), [seaborn](https://seaborn.pydata.org/tutorial.html), [Plotly Express](https://plotly.com/python/plotly-express/), [Dash](https://dash.plotly.com/)
 - Дані: [HDX — Ukraine Food Prices (WFP)](https://data.humdata.org/dataset/wfp-food-prices-for-ukraine), [HDX — Ukraine](https://data.humdata.org/group/ukr), [data.gov.ua — середньомісячна заробітна плата за регіонами](https://data.gov.ua/)
