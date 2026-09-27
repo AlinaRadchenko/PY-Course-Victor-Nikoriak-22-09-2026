@@ -77,7 +77,7 @@ min_temperature     None
 
 Відносну вологість (47 %) телеграма не передає — її обчислюємо з температури й точки роси.
 
-Ця телеграма — справжня: станція Дніпро, 2 вересня 2024 року, 18:00 UTC, з документації API викладача. Вона ж — фікстура для тестів. Решта даних уроку — знімок телеграм 12 обласних центрів із ogimet.com (`meteo_api/fetch_snapshot.py`).
+Ця телеграма — справжня: станція Дніпро, 2 вересня 2024 року, 18:00 UTC, з документації API викладача. Вона ж — фікстура для тестів, і поки що API працює саме на ній. Знімок телеграм 12 обласних центрів за кілька діб робить скрипт `meteo_api/fetch_snapshot.py` (код викладача, що завантажує телеграми з ogimet.com): щойно файли знімка з'являться в `meteo_api/data/`, API підхопить їх автоматично.
 
 ## Які бувають API
 
@@ -559,11 +559,19 @@ print(first.status_code, repr(first.text), "|", second.status_code, second.json(
 
 ### Фільтри, поля і пагінація
 
-Колекція може бути великою: 12 станцій × 8 строків × 365 днів — понад 35 тисяч спостережень за рік. Віддавати все одним шматком не можна: відповідь довга, клієнт чекає, пам'ять сервера забивається. Тому колекції віддають **сторінками**, а клієнт може попросити **лише потрібні поля**:
+Колекція може бути великою: 12 станцій × 8 строків × 365 днів — понад 35 тисяч спостережень за рік. Віддавати все одним шматком не можна: відповідь довга, клієнт чекає, пам'ять сервера забивається. Тому колекції віддають **сторінками**, а клієнт може попросити **лише потрібні поля**.
+
+Щоб було що гортати, додамо **умовну** станцію «Навчальна» з вісьмома спостереженнями за добу (значення вигадані для прикладу). Станцію додаємо прямо в сховище — у нашому API немає `POST /stations`, — а спостереження вже через API:
 
 ```python
-url = f"{BASE}/api/v1/stations/34504/observations"
-page = requests.get(url, params={"fields": "time,temperature", "limit": 5}, timeout=5).json()
+from meteo_api.app import app
+
+app.state.repo.add_station("99001", "Навчальна")
+url = f"{BASE}/api/v1/stations/99001/observations"
+for hour, temperature in zip(range(0, 24, 3), [11.2, 10.4, 12.9, 17.5, 20.1, 19.3, 15.8, 13.0]):
+    requests.post(url, json={"time": f"2026-09-20T{hour:02d}:00Z", "temperature": temperature}, timeout=5)
+
+page = requests.get(url, params={"fields": "time,temperature", "limit": 3}, timeout=5).json()
 print("total:", page["total"], "| limit:", page["limit"], "| offset:", page["offset"])
 for item in page["items"]:
     print(item)
@@ -573,13 +581,15 @@ print(requests.get(url, params={"fields": "time,colour"}, timeout=5).json())
 ```
 
 ```text
-total: 1 | limit: 5 | offset: 0
-{'time': '2024-09-02T18:00Z', 'temperature': 25.1}
-next: None
+total: 8 | limit: 3 | offset: 0
+{'time': '2026-09-20T00:00Z', 'temperature': 11.2}
+{'time': '2026-09-20T03:00Z', 'temperature': 10.4}
+{'time': '2026-09-20T06:00Z', 'temperature': 12.9}
+next: http://127.0.0.1:8032/api/v1/stations/99001/observations?fields=time%2Ctemperature&offset=3&limit=3
 {'detail': 'невідомі поля: colour'}
 ```
 
-Конверт сторінки: `items` — дані, `total` — скільки всього, `next` — готове посилання на наступну сторінку або `None`, якщо сторінка остання. Клієнт іде за `next`, поки воно не стане `None`, — так робить `MeteoClient` у розділі «Архітектура».
+Конверт сторінки: `items` — дані, `total` — скільки всього, `next` — готове посилання на наступну сторінку або `None`, якщо сторінка остання. Невідоме поле у `fields` — помилка клієнта `400`, а не мовчазне ігнорування. Клієнт іде за `next`, поки воно не стане `None`, — так робить `MeteoClient` у розділі «Архітектура»:
 
 ```mermaid
 flowchart TD
@@ -589,17 +599,17 @@ flowchart TD
     classDef error    fill:#ffebee,stroke:#c62828,stroke-width:3px;
     classDef warning  fill:#fff8e1,stroke:#e65100,stroke-width:2px;
 
-    subgraph P1["запит 1: offset = 0, limit = 5"]
+    subgraph P1["запит 1: offset = 0, limit = 3"]
         direction LR
-        A1["GET /stations<br>?limit=5"] --> B1["items: станції 1–5<br>total: 12"] --> C1["next:<br>offset=5"]
+        A1["GET …/observations<br>?limit=3"] --> B1["items: 00, 03, 06 год<br>total: 8"] --> C1["next:<br>offset=3"]
     end
-    subgraph P2["запит 2: offset = 5"]
+    subgraph P2["запит 2: offset = 3"]
         direction LR
-        A2["GET за посиланням next"] --> B2["items: станції 6–10"] --> C2["next:<br>offset=10"]
+        A2["GET за посиланням next"] --> B2["items: 09, 12, 15 год"] --> C2["next:<br>offset=6"]
     end
-    subgraph P3["запит 3: offset = 10"]
+    subgraph P3["запит 3: offset = 6"]
         direction LR
-        A3["GET за посиланням next"] --> B3["items: станції 11–12"] --> C3["next: None<br>кінець"]
+        A3["GET за посиланням next"] --> B3["items: 18, 21 год"] --> C3["next: None<br>кінець"]
     end
     P1 --> P2 --> P3
 
@@ -610,16 +620,17 @@ flowchart TD
 ```
 
 ```python
-url = f"{BASE}/api/v1/stations"
-params = {"limit": 5}
+params = {"fields": "time", "limit": 3}
 while url:
     page = requests.get(url, params=params, timeout=5).json()
-    print(page["offset"], [station["wmo"] for station in page["items"]])
+    print(page["offset"], [item["time"][11:16] for item in page["items"]], "next:", page["next"] is not None)
     url, params = page["next"], None
 ```
 
 ```text
-0 ['34504']
+0 ['00:00', '03:00', '06:00'] next: True
+3 ['09:00', '12:00', '15:00'] next: True
+6 ['18:00', '21:00'] next: False
 ```
 
 `offset` / `limit` — найпростіша пагінація. Великі API (GitHub, Stripe) використовують **курсор** — «дай 100 записів після запису X»: це стабільніше, коли нові записи з'являються посеред гортання.
