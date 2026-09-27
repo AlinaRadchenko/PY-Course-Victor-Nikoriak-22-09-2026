@@ -119,6 +119,7 @@ nav:
     - "М3. Бази даних":
       - Огляд модуля: modules/m3_databases.md
       - "Бонус. Pandas: аналіз даних, графіки і Dash":
+          - "Урок": modules/m3/bonus_pandas.md
           - "Довідник: аналіз даних": modules/m3/pandas/data_analytics.md
           - "Довідник: архітектура Dash": modules/m3/pandas/dash_architecture.md
       - "29. Основи SQL (PostgreSQL)": modules/m3/lesson_29.md

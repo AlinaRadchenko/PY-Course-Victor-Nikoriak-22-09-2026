@@ -45,7 +45,8 @@ PY-Course-Victor-Nikoriak-22-09-2026/
 ├── module_2/
 │   └── lessons/                ← lesson_18_functions_first_class/ … lesson_28_practicum_data_structures/ (all of М2)
 ├── module_3/
-│   └── lessons/                ← lesson_29_sql_basics/, lesson_30_redis_overview/ (all of М3; bonus pandas lesson pending — see «Bonus lessons»)
+│   ├── lessons/                ← lesson_29_sql_basics/, lesson_30_redis_overview/ (all of М3)
+│   └── bonus/pandas_data_analysis/ ← bonus lesson (before 29): 3 old-course notebooks + note_bonus_extra_datasets.ipynb, dash_API/ (Dash, 7 tabs), data/ (instructor's WFP/HDX/data.gov.ua files); book page docs/modules/m3/bonus_pandas.md + reference pages docs/modules/m3/pandas/
 ├── module_4/
 │   └── lessons/                ← lesson_31_http_requests/ (+ smachno_api.py — local training HTTP API, stdlib only),
 │                                 lesson_32_rest_api_design/ (meteo_api/ FastAPI v2 + all API types + gRPC, weather_map/ Streamlit, tests/, docker-compose.yml),
