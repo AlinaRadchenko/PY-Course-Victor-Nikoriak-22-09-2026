@@ -498,7 +498,7 @@ rbc.ua uk Економіка
 
 ### Знайди помилку { #find-bug }
 
-Так `news_dashboard` старого курсу визначав категорію новини:
+Так визначають категорію новини, розбираючи URL рядком:
 
 ```python
 url = "https://auto.rbc.ua/rus/news/speka-pislya-holodiv-ryatuemo-vid-rizikiv-1778085857.html"

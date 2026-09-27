@@ -1,23 +1,8 @@
 # Depression Analytics Platform — кейс уроку 42
 
 > **Навчальний кейс, а не медичний інструмент.** Цей проєкт у старому курсі згенерував AI-асистент за
-> промптами з [`prompts/`](prompts/) (IDEA → ROADMAP → Prompts_Roadmap). Застосунок запускався, усі ендпоінти
-> відповідали 200 — але рецензія тестами знайшла 10 вад. Тести — `tests/test_review.py`: на коді старого курсу
-> всі 17 падають, у цій копії — проходять. Розбір — [урок 42 у книзі курсу](https://nikoriakviktot.github.io/PY-Course-Victor-Nikoriak-22-09-2026/modules/m4/lesson_42/).
-
-| Що було | Стало |
-|---|---|
-| Flask сортував ключі JSON за алфавітом → «топ-ознаки» й «найсильніші предиктори» — перші за абеткою | `sort_keys = False`, UI сортує сам |
-| назви кластерів вшиті в UI («Sleep Deprived» спить найбільше) | назву дає профіль кластера (`cluster_names`) |
-| `/api/predict` приймав похідні ознаки від клієнта, `Age=-500` → 200, пропущене поле → 500 з текстом pandas | `StudentProfile` (Pydantic): 422 з переліком полів; похідні ознаки — `add_features` на сервері |
-| повзунок CGPA ні на що не впливав (не в ознаках моделі) | прибрано; невідоме поле → 422 |
-| `POST /api/train` без захисту перезаписував модель | лише з `X-Admin-Token` = `ADMIN_TOKEN`; без нього — вимкнено |
-| імпутер і скейлер навчались до `train_test_split` (витік) | `Pipeline`, навчений на навчальній вибірці |
-| pickle 57 МБ читався з диска на кожен запит; перезапис на місці | кеш у пам'яті; атомарна заміна файлу |
-| `/api/groups` змінював кешований DataFrame | `.copy()` |
-| NaN у відповіді — невалідний JSON | `null` (`allow_nan=False`) |
-| `ui/pages/` — Streamlit додавав 5 порожніх сторінок у меню | `ui/views/` |
-| `==` під Python 3.11: без колес для 3.13 | мінімальні версії, перевірено на 3.10 і 3.13 |
+> промптами з [`prompts/`](prompts/) (IDEA → ROADMAP → Prompts_Roadmap). Тести рецензії — `tests/test_review.py`.
+> Розбір — [урок 42 у книзі курсу](https://nikoriakviktot.github.io/PY-Course-Victor-Nikoriak-22-09-2026/modules/m4/lesson_42/).
 
 Датасет у репозиторій не входить: Student Depression Dataset (Kaggle) →
 `../data/Student Depression Dataset.csv` (або змінна `DATA_DIR`). Модель навчається при першому запуску бекенду.

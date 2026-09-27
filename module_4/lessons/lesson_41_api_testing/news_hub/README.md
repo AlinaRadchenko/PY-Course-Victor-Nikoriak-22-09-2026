@@ -75,8 +75,4 @@ uvicorn news_hub.api:app --reload
 Свіжа стрічка (коли `www.rbc.ua` доступний з мережі) — `POST /api/scrape` з `{}` або
 `{"mode": "sequential"}`; у відповіді — час кожної сторінки й помилки, якщо сторінка не завантажилась.
 
-Що знайшли нові тести й виправлено в цій копії: ISO-час з `<time datetime>` модель відхиляла (`models.py`);
-одна сторінка з битим байтом UTF-8 валила весь збір (`scraper.py`); перевірка `endswith("rbc.ua")` пропускала
-`fakerbc.ua` (`is_rbc_host`); з beautifulsoup4 4.12 парсер падав на тегах без `class` (`parser.py`).
-
 Розбір змін — [урок 41 у книзі курсу](https://nikoriakviktot.github.io/PY-Course-Victor-Nikoriak-22-09-2026/modules/m4/lesson_41/).

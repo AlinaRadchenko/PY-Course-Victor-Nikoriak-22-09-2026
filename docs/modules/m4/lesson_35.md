@@ -509,7 +509,7 @@ Not Found: /api/notes/
 
 ### Знайди помилку { #find-bug }
 
-API повертає поле `updated_at`. Перевіримо його на **старій** версії `services.update_note` з уроку 34 (у shell, де вже є `olena`):
+API повертає поле `updated_at`. Перевіримо, як воно оновлюється, коли модель зберігають з `update_fields` (у shell, де вже є `olena`):
 
 ```python
 import time
@@ -521,12 +521,12 @@ before = note.updated_at
 time.sleep(0.01)
 
 note.title = "Нова назва"
-note.save(update_fields=["title"])                 # як у старому update_note
+note.save(update_fields=["title"])                 # зберегти лише title
 note.refresh_from_db()
 print("лише title        → змінився updated_at?", note.updated_at != before)
 
 note.title = "Ще новіша назва"
-note.save(update_fields=["title", "updated_at"])   # як після виправлення
+note.save(update_fields=["title", "updated_at"])   # title разом з updated_at
 note.refresh_from_db()
 print("title + updated_at → змінився updated_at?", note.updated_at != before)
 ```
@@ -540,11 +540,11 @@ title + updated_at → змінився updated_at? True
 
 ??? success "Відповідь"
 
-    `auto_now` виставляє час у `pre_save()` — але Django викликає `pre_save()` і записує в базу **лише поля з `update_fields`**. Стара `update_note` збирала `changed_fields` (`title`, `content`, …) і не додавала `updated_at`, тож час зміни назавжди лишався часом створення.
+    `auto_now` виставляє час у `pre_save()` — але Django викликає `pre_save()` і записує в базу **лише поля з `update_fields`**. Якщо `update_note` збирає `changed_fields` (`title`, `content`, …) і не додає `updated_at`, час зміни назавжди лишається часом створення.
 
-    Шкода реальна: `selectors.get_user_notes` сортує за `-updated_at` — щойно відредагована нотатка не піднімалася вгору списку, а клієнт API отримував неправдивий час зміни. Помилка тиха: жодного винятку, лише неправильні дані.
+    Шкода реальна: `selectors.get_user_notes` сортує за `-updated_at` — щойно відредагована нотатка не піднімається вгору списку, а клієнт API отримує неправдивий час зміни. Помилка тиха: жодного винятку, лише неправильні дані.
 
-    Виправлення в коді уроку — одне слово: `note.save(update_fields=changed_fields + ['updated_at'])`. Тест `test_patch_changes_only_sent_fields_and_updated_at` у `tests_api.py` його закріплює. Сторінка редагування уроку 34 мала ту саму помилку — API лише зробив її видимою.
+    Правильно — одне слово: `note.save(update_fields=changed_fields + ['updated_at'])`. Тест `test_patch_changes_only_sent_fields_and_updated_at` у `tests_api.py` це перевіряє.
 
 ## Підсумок
 
@@ -590,7 +590,7 @@ title + updated_at → змінився updated_at? True
 
 ## Документація і джерела
 
-- Код: [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_35_drf_fastapi/crispy_notes_project) — проєкт уроку 34 (старий курс, `module_5/lesson_HTML_CSS_Bootstrap`) + `api.py` з Django-книги ([`notes_app/api.py`](https://github.com/NikoriakViktot/notes_chat_app/blob/main/notes_app/api.py)), доповнений до CRUD; у курсі виправлено `updated_at` в `services.update_note`. Порівняльний [`fastapi_notes.py`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/fastapi_notes.py).
+- Код: [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_35_drf_fastapi/crispy_notes_project) — проєкт уроку 34 (старий курс, `module_5/lesson_HTML_CSS_Bootstrap`) + `api.py` з Django-книги ([`notes_app/api.py`](https://github.com/NikoriakViktot/notes_chat_app/blob/main/notes_app/api.py)), доповнений до CRUD. Порівняльний [`fastapi_notes.py`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/fastapi_notes.py).
 - Django-книга: [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/), [Serializers — Transport Layer](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/django_serializers_full/)
 - DRF: [Quickstart](https://www.django-rest-framework.org/tutorial/quickstart/), [Serializers](https://www.django-rest-framework.org/api-guide/serializers/), [ViewSets](https://www.django-rest-framework.org/api-guide/viewsets/), [Routers](https://www.django-rest-framework.org/api-guide/routers/), [Authentication](https://www.django-rest-framework.org/api-guide/authentication/), [Permissions](https://www.django-rest-framework.org/api-guide/permissions/), [Testing](https://www.django-rest-framework.org/api-guide/testing/), [Browsable API](https://www.django-rest-framework.org/topics/browsable-api/)
 - Django: [`Model.save(update_fields=…)`](https://docs.djangoproject.com/en/5.2/ref/models/instances/#specifying-which-fields-to-save), [`DateField.auto_now`](https://docs.djangoproject.com/en/5.2/ref/models/fields/#django.db.models.DateField.auto_now)

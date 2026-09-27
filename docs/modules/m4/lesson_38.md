@@ -301,8 +301,8 @@ sequenceDiagram
     F-->>C: 200 {"id": 7, "category": "Економіка", …}
 ```
 
-!!! danger "Знахідка: з FastAPI 0.118 COMMIT за замовчуванням іде вже після відповіді"
-    У старому `production_bot` зафіксовано FastAPI 0.115.5 — там код після `yield` виконувався **до** відповіді. З версії 0.118 за замовчуванням — **після**: клієнт отримує `200`/`201` ще до COMMIT. Якщо COMMIT не вдасться (обрив з'єднання, обмеження бази, що перевіряється при COMMIT), клієнт уже почув «збережено», а даних немає.
+!!! danger "З FastAPI 0.118 COMMIT за замовчуванням іде вже після відповіді"
+    До FastAPI 0.118 код після `yield` виконувався **до** відповіді. З версії 0.118 за замовчуванням — **після**: клієнт отримує `200`/`201` ще до COMMIT. Якщо COMMIT не вдасться (обрив з'єднання, обмеження бази, що перевіряється при COMMIT), клієнт уже почув «збережено», а даних немає.
 
     Перевірили однією залежністю, що падає після `yield` (`raise` замість COMMIT):
 
@@ -314,7 +314,7 @@ sequenceDiagram
     FastAPI 0.141.1, Depends(dep, scope="function") → 500 Internal Server Error
     ```
 
-    Виправлення — `Depends(get_db, scope="function")` (є з FastAPI 0.121): залежність завершується **до** відправлення відповіді. Тест `test_failed_commit_is_500_not_200` закріплює це: без `scope="function"` він падає.
+    Тому — `Depends(get_db, scope="function")` (є з FastAPI 0.121): залежність завершується **до** відправлення відповіді. Тест `test_failed_commit_is_500_not_200` закріплює це: без `scope="function"` він падає.
 
 ## Рефакторинг 3. Повний CRUD { #refactor-3 }
 
@@ -462,7 +462,7 @@ INFO  [alembic.runtime.migration] Running upgrade  -> 0001, news table — та�
 ```
 
 !!! warning "Autogenerate — чернетка, а не готова міграція"
-    Alembic записав `server_default=sa.text('now()')`: текст функції PostgreSQL. На SQLite такої функції немає — міграція там падала. Виправлено вручну на `sa.func.now()`: SQLAlchemy підставляє правильний SQL для кожної бази (`now()` для PostgreSQL, `CURRENT_TIMESTAMP` для SQLite). Правило: **кожну автоміграцію читай перед комітом**, а `alembic check` покаже, чи збігаються моделі з базою.
+    Alembic записав `server_default=sa.text('now()')`: текст функції PostgreSQL. На SQLite такої функції немає — міграція там падала. Тому в міграції — `sa.func.now()`: SQLAlchemy підставляє правильний SQL для кожної бази (`now()` для PostgreSQL, `CURRENT_TIMESTAMP` для SQLite). Правило: **кожну автоміграцію читай перед комітом**, а `alembic check` покаже, чи збігаються моделі з базою.
 
 ## Архітектура: було → стало { #architecture }
 

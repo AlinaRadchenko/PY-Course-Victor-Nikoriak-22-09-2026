@@ -278,7 +278,7 @@ print("409:  ", again.status_code, api.get("/api/news/stats").headers["X-Cache"]
 +return count <= self.limit, count, max(ttl, 0)
 ```
 
-Навіщо: у старому коді `INCR` і `EXPIRE` — **два окремі** запити. Якщо процес упаде (перезапуск, обрив з'єднання) між ними, ключ залишиться **без TTL**: наступні `INCR` дадуть 2, 3, 4… — і умова `count == 1` більше ніколи не спрацює. Користувача заблоковано назавжди. Перевіримо — «падіння» імітуємо, просто не викликаючи `EXPIRE`:
+Навіщо: якщо `INCR` і `EXPIRE` — **два окремі** запити, і процес упаде (перезапуск, обрив з'єднання) між ними, ключ залишиться **без TTL**: наступні `INCR` дадуть 2, 3, 4… — і умова `count == 1` більше ніколи не спрацює. Користувача заблоковано назавжди. Перевіримо — «падіння» імітуємо, просто не викликаючи `EXPIRE`:
 
 ```python
 from news_hub.middleware import RateLimiter
@@ -288,16 +288,16 @@ async def old_vs_new() -> None:
     redis = Redis.from_url("redis://localhost:6379/0", decode_responses=True)
     await redis.delete("rate:old", "rate:scrape:crashed")
 
-    await redis.incr("rate:old")                   # старий код: INCR… і процес «упав» до EXPIRE
+    await redis.incr("rate:old")                   # INCR… і процес «упав» до EXPIRE
     for _ in range(3):
         count = await redis.incr("rate:old")
         if count == 1:                             # ніколи не виконається
             await redis.expire("rate:old", 60)
-    print("старий код: count =", await redis.get("rate:old"), "| TTL =", await redis.ttl("rate:old"))
+    print("окремо:     count =", await redis.get("rate:old"), "| TTL =", await redis.ttl("rate:old"))
 
     await redis.set("rate:scrape:crashed", 99)     # той самий «залишок» без TTL
     allowed, count, ttl = await RateLimiter(redis).hit("crashed", "scrape")
-    print("новий код:  count =", count, "| дозволено:", allowed, "| TTL =", ttl)
+    print("транзакція: count =", count, "| дозволено:", allowed, "| TTL =", ttl)
     await redis.aclose()
 
 
@@ -305,8 +305,8 @@ asyncio.run(old_vs_new())
 ```
 
 ```text
-старий код: count = 4 | TTL = -1
-новий код:  count = 100 | дозволено: False | TTL = 60
+окремо:     count = 4 | TTL = -1
+транзакція: count = 100 | дозволено: False | TTL = 60
 ```
 
 `TTL = -1` — ключ без часу життя: блокування назавжди. `EXPIRE … NX` ставить TTL, **якщо його немає**, і робить це в тій самій транзакції, що `INCR`, — навіть «залишок» після збою сам зникне за хвилину.
