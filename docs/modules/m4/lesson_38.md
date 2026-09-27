@@ -525,17 +525,6 @@ Success: no issues found in 9 source files
 
 `tests/conftest.py` створює для кожного тесту окремий engine і порожні таблиці (`Base.metadata.create_all`) і підміняє `get_db`; за замовчуванням — SQLite у пам'яті, з `TEST_DATABASE_URL` — PostgreSQL. Додалось 9 тестів CRUD: `201`, `409`, `422`, `404`, `PATCH` і збереження змін, `204`, `GROUP BY`, пошук, «COMMIT не вдався → `500`».
 
-## Що виправлено в старому коді { #fixes }
-
-| Де (`production_bot`) | Було | Стало |
-|---|---|---|
-| `core/database.py`, `get_db` | COMMIT після `yield` — з FastAPI ≥ 0.118 після відповіді: клієнт бачить успіх, навіть якщо COMMIT не вдався | `Depends(get_db, scope="function")`; `fastapi>=0.121`; тест |
-| `core/database.py`, `get_db` | анотація `-> AsyncSession`, хоча це генератор (mypy `--strict` — помилка) | `-> AsyncIterator[AsyncSession]` |
-| `core/database.py`, `alembic.ini` | адреса лише PostgreSQL, у `alembic.ini` — ще й окремо, з паролем | одна `DATABASE_URL` зі змінної середовища для застосунку й міграцій; без неї — SQLite |
-| `repositories/base.py`, `user_repo.py` | `from sqlalchemy import func, select` усередині методів; `datetime` — теж | імпорти вгорі модуля |
-| міграція, згенерована autogenerate | `server_default=sa.text('now()')` — лише PostgreSQL | `sa.func.now()` — PostgreSQL і SQLite |
-| — (нове в уроці) | SQLite `lower()` знає лише латиницю: пошук «ЗЕЛЕНСЬК» не знаходив «Зеленськ» | `lower()` з Unicode для SQLite (`db.py`); тест пошуку на обох базах |
-
 ## Практика { #practice }
 
 ### Розібраний приклад: пошук `GET /api/news/search?q=`

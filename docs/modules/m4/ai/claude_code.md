@@ -1,6 +1,6 @@
 # Довідник: Claude Code
 
-Довідник до [уроку 42](../lesson_42.md). Основа — `module_5/lesson_53_claude_code/CLAUDE_DOC.md` зі старого курсу. Кожне твердження звірено з установленим `claude` (версія 2.1.283, `claude --help`) і з [офіційною документацією](https://code.claude.com/docs/en/overview) станом на 27.09.2026. Застаріле виправлено, список — [у кінці сторінки](#fixes).
+Довідник до [уроку 42](../lesson_42.md). Основа — `module_5/lesson_53_claude_code/CLAUDE_DOC.md` зі старого курсу. Кожне твердження звірено з установленим `claude` (версія 2.1.283, `claude --help`) і з [офіційною документацією](https://code.claude.com/docs/en/overview) станом на 27.09.2026.
 
 Інструмент змінюється щомісяця. Якщо команда з цієї сторінки не працює, джерело правди — `claude --help`, `/help` і документація.
 
@@ -477,25 +477,6 @@ asyncio.run(main())
 | Повний автопілот | `bypassPermissions` лише в одноразовому контейнері |
 
 Поглиблено: [Security](https://code.claude.com/docs/en/security), [Best practices](https://code.claude.com/docs/en/best-practices).
-
-## Що виправлено в довіднику старого курсу { #fixes }
-
-Старий довідник датовано 2025-05. Ми попросили AI-агента звірити його з документацією. Агент знайшов справжні застарілі місця, але **сам помилився** щонайменше в чотирьох пунктах. Кожне твердження нижче тому перевірено ще раз — за `claude --help` установленої версії і за документацією.
-
-| Старий довідник | Що не так | Тепер |
-|---|---|---|
-| таблиця моделей з повними назвами | застаріла за рік | аліаси `--model sonnet` / `opus` / `haiku`; поточний список — `/model` |
-| ієрархія CLAUDE.md як «порядок пріоритету» (`/.claude/CLAUDE.md` для організації) | файли не перекривають, а доповнюють один одного; шлях організації — інший | розділ 6 |
-| режими дозволів: 4 | з'явились `auto` і `dontAsk`, `default` у CLI зветься Manual | таблиця в розділі 11 |
-| події hooks: 9 | понад 30 | головні — у розділі 10, решта — посилання |
-| hook блокує `^rm -rf` і друкує JSON разом з `exit 2` | з кодом 2 JSON ігнорується, причина — у stderr; регулярний вираз легко обійти | розділ 10: hook — для якості, безпека — `deny` і sandbox |
-| «Agent SDK» — приклад `anthropic.Anthropic().messages.create(...)` | це Client SDK (урок 43), а не Agent SDK | `claude-agent-sdk`, `query(...)` |
-| CI: `claude --permission-mode bypassPermissions -p` у workflow | Claude Code не встановлено на раннері; повний автопілот на вмісті PR небезпечний | `anthropics/claude-code-action@v1` |
-| `sudo apt install claude-code` одним рядком; автооновлення за замовчуванням — `stable` | apt/dnf/apk — лише після підключення підписаного репозиторію; канал за замовчуванням — `latest` | розділ 2 |
-| посилання `docs.anthropic.com/en/docs/claude-code/…` | документація переїхала | `code.claude.com/docs/en/…` |
-| — | не було: довіра до папки, `ask`-правила, `AGENTS.md`, `.claude/rules/`, skills з `paths` | розділи 6, 8, 11 |
-
-**Помилки AI-аудитора (перевірено й відкинуто).** Агент стверджував, що імпорти `@path` у CLAUDE.md більше не підтримуються, що ключа `autoMemoryEnabled` немає, що поля skill `argument-hint` немає і що прапорців `--json-schema` і `--system-prompt` немає. Усе це є: `@path` і `autoMemoryEnabled` — у документації Memory, `argument-hint` — у документації Skills, прапорці — у `claude --help`. Урок той самий, що з кодом: **відповідь AI перевіряють за першоджерелом**.
 
 ## Посилання
 

@@ -690,16 +690,6 @@ Success: no issues found in 12 source files
 
 Було 41 тест у трьох файлах, стало 86 у десяти; покриття 88% (рядки, без greenlet) → 99% (рядки й гілки).
 
-## Що виправлено в коді { #fixes }
-
-| Де | Було | Хто знайшов | Стало |
-|---|---|---|---|
-| `models.py` (урок 36) | `published_time` приймав лише «HH:MM»; ISO-час з `<time datetime>` → новину відхилено | тест конвеєра на збереженій сторінці | `field_validator`: з ISO береться час |
-| `scraper.py` (урок 37, `news_dashboard`) | `resp.text()` на битому байті — `UnicodeDecodeError` повз `except`, `gather` губив усі сторінки | фейковий HTTP-сервер | `resp.text(errors="replace")` |
-| `models.py`, `api.py` (36–37) | `host.endswith("rbc.ua")` пропускав `fakerbc.ua`: сервер завантажував чужий сайт на запит | покриття гілок → тест межових значень | `is_rbc_host` |
-| `parser.py` (урок 36) | з beautifulsoup4 4.12 `_classes` падав на тезі без `class` | прогін на мінімальних версіях | порожні значення відкидаються |
-| `tests/` (урок 39) | один рівень, HTML у рядках, мережа й `get_db` не тестувались, покриття занижене | — | unit / integration, фікстури, мок і фейк, `aclient`, `.coveragerc` |
-
 ## Практика { #practice }
 
 ### Розібраний приклад: тест ключа кешу

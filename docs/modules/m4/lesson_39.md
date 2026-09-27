@@ -492,17 +492,6 @@ Success: no issues found in 12 source files
 
 Додалось 9 тестів у `tests/test_redis.py`: hit/miss, інвалідація після запису і її відсутність після `409`, заголовки middleware, `429` з `Retry-After`, «ключ без TTL лікується» (зі старою логікою `ai_bot` цей тест падає), фоновий збір — `done`, `failed` з текстом помилки, `404` невідомої задачі. Redis у тестах — `fakeredis`; ті самі тести на справжніх серверах: `TEST_DATABASE_URL=… TEST_REDIS_URL=redis://localhost:6379/15 pytest`.
 
-## Що виправлено в старому коді { #fixes }
-
-| Де | Було | Стало |
-|---|---|---|
-| `ai_bot/…/rate_limit_repo.py` | `INCR`, потім окремий `EXPIRE` лише при `count == 1`: збій між ними — ключ без TTL, блокування назавжди | транзакція `INCR` + `EXPIRE … NX`; «залишок» без TTL лікується |
-| `ai_bot/…/rate_limit.py` | алгоритм названо «Sliding Window Counter», а це фіксоване вікно | назву виправлено; межу вікна показано вимірюванням |
-| `production_bot/…/redis.py` | глобальна змінна `_redis_pool`, не підміниш у тестах | клієнт у `app.state` з `lifespan`, `Depends(get_redis)`; `fakeredis://` для тестів |
-| `news_dashboard/…/main.py`, `/api/scrape/archive` | у фонову задачу передавали `db` запиту; статус задач — у базі новин | своя сесія бази в задачі; статус — Redis-hash з TTL; помилка → `failed` |
-| — (урок 39) | рядки журналу `news_hub` нікуди не виводились: uvicorn налаштовує лише свої логери | `setup_logging()` у `lifespan` |
-| — (урок 39) | інвалідація кешу в ендпоінті йшла б до COMMIT | middleware `invalidate_cache` — після COMMIT |
-
 ## Практика { #practice }
 
 ### Розібраний приклад: кеш для `GET /api/news/{news_id}`

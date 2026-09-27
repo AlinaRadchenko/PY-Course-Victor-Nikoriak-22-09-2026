@@ -598,18 +598,6 @@ Success: no issues found in 7 source files
 
 Додалось 11 тестів API: порожнє сховище, збір зі знімка й фільтри, повторний збір, відхилені новини зі «скрапера»-заглушки, чотири випадки `422`, очищення, перелік шляхів в OpenAPI.
 
-## Що виправлено в старому коді { #fixes }
-
-| Де | Було | Стало |
-|---|---|---|
-| `news_dashboard/app/main.py` | `@app.on_event("startup")` — застарілий API FastAPI | `lifespan` |
-| `main.py`, `ScrapeRequest.pages` | будь-які URL — сервер завантажить що завгодно (SSRF) | лише сторінки rbc.ua, не більше 20; інше — `422` |
-| `main.py`, `lang` | вільний рядок: `?lang=en` — порожній список без помилки | `Literal["uk", "ru"]` → `422` |
-| `news_dashboard/app/scraper.py`, `fetch_one` | статус відповіді не перевірявся: сторінку «403» розбирало як стрічку, «0 новин, помилки немає»; `except Exception` ховав будь-які помилки | `raise_for_status()`; ловимо лише мережеві помилки й тайм-аут |
-| `scraper.py`, `_parse_page` | друга копія парсера зі своїм словником категорій (і помилкою з піддоменами, урок 36) | `parse_rbc_news` + `NewsItem` з уроку 36 |
-| `fastapi_demo/load_test.py` | клієнт `httpx` на 500 з'єднаннях сам гальмував вимір; тайм-аут 30 с < 40 с тесту | клієнт навантаження — `aiohttp` без ліміту з'єднань, тайм-аут 60 с |
-| `load_test.py`, docstring | «`uvicorn app.main:app --reload`» — порт 8000, а тест стукає на 8001 | `uvicorn app.main:app --port 8001` |
-
 ## Практика { #practice }
 
 ### Розібраний приклад: ендпоінт `GET /api/news/sources`
