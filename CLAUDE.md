@@ -51,7 +51,7 @@ PY-Course-Victor-Nikoriak-22-09-2026/
 │                                 lesson_32_rest_api_design/ (meteo_api/ FastAPI v2 + all API types + gRPC, weather_map/ Streamlit, tests/, docker-compose.yml),
 │                                 lesson_33_django_intro/ (hello_project/ — Django 5.2 notes app, step 1–2 of the Django book),
 │                                 lesson_34_django_forms/ (old-course django_bootstrap_project/ → crispy_notes_project/, taught as two refactorings of lesson 33; tests added),
-│                                 lesson_35_drf_fastapi/ (hello_project/ from 33 + DRF API, tests_api, fastapi_notes.py); lessons 36–47 pending
+│                                 lesson_35_drf_fastapi/ (crispy_notes_project/ from 34 + DRF api.py over services/selectors, tests_api; fastapi_notes.py); lessons 36–47 pending
 │
 ├── tools/
 │   ├── sync_notebook_metadata.py ← generates the Colab badge + metadata.lms of every notebook
