@@ -1,7 +1,7 @@
 # Виправлення старого коду — нотатки викладача
 
 > Файл для викладача, у книгу курсу (`docs/`) не входить. Тут — усе, що довелося змінити в коді й
-> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–43,
+> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–44,
 > бонус-урок pandas, довідники. На сторінках уроків цих списків немає — студенти бачать лише
 > правильний код і пояснення «чому так».
 
@@ -137,6 +137,25 @@
 | `google-genai>=1.21` у першій версії requirements — там немає `response_json_schema` у `GenerateContentConfig`, до 1.39 — `client.aio.aclose()` | прогін на мінімальних версіях | `>=1.39`; `httpx>=0.28.1` (вимога google-genai), `typing-extensions>=4.14` (anthropic 1.x) |
 | aiohttp 3.10.0–3.10.9: google-genai при помилці запиту звертається до `aiohttp.ClientConnectorDNSError` → `AttributeError` замість `LLMUnavailable` | контрактний тест на мінімальних версіях | `aiohttp>=3.10.10` |
 | клієнт Gemini не закривав aiohttp-сесію → на 3.10 `RuntimeError: Event loop is closed` при виході | прогін ноутбука на 3.10 | `LLMClient.aclose()`, виклик у `lifespan` |
+
+## Урок 44. Архітектура застосунків і патерни
+
+Джерела: `crispy_notes_project` уроку 40 (код `lesson_Django_authentication_and_security` старого курсу) і `module_5/lesson_Django_ORM_Database/notes_project_cbv/` (CBV).
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `selectors.get_todo_list_detail`, `get_shopping_list_detail`, views `*_edit` / `*_delete` | `.get(Q(user=u) \| Q(shared_with=u), pk=…)` — M2M з OR дає рядок на кожного, з ким поділено: список, поділений з двома, — `MultipleObjectsReturned` (500) для власника на сторінці, редагуванні й видаленні | тест: поділити з ann і bob → `get()` повертає 2 рядки | `todo_lists_visible_to` / `shopping_lists_visible_to` з `.distinct()`; тест `test_list_shared_with_two_users_is_returned_once` |
+| `get_user_shopping_lists` vs `get_shopping_list_detail` | список груп є в «Мої списки», а сторінка списку групи — 404 (різні правила доступу у двох selectors); відмітити товар учасник групи теж не міг | тест: учасник групи → `/shopping/<pk>/` → 404 | одне правило `shopping_lists_visible_to`; тест `test_every_listed_shopping_list_opens` |
+| `views.tag_create` | `redirect(request.GET['next'])` без перевірки — відкритий редирект (`?next=https://evil…`) | тест з `https://evil.example` і `//evil.example` | `url_has_allowed_host_and_scheme` у `TagCreateView.next_url` |
+| `views.notebook_create` | опис записника дописувався у view після `create_notebook` (другий `save`) | читання коду | параметр `description` у `services.create_notebook` |
+| `views.group_delete` | не учасник групи отримував 403 (а неіснуюча група — 404): видно, що група існує | читання коду | 404 для обох (`get_group_with_members`) |
+| `views.group_detail` (remove) | `User.objects.get(pk=…)` — будь-який користувач сайту | читання коду | `selectors.get_group_member` — лише учасник |
+| `notes_project_cbv` `NoteCreateView` / `UserQuerySetMixin` | `is_pinned` не передавався в сервіс (як в уроці 34); міксин `filter(user=…)` ховав нотатки групи | перенос на проєкт з групами | `NoteFormMixin.note_fields`, `SelectorQuerySetMixin` + `OwnerRequiredMixin` |
+| `requirements.txt` | `django-debug-toolbar>=4.0` — з Django 5.2 не імпортується (`get_storage_class`), `debug_toolbar_urls` лише з 4.4 | прогін на мінімальних версіях (Python 3.10) | `>=4.4.3` (4.4.4 має баг з `jinja2`, pip однаково бере новішу) |
+
+Знахідка в новому коді уроку (до коміту): фільтри `NoteListView` спершу читались у `setup()` — він виконується до `dispatch()`, тобто до `LoginRequiredMixin`: анонім з `?tag=1` робив запит до бази з `AnonymousUser` (`TypeError`). Перенесено в `get()`; тест `test_anonymous_is_redirected_before_any_query` (0 запитів). Використано на сторінці як приклад життєвого циклу CBV.
+
+«Знайди помилку» уроку побудовано на M2M + OR без `distinct()`.
 
 ## Довідник Claude Code (`CLAUDE_DOC.md` старого курсу)
 
