@@ -118,6 +118,10 @@ nav:
       - "28. П6. Stack, Queue, Heap, Trie + LRU → ООП-пакет": modules/m2/lesson_28.md
     - "М3. Бази даних":
       - Огляд модуля: modules/m3_databases.md
+      - "Бонус. Pandas: аналіз даних, графіки і Dash":
+          - "Урок": modules/m3/bonus_pandas.md
+          - "Довідник: аналіз даних": modules/m3/pandas/data_analytics.md
+          - "Довідник: архітектура Dash": modules/m3/pandas/dash_architecture.md
       - "29. Основи SQL (PostgreSQL)": modules/m3/lesson_29.md
       - "30. Redis overview": modules/m3/lesson_30.md
     - "М4. Web (+ Web Advanced)":
@@ -127,6 +131,7 @@ nav:
       - "33. Django intro: MVT, ORM, admin": modules/m4/lesson_33.md
       - "34. Django: forms, HTML practice": modules/m4/lesson_34.md
       - "35. DRF overview + Django vs FastAPI": modules/m4/lesson_35.md
+      - "36. Typing + Pydantic": modules/m4/lesson_36.md
     - "М5. Production": modules/m5_production.md
     - "М6. Капстоун": modules/m6_capstone.md
     - "Self-paced. AI для розробників (бонус)": modules/bonus_ai.md
