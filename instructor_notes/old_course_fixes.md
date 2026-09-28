@@ -318,6 +318,46 @@ HEALTHCHECK на інший порт — кожну ловить принайм�
 pip у збірці ходить через проксі з власним CA, тому базовий `python:3.12-slim` у пісочниці локально доповнено сертифікатом
 (в образі курсу цього немає; розміри образів від цього змінились на ~250 кБ).
 
+## Урок 49. Docker Compose + деплой
+
+Джерела: `production_bot/docker-compose.yml` і `nginx/default.conf` старого курсу (для `news_hub`); `Dockerfile`,
+`entrypoint.sh`, `docker-compose.yml`, `nginx/nginx.conf` Django-книги `notes_chat_app` (для `crispy_notes_project`).
+Обидва запущено майже без змін (шляхи до застосунку, порт 8080 замість 80, без SSL-блоку) — Docker 29, Compose v5.
+
+**news_hub (production_bot)**
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `docker-compose.yml`, `bot.healthcheck` | `curl -f http://localhost:8000/health` | `docker compose ps` → `bot … (unhealthy)`, журнал перевірки: `exec: "curl": executable file not found in $PATH` — API при цьому працює | HEALTHCHECK образу (python), у Compose — `/health/ready` |
+| `nginx.depends_on: [bot]` | без умови | curl кожні 2 с після `up`: `000 502 502 502 502 200` — ~10 с nginx віддає 502 | `condition: service_healthy` |
+| `nginx/default.conf` + uvicorn за замовчуванням | uvicorn довіряє `X-Forwarded-For` лише від 127.0.0.1 → IP клієнта для застосунку — адреса nginx | 5 невдалих входів → вхід адміна з правильним паролем: 429; у Redis один ключ `rate:login:172.19.0.6` = IP nginx: один зловмисник блокує вхід усім | nginx: `X-Forwarded-For $remote_addr`; uvicorn: `FORWARDED_ALLOW_IPS=172.28.0.10` (фіксована адреса nginx у мережі `edge`) |
+| те саме, «виправлення» `FORWARDED_ALLOW_IPS=*` з `$proxy_add_x_forwarded_for` | клієнтський заголовок дописується, uvicorn бере крайній лівий | 8 спроб входу з `X-Forwarded-For: 10.66.0.$i` → `401 ×8`, жодного 429 (ключі `rate:login:10.66.0.1…`) — захист від перебору пароля обходиться | див. рядок вище: 7 спроб → `401 ×5, 429 ×2`; інший клієнт (інша адреса) входить |
+| `postgres.environment` | `POSTGRES_PASSWORD: password` у compose, поруч `env_file: .env` | читання | `${POSTGRES_PASSWORD:?…}` з `.env`; без нього `docker compose config` падає |
+| `bot` без `depends_on: migrate` | API стартує паралельно з міграціями | читання | `condition: service_completed_successfully` |
+| `backend/app.py`, lifespan | `set_webhook()` без обробки помилок (те саме в `news_hub` уроку 47) | Telegram недоступний (`twin` не запущено) → `TelegramNetworkError` → `Application startup failed. Exiting.`, api по колу, новини недоступні | реєстрація — фонова задача з повторами (1, 2, 5, 10, 30 с), 401 — лише журнал; тести `test_api_starts_while_telegram_is_down`, `test_wrong_token_does_not_stop_api`; наживо: api healthy одразу, `бот зареєстрований (спроба 5)` після старту двійника |
+
+**news_hub — власний код попередніх уроків**
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `security.load_admin_settings` (урок 46) | хеш перевірявся лише `startswith("$2")` | `.env` Compose з хешем без лапок: Compose підставив `$eBDJ…` → порожньо (попередження `The "eBDJ…" variable is not set`), хеш обрізано до `$2b$12`, старт проходить, а вхід відповідає 500 | повний формат bcrypt (`$2b$12$` + 53 символи), інакше помилка при старті; тест `test_truncated_hash_fails_at_startup`; `.env.example`: значення з `$` — в одинарних лапках |
+| `HEALTHCHECK` образу (урок 48) для `bot`, `twin`, `migrate` | успадковується всіма ролями образу | `docker compose ps`: `twin (unhealthy)`, `bot (unhealthy)` — вони не слухають :8000; `up --wait` падає | `healthcheck: disable: true` для цих сервісів |
+
+**crispy_notes_project (Django-книга)**
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `entrypoint.sh` + bind mount `.:/app` | файл у git з режимом `100644`; `chmod +x` в образі перекривається bind mount | `docker compose up` на Linux: `exec: "./entrypoint.sh": permission denied` (на Windows Docker Desktop файли видно як виконувані — там працює) | без entrypoint і без bind mount: команди — у `command:` сервісів |
+| `entrypoint.sh`: `migrate` при старті кожного `web` | — | чиста база, `--scale web=2`, 3 запуски: друга репліка падає всі 3 рази — `UniqueViolation … pg_type_typname_nsp_index (auth_permission)`, `(hello_app_notebook)`, `ProgrammingError: column "name" of relation "django_content_type" does not exist` | окремий one-shot сервіс `release` (migrate + collectstatic --clear), `web` чекає `service_completed_successfully` |
+| `entrypoint.sh`: `uvicorn … --reload` | reloader у продакшн-контейнері | `docker top`: процес reloader + `spawn_main` | `daphne --proxy-headers` у exec-формі CMD; `docker stop` — 0.7 с, код 0 |
+| `nginx.conf`: `proxy_set_header Host $host` | `$host` без порту | стек на порту 8080: вхід формою → `403 Origin checking failed - http://localhost:8080 does not match any trusted origins`; на 80 (як у книзі) працює | `$http_host`; для https — `DJANGO_HTTPS=1` (`SECURE_PROXY_SSL_HEADER`) і `DJANGO_CSRF_TRUSTED_ORIGINS` |
+| `crispy_notes_project` (уроки 40–45): немає `STATIC_ROOT` | — | `collectstatic` → `ImproperlyConfigured: … STATIC_ROOT` | `STATIC_ROOT` (`DJANGO_STATIC_ROOT`) |
+| `DJANGO_DEBUG` за замовчуванням `1` | compose книги його не задає | через nginx `/no-such-page/` → сторінка з `DEBUG = True` (маршрути, налаштування) | `DJANGO_DEBUG=0` у `.env.example`; з `DEBUG=0` без `DJANGO_SECRET_KEY` — `ImproperlyConfigured` при старті; тести `tests_deploy.py` (5) |
+
+Проміжні перевірки (не дефекти, на сторінці — з числами): оновлення `docker compose up -d --build` — 21 з 60 запитів (кожні 0,5 с)
+отримали 502 (~10 с простою); nginx визначає адреси `web` лише при старті — після `--scale web=2` усі 10 запитів ішли в першу
+репліку, після `nginx -s reload` — 7/3; чат між двома репліками: з Redis доставлено 4 з 4, з `InMemoryChannelLayer` — 1 з 6.
+
 ## Довідник Claude Code (`CLAUDE_DOC.md` старого курсу)
 
 Старий довідник датовано 2025-05. Ми попросили AI-агента звірити його з документацією. Агент знайшов справжні застарілі місця, але **сам помилився** щонайменше в чотирьох пунктах. Кожне твердження нижче тому перевірено ще раз — за `claude --help` установленої версії і за документацією.
