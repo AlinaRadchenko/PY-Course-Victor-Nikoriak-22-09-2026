@@ -55,3 +55,9 @@ def test_placeholder_but_not_markdown_link() -> None:
     todo = slide("Прохання", body="TODO контакт")
     assert check(deck(*GOOD[:-1], linked)) == []
     assert check(deck(*GOOD[:-1], todo)) == ["слайд 10 «Прохання»: лишилась заготовка [..] чи TODO"]
+
+
+def test_link_targets_are_not_words_on_slide() -> None:
+    body = " ".join(["слово"] * 43) + " [Джерело](https://example.com/a/very/long/descriptive/source/path)"
+    body += " ![](img/architecture-diagram-final-version.png) <https://github.com/some/long/repository/path>"
+    assert check(deck(slide("Проблема", body=body), *GOOD[1:])) == []     # 43 + «Проблема» + «Джерело» = 45

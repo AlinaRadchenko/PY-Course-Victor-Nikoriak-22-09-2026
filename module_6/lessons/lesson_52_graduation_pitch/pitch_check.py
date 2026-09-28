@@ -22,6 +22,8 @@ REQUIRED = ("проблема", "рішення", "демо", "як це пра�
 COMMENT = re.compile(r"<!--(.*?)-->", re.S)
 DIRECTIVE = re.compile(r"^\s*_?[a-zA-Z]+\s*:")          # <!-- _class: lead -->, <!-- paginate: false -->
 PLACEHOLDER = re.compile(r"\[[^\]]*\]\s*(?!\()|\bTODO\b")   # [текст] без посилання (…)
+LINK = re.compile(r"!?\[([^\]]*)\]\([^)]*\)")             # [підпис](адреса), ![опис](картинка.png)
+AUTOLINK = re.compile(r"<(?:https?|mailto):[^>]*>")
 
 
 @dataclass
@@ -55,7 +57,8 @@ def check(markdown: str) -> list[str]:
     if not MIN_SLIDES <= len(slides) <= MAX_SLIDES:
         problems.append(f"слайдів {len(slides)}, треба {MIN_SLIDES}–{MAX_SLIDES}")
     for number, slide in enumerate(slides, 1):
-        visible = re.sub(r"[|`*>#-]", " ", slide.text)
+        visible = AUTOLINK.sub(" ", LINK.sub(r"\1", slide.text))   # на слайді видно підпис, а не адресу
+        visible = re.sub(r"[|`*>#-]", " ", visible)
         if words(visible) > MAX_WORDS_ON_SLIDE:
             problems.append(f"слайд {number} «{slide.title}»: {words(visible)} слів на слайді — перенеси в нотатки")
         if PLACEHOLDER.search(slide.text + " " + slide.notes):
