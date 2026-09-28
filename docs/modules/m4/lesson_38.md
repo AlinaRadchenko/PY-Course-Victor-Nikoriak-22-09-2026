@@ -28,7 +28,7 @@
 - створити й застосувати міграцію Alembic;
 - пояснити, чому «перевір, а потім встав» ламається під навантаженням.
 
-**Ноутбук заняття:** [`note_lesson_38_sqlalchemy.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_38_fastapi_sqlalchemy/note_lesson_38_sqlalchemy.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_38_fastapi_sqlalchemy/note_lesson_38_sqlalchemy.ipynb) — база й CRUD на SQLite, без встановлення PostgreSQL.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_38_fastapi_sqlalchemy/note_lesson_38_sqlalchemy_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_38_fastapi_sqlalchemy/note_lesson_38_sqlalchemy.ipynb){ .solutions-link } — база й CRUD на SQLite, без встановлення PostgreSQL.
 
 **Довідник:** [FastAPI: архітектура, async і production-патерни](fastapi/fastapi_documentation.md) — розділи 6–8: пул з'єднань, Repository, Unit of Work.
 
@@ -657,7 +657,7 @@ IntegrityError duplicate key value violates unique constraint "news_url_key"
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_38_sqlalchemy.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_38_fastapi_sqlalchemy/note_lesson_38_sqlalchemy.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_38_fastapi_sqlalchemy/note_lesson_38_sqlalchemy.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_38_fastapi_sqlalchemy/note_lesson_38_sqlalchemy_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_38_fastapi_sqlalchemy/note_lesson_38_sqlalchemy.ipynb){ .solutions-link }.
 - Урок 39 — middleware і Redis: кеш `GET /api/news` перед репозиторієм, rate limit на `POST /api/scrape`, фоновий збір.
 
 ## Документація і джерела

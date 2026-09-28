@@ -16,7 +16,7 @@
 
 **Задача розділу.** Чотири питання диспетчера таксі — чотири властивості даних — чотири стратегії. Практика — автодоповнення адреси в застосунку таксі.
 
-**Ноутбук заняття:** [`note_lesson_11_search.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_11_practicum_search/note_lesson_11_search.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_11_practicum_search/note_lesson_11_search.ipynb)
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_11_practicum_search/note_lesson_11_search_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_11_practicum_search/note_lesson_11_search.ipynb){ .solutions-link }
 
 ## Пригадай
 
@@ -552,7 +552,7 @@ first_at_or_after([], 5)        → 0
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_11_search.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_11_practicum_search/note_lesson_11_search.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_11_practicum_search/note_lesson_11_search.ipynb) — зміна диспетчера таксі: чотири задачі, чотири стратегії, лічильники кроків і перевірки.
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_11_practicum_search/note_lesson_11_search_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_11_practicum_search/note_lesson_11_search.ipynb){ .solutions-link } — зміна диспетчера таксі: чотири задачі, чотири стратегії, лічильники кроків і перевірки.
 - Наступне заняття: [Урок 12. Модулі та стандартна бібліотека](lesson_12.md). Модуль `bisect` — лише один з багатьох готових інструментів.
 - Лінію «алгоритм залежить від представлення даних» продовжить [Практикум 3. Хеш-структури](lesson_16.md): пошук за `O(1)` через `dict` і `set`.
 

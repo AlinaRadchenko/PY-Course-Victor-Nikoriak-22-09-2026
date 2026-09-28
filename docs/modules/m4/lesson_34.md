@@ -21,7 +21,7 @@
 - перенести розмітку форми з шаблону в `FormHelper` + `Layout` (`{% crispy form %}`);
 - пояснити, навіщо context processor і що таке CSRF.
 
-**Ноутбук заняття:** [`note_lesson_34_forms.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_34_django_forms/note_lesson_34_forms.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_34_django_forms/note_lesson_34_forms.ipynb) — форми, CRUD і PRG на `django_bootstrap_project` з перевірками.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_34_django_forms/note_lesson_34_forms_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_34_django_forms/note_lesson_34_forms.ipynb){ .solutions-link } — форми, CRUD і PRG на `django_bootstrap_project` з перевірками.
 
 ## Пригадай
 
@@ -744,7 +744,7 @@ if form.is_valid():
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_34_forms.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_34_django_forms/note_lesson_34_forms.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_34_django_forms/note_lesson_34_forms.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_34_django_forms/note_lesson_34_forms_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_34_django_forms/note_lesson_34_forms.ipynb){ .solutions-link }.
 - Урок 35 — наступний рефакторинг того самого застосунку: нотатки віддаємо як REST API (DRF), не чіпаючи моделей.
 - Урок 40 — вхід, реєстрація, власник і спільний доступ (крок 5 книги); урок 44 — services/selectors і CBV (крок 3).
 

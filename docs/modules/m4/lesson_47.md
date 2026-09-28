@@ -31,7 +31,7 @@
 - приймати webhook Telegram у FastAPI;
 - тестувати бота без мережі й токена — на двійнику Telegram Bot API.
 
-**Ноутбук заняття:** [`note_lesson_47_telegram_bot.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_47_telegram_bot/note_lesson_47_telegram_bot.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_47_telegram_bot/note_lesson_47_telegram_bot.ipynb) — бот розмовляє з двійником Telegram прямо в ноутбуці, без токена й мережі.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_47_telegram_bot/note_lesson_47_telegram_bot_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_47_telegram_bot/note_lesson_47_telegram_bot.ipynb){ .solutions-link } — бот розмовляє з двійником Telegram прямо в ноутбуці, без токена й мережі.
 
 ## Пригадай
 
@@ -630,7 +630,7 @@ async def test_start_greets_user():
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_47_telegram_bot.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_47_telegram_bot/note_lesson_47_telegram_bot.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_47_telegram_bot/note_lesson_47_telegram_bot.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_47_telegram_bot/note_lesson_47_telegram_bot_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_47_telegram_bot/note_lesson_47_telegram_bot.ipynb){ .solutions-link }.
 - Уроки 48–50 — Docker, Compose, CI/CD: `news_hub`, PostgreSQL, Redis і бот у контейнерах; `BOT_TOKEN` і секрети — у змінних середовища, не в образі.
 
 ## Документація і джерела

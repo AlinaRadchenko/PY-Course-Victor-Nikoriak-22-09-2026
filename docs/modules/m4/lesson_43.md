@@ -39,7 +39,7 @@
 - рахувати й економити токени: база, кеш за хешем тексту, rate limit;
 - тестувати код з LLM без мережі й ключа — і перевіряти контракт зі справжнім API.
 
-**Ноутбук заняття:** [`note_lesson_43_llm.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_43_llm_api/note_lesson_43_llm.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_43_llm_api/note_lesson_43_llm.ipynb) — вправи на `FakeLLM`, ключ не потрібен; з ключем Gemini — ще й справжні виклики.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_43_llm_api/note_lesson_43_llm_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_43_llm_api/note_lesson_43_llm.ipynb){ .solutions-link } — вправи на `FakeLLM`, ключ не потрібен; з ключем Gemini — ще й справжні виклики.
 
 ## Пригадай
 
@@ -1020,7 +1020,7 @@ E   news_hub.llm.LLMUnavailable: gemini відхилив запит (400): Inval
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_43_llm.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_43_llm_api/note_lesson_43_llm.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_43_llm_api/note_lesson_43_llm.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_43_llm_api/note_lesson_43_llm_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_43_llm_api/note_lesson_43_llm.ipynb){ .solutions-link }.
 - Урок 44 — архітектура застосунків і патерни: `LLMClient` + `GuardedLLM` — це вже патерни «стратегія» й «декоратор».
 - Урок 47 — Telegram-бот: `/digest` збирає проаналізовані новини через той самий `analyze_news`.
 

@@ -18,6 +18,11 @@ For every notebook under module_*/ (course materials only, not assignments/):
 For docs/**/*.md:
   * links to files of this repo on GitHub must point at existing files
   * each GitHub link to a notebook gets an "Open in Colab" badge next to it
+    (except links with attributes `{ … }`, e.g. the solutions link below)
+  * a notebook that has a student copy (<name>_student.ipynb, tools/generate_student.py)
+    is linked as exercises + solutions, never directly:
+      [Відкрити вправи в Colab](<colab …_student.ipynb>){ .md-button .md-button--primary }
+      [Переглянути розв’язки](<github master .ipynb>){ .solutions-link }
 
 Sources of truth: course.json (repo, branch, modules), tools/lessons_v5.json
 (stream, lesson titles), mkdocs.yml (site_url).
@@ -67,7 +72,7 @@ DOCS_REPO_LINK_RE = re.compile(
     re.I,
 )
 DOCS_NOTEBOOK_LINK_RE = re.compile(
-    r"(\[[^\]]*\]\(https://github\.com/" + REPO_URL_RE + r"/blob/" + BRANCH_URL_RE + r"/([^)\s]+\.ipynb)\))"
+    r"(\[[^\]]*\]\(https://github\.com/" + REPO_URL_RE + r"/blob/" + BRANCH_URL_RE + r"/([^)\s]+\.ipynb)\))(?!\{)"
     r"( \[!\[Open In Colab\]\([^)]*\)\]\([^)]*\))?",
     re.I,
 )
@@ -254,6 +259,14 @@ def dump_notebook(nb, like_text):
     return text + "\n" if like_text.endswith("\n") else text
 
 
+SOLUTIONS_SUFFIX = "){ .solutions-link }"
+
+
+def has_student_copy(target):
+    return target.endswith(".ipynb") and not target.endswith("_student.ipynb") \
+        and (ROOT / (target[:-len(".ipynb")] + "_student.ipynb")).is_file()
+
+
 def sync_doc(path, errors):
     """Return (text, synced_text) of a docs page; record links to missing files in errors."""
     rel = path.relative_to(ROOT).as_posix()
@@ -263,6 +276,12 @@ def sync_doc(path, errors):
         target = unquote((m[1] or m[2]).rstrip("/"))
         if not (ROOT / target).exists():
             errors.append(f"{rel}: link to missing file {target}")
+        elif has_student_copy(target):
+            # вправи — лише студентська копія; майстер з рішеннями — лише як «Переглянути розв’язки» на GitHub
+            if m[2] or not text.startswith(SOLUTIONS_SUFFIX, m.end()):
+                errors.append(f"{rel}: {target} has a student copy — link it as "
+                              f"[Відкрити вправи в Colab](<colab …_student.ipynb>){{ .md-button .md-button--primary }} "
+                              f"[Переглянути розв’язки](<github {target}>){SOLUTIONS_SUFFIX[1:]}")
 
     def badge_sub(m):
         return m[1] + " " + BADGE_MD.format(url=colab_url(unquote(m[2])))

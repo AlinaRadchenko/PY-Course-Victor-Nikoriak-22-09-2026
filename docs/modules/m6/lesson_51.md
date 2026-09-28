@@ -31,7 +31,7 @@
 - перевірити, де живе стан застосунку і чи переживе він кілька реплік;
 - обрати тему фінального проєкту й скласти його мінімальний план.
 
-**Ноутбук заняття:** [`note_lesson_51_final_project.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_51_final_project/note_lesson_51_final_project.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_51_final_project/note_lesson_51_final_project.ipynb) — аудит архітектури власноруч: граф імпортів, цикли, keyset-пагінація і `EXPLAIN` на SQLite, чек-лист фінального проєкту.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_51_final_project/note_lesson_51_final_project_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_51_final_project/note_lesson_51_final_project.ipynb){ .solutions-link } — аудит архітектури власноруч: граф імпортів, цикли, keyset-пагінація і `EXPLAIN` на SQLite, чек-лист фінального проєкту.
 
 ## Пригадай
 
@@ -905,7 +905,7 @@ REST_FRAMEWORK = {"DEFAULT_THROTTLE_RATES": {"login": "5/min"}}
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_51_final_project.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_51_final_project/note_lesson_51_final_project.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_51_final_project/note_lesson_51_final_project.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_51_final_project/note_lesson_51_final_project_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_51_final_project/note_lesson_51_final_project.ipynb){ .solutions-link }.
 - [Бонус. CV розробника](bonus_cv.md): як описати фінальний проєкт у CV.
 - [Урок 52](lesson_52.md) — випускний: презентація фінального проєкту як питч-дек.
 

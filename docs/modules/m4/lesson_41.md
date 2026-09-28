@@ -32,7 +32,7 @@
 - підняти фейковий HTTP-сервер для тесту та тестувати API асинхронно через `httpx.AsyncClient`;
 - читати звіт покриття гілок і перетворювати червоні рядки на тести.
 
-**Ноутбук заняття:** [`note_lesson_41_testing.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_41_api_testing/note_lesson_41_testing.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_41_api_testing/note_lesson_41_testing.ipynb) — pytest запускається з ноутбука, без серверів.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_41_api_testing/note_lesson_41_testing_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_41_api_testing/note_lesson_41_testing.ipynb){ .solutions-link } — pytest запускається з ноутбука, без серверів.
 
 ## Пригадай
 
@@ -824,7 +824,7 @@ for item in raw:
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_41_testing.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_41_api_testing/note_lesson_41_testing.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_41_api_testing/note_lesson_41_testing.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_41_api_testing/note_lesson_41_testing_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_41_api_testing/note_lesson_41_testing.ipynb){ .solutions-link }.
 - Урок 42 — AI-інструменти розробника і як перевіряти згенерований код. Тести цього уроку — перший інструмент такої перевірки.
 - Урок 43 — Gemini в агрегаторі; виклик LLM API — ще одна зовнішня межа, яку мокатимемо за сьогоднішніми правилами.
 

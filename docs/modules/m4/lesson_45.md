@@ -30,7 +30,7 @@ HTTP так не вміє: розмову завжди починає брауз
 - захистити WebSocket: автентифікація, права на кожне повідомлення, перевірка `Origin`;
 - тестувати consumer без браузера і сервера — `WebsocketCommunicator`.
 
-**Ноутбук заняття:** [`note_lesson_45_chat.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_45_websocket_chat/note_lesson_45_chat.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_45_websocket_chat/note_lesson_45_chat.ipynb) — чат з кількома «браузерами» прямо в ноутбуці, без сервера.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_45_websocket_chat/note_lesson_45_chat_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_45_websocket_chat/note_lesson_45_chat.ipynb){ .solutions-link } — чат з кількома «браузерами» прямо в ноутбуці, без сервера.
 
 ## Пригадай
 
@@ -677,7 +677,7 @@ async def test_non_member_rejected(self):
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_45_chat.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_45_websocket_chat/note_lesson_45_chat.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_45_websocket_chat/note_lesson_45_chat.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_45_websocket_chat/note_lesson_45_chat_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_45_websocket_chat/note_lesson_45_chat.ipynb){ .solutions-link }.
 - Урок 46 — Security advanced: CSWSH і права на кожне повідомлення — частина ширшої картини.
 - Уроки 48–49 — Docker і деплой: кілька процесів сервера, Redis як channel layer, `DJANGO_ALLOWED_HOSTS`.
 

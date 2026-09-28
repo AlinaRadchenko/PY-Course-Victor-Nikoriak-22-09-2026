@@ -27,7 +27,7 @@
 - відділити «сирі» дані з інтернету від перевірених і не губити відхилені мовчки;
 - отримати з моделі JSON і JSON Schema.
 
-**Ноутбук заняття:** [`note_lesson_36_pydantic.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic.ipynb) — типи й моделі на справжніх новинах з перевірками.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic.ipynb){ .solutions-link } — типи й моделі на справжніх новинах з перевірками.
 
 !!! note "Звідки дані"
     Сайт `www.rbc.ua` зараз недоступний із середовища, де збирався курс, тому агрегатор працює на **знімку** — 168 новинах, які `parse_rbc_news` зібрала раніше (`data/rbc_news_snapshot.json`). Код парсера той самий; як запустити його на свіжій сторінці — у [`README.md`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/news_hub/README.md) проєкту.
@@ -561,7 +561,7 @@ URL — справжній, зі знімка. Чому категорія «Aut
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_36_pydantic.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic.ipynb){ .solutions-link }.
 - Урок 37 — FastAPI над `NewsItem`: `GET /api/news`, `POST /api/scrape`, `/docs` з JSON Schema, Postman. Основа — прототип `news_dashboard`.
 
 ## Документація і джерела

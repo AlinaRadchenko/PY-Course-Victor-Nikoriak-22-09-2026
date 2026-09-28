@@ -24,7 +24,7 @@
 - отримати OpenAPI-схему API;
 - порівняти Django + DRF і FastAPI і обрати інструмент під задачу.
 
-**Ноутбук заняття:** [`note_lesson_35_drf.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) — серіалізатори й API з перевірками.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb){ .solutions-link } — серіалізатори й API з перевірками.
 
 ## Пригадай
 
@@ -584,7 +584,7 @@ title + updated_at → змінився updated_at? True
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_35_drf.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/note_lesson_35_drf.ipynb){ .solutions-link }.
 - Урок 36 — типізація й Pydantic на першому кроці новинного агрегатора; урок 37 — FastAPI, Postman і OpenAPI.
 - Урок 40 — вхід за токенами для API й спільний доступ до нотаток.
 

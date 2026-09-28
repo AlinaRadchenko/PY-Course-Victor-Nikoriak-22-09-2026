@@ -29,7 +29,7 @@
 - розділити «випуск» (міграції, статика) і «роботу» (сервер) — щоб масштабувати без гонок;
 - розгорнути стек на сервері, оновити його, зробити бекап і відновитись з нього.
 
-**Ноутбук заняття:** [`note_lesson_49_compose.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_49_compose_deploy/note_lesson_49_compose.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_49_compose_deploy/note_lesson_49_compose.ipynb) — читаємо `docker-compose.yml` як дані: порядок запуску за `depends_on` (топологічне сортування), підстановка `${VAR}`, IP клієнта за `X-Forwarded-For`. Docker для ноутбука не потрібен.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_49_compose_deploy/note_lesson_49_compose_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_49_compose_deploy/note_lesson_49_compose.ipynb){ .solutions-link } — читаємо `docker-compose.yml` як дані: порядок запуску за `depends_on` (топологічне сортування), підстановка `${VAR}`, IP клієнта за `X-Forwarded-For`. Docker для ноутбука не потрібен.
 
 ## Пригадай
 
@@ -835,7 +835,7 @@ $ curl localhost:8000/health/ready
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_49_compose.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_49_compose_deploy/note_lesson_49_compose.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_49_compose_deploy/note_lesson_49_compose.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_49_compose_deploy/note_lesson_49_compose_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_49_compose_deploy/note_lesson_49_compose.ipynb){ .solutions-link }.
 - Урок 50: те, що тут перевіряли руками, — тести, типи, збірка образу, smoke-запуск — робить GitHub Actions на кожен PR.
 
 ## Документація і джерела

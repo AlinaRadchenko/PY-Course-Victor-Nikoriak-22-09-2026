@@ -24,7 +24,7 @@
 
 **Задача розділу.** Клієнт до API ресторанів: список, статуси, створення замовлень, обробка збоїв. Повний приклад — у розділі [«Практика»](#practice).
 
-**Ноутбук заняття:** [`note_lesson_31_http.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_31_http_requests/note_lesson_31_http.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_31_http_requests/note_lesson_31_http.ipynb) — з навчальним сервером, який запускається прямо в ноутбуці.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_31_http_requests/note_lesson_31_http_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_31_http_requests/note_lesson_31_http.ipynb){ .solutions-link } — з навчальним сервером, який запускається прямо в ноутбуці.
 
 ## Пригадай
 
@@ -1077,7 +1077,7 @@ KeyError: 'name'
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_31_http.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_31_http_requests/note_lesson_31_http.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_31_http_requests/note_lesson_31_http.ipynb) — запити, помилки, повтори, одночасні запити й клієнт-клас з перевірками.
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_31_http_requests/note_lesson_31_http_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_31_http_requests/note_lesson_31_http.ipynb){ .solutions-link } — запити, помилки, повтори, одночасні запити й клієнт-клас з перевірками.
 - Наступний урок — 32, «REST: принципи дизайну API»: подивимось з іншого боку — як спроєктувати шляхи, методи й коди власного API, щоб ним було зручно користуватися.
 - Далі — Django (уроки 33–34) і DRF / FastAPI (урок 35): як написати сервер на кшталт `smachno_api.py` на справжньому фреймворку.
 

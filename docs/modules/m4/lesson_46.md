@@ -39,7 +39,7 @@ $ curl -X POST http://127.0.0.1:8000/api/analyze/jobs -d '{"limit": 200}'       
 - приймати webhook з підписом HMAC, вікном часу й захистом від повтору;
 - відрізняти, які перевірки ловлять тести, а які — лише рецензія (порівняння секретів за сталий час).
 
-**Ноутбук заняття:** [`note_lesson_46_security.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_46_security_advanced/note_lesson_46_security.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_46_security_advanced/note_lesson_46_security.ipynb) — підробка токенів, SSRF на локальних серверах, підпис webhook; мережа не потрібна.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_46_security_advanced/note_lesson_46_security_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_46_security_advanced/note_lesson_46_security.ipynb){ .solutions-link } — підробка токенів, SSRF на локальних серверах, підпис webhook; мережа не потрібна.
 
 ## Пригадай
 
@@ -727,7 +727,7 @@ is_safe_url: True
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_46_security.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_46_security_advanced/note_lesson_46_security.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_46_security_advanced/note_lesson_46_security.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_46_security_advanced/note_lesson_46_security_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_46_security_advanced/note_lesson_46_security.ipynb){ .solutions-link }.
 - Урок 47 — Telegram-бот: webhook Telegram приходить на `news_hub` і перевіряється `verify_secret_token`; команди адміна в боті — лише для дозволених `user_id`.
 - Уроки 48–50 — Docker і CI: секрети (`JWT_SECRET`, `ADMIN_PASSWORD_HASH`, `WEBHOOK_SECRET`) — у змінних середовища контейнера і секретах CI, не в образі й не в git.
 
