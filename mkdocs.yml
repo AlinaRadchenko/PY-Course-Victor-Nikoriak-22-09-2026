@@ -177,6 +177,7 @@ nav:
     - "М6. Капстоун":
       - Огляд модуля: modules/m6_capstone.md
       - "51. Робота над фінальним проєктом": modules/m6/lesson_51.md
+      - "52. Випускний: питч фінального проєкту": modules/m6/lesson_52.md
       - "Бонус. CV розробника":
           - "Урок": modules/m6/bonus_cv.md
           - "Довідник: сильне CV": modules/m6/cv/cv_tutorial.md

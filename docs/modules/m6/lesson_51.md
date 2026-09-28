@@ -803,6 +803,9 @@ flowchart TD
 
 ### Презентація на уроці 52
 
+Коротко — нижче; повністю, як питч-дек із шаблоном і прикладом, — в [уроці 52](lesson_52.md).
+
+
 1. **Проблема** (30 с): для кого і навіщо.
 2. **Демо** (2–3 хв): справжній сценарій користувача, не перелік екранів. Підготуй дані заздалегідь.
 3. **Архітектура** (1 хв): одна діаграма — компоненти і де живе стан.
@@ -904,7 +907,7 @@ REST_FRAMEWORK = {"DEFAULT_THROTTLE_RATES": {"login": "5/min"}}
 
 - Ноутбук заняття: [`note_lesson_51_final_project.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_51_final_project/note_lesson_51_final_project.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_51_final_project/note_lesson_51_final_project.ipynb).
 - [Бонус. CV розробника](bonus_cv.md): як описати фінальний проєкт у CV.
-- Урок 52 — випускний: презентація фінального проєкту.
+- [Урок 52](lesson_52.md) — випускний: презентація фінального проєкту як питч-дек.
 
 ## Документація і джерела
 
