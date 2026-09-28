@@ -3,7 +3,8 @@
   "course": "python-course",
   "stream": "autumn-2026",
   "bonus": {
-    "pandas_data_analysis": {"module": 3, "after": 28, "title": "Бонус. Pandas: аналіз даних, графіки і Dash", "type": "Урок (бонус)"}
+    "pandas_data_analysis": {"module": 3, "after": 28, "title": "Бонус. Pandas: аналіз даних, графіки і Dash", "type": "Урок (бонус)"},
+    "linux_devops": {"module": 5, "after": 47, "title": "Бонус. Linux для розробника", "type": "Урок (бонус)"}
   },
   "lessons": {
     "1": {"title": "Вступний урок: знайомство, формат курсу, AI-політика", "type": "Урок"},

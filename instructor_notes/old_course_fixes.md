@@ -1,7 +1,7 @@
 # Виправлення старого коду — нотатки викладача
 
 > Файл для викладача, у книгу курсу (`docs/`) не входить. Тут — усе, що довелося змінити в коді й
-> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–47,
+> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–50, бонус Linux,
 > бонус-урок pandas, довідники. На сторінках уроків цих списків немає — студенти бачать лише
 > правильний код і пояснення «чому так».
 
@@ -222,6 +222,101 @@
 | `production_bot/backend/models/subscription.py` | `user_id` FK на `users`, тариф | — | підписка = (`chat_id` BigInteger, слово): id груп у Telegram — понад 32 біти; тест `test_group_chat_id_fits` падає з `Integer` на PostgreSQL |
 
 Обмеження середовища: `api.telegram.org` заблоковано мережевою політикою — справжнім ботом не перевірено. Бот, webhook і polling перевірено на двійнику: uvicorn + `setWebhook` + update через webhook; `python -m news_hub.bot` + `getUpdates`. Ключа LLM немає — `/digest` на `FakeLLM`.
+
+## Бонус. Linux для розробника (довідник)
+
+Джерело — `module_5/lesson_Linux_DevOps_Basics/` старого курсу (18 розділів + `INDEX.md`), перенесено в `docs/modules/m5/linux/`.
+Команди запущено в контейнерах `ubuntu:24.04`, `debian`, `python:3.12-slim`, `postgres:16-alpine`, `nginx:1.27-alpine`
+(`nginx -t`, `systemd-analyze verify`, `docker compose config`, actionlint, kubernetes-validate, GNU Make 4.3, sshd у контейнері).
+Mermaid: `\n` → `<br>`, світла палітра й класи; parse error у розділі 16 виправлено.
+
+| Файл | Було | Як перевірено | Стало |
+|---|---|---|---|
+| 01 | «Ubuntu, Debian, CentOS»; рядок «CentOS / Rocky Linux» | CentOS Linux 7 — EOL 30.06.2024 (CentOS 8 — раніше) | Rocky Linux / AlmaLinux — наступники CentOS Linux |
+| 02 | `ls --all` як довга форма `ls -l -a` | `ls --all -l /` в ubuntu:24.04 | `ls -l --all` (довга форма лише `-a`) |
+| 02 | Ctrl+Z «відправити у background» | pty: `jobs` → `Stopped` | «призупинити (Stopped); далі `fg`/`bg`» |
+| 03 | `/usr/bin`: python, git, nginx | ubuntu:24.04: `/usr/sbin/nginx`, `python` немає | python3, git; nginx — у `/usr/sbin` |
+| 03 | `tree` без примітки | у ubuntu:24.04 немає | `sudo apt install tree` |
+| 03 | `rm -rf /` знищить систему | `rm: it is dangerous to operate recursively on '/'` (--preserve-root) | небезпечні `rm -rf /*` і `rm -rf "$DIR"/*` з порожньою змінною |
+| 04 | `w` на файлі — «змінювати і видаляти» | файл 777 у папці 555 не видаляється; 444 у папці з w — видаляється | видалення залежить від `w` на директорії |
+| 04 | `chown` без sudo | `Operation not permitted` | `sudo chown` |
+| 05 | nginx worker від користувача `nginx` | ubuntu: `www-data` | `www-data`, примітка про скорочений вивід |
+| 05 | вигаданий вивід `ss -tulpn`, runserver на 0.0.0.0:8000 | справжній `ss`/`lsof`: runserver слухає 127.0.0.1:8000 | справжній формат; примітка про 127.0.0.1 |
+| 05 | `journalctl -u nginx # всі логи Nginx` | (з документації) access/error — у /var/log/nginx | журнал сервісу — старт/стоп; `nginx -t` |
+| 06 | `pip install django` у системний Python | ubuntu:24.04 → `externally-managed-environment` (PEP 668) | лише у venv; не обходити `--break-system-packages` |
+| 06 | `.venv` 100+ МБ | venv з Django — 67 МБ | «десятки–сотні МБ» |
+| 06 | `which python` | у ubuntu:24.04 немає `python` | `which python3` |
+| 07 | «при наступних підключеннях перевірки не буде» | known_hosts; `ssh-keygen -R` в ubuntu:24.04 | SSH мовчки звіряє ключ з `known_hosts` |
+| 07 | `echo … >> ~/.ssh/authorized_keys` без каталогу | новий користувач: `Directory nonexistent` | `mkdir -p ~/.ssh` (вхід по ed25519 перевірено sshd у контейнері) |
+| 08 | `python` замість `/usr/bin/python3` | в Ubuntu `python` за замовчуванням немає | `python3` |
+| 08 | лише `KeyError: 'SECRET_KEY'` | decouple → `UndefinedValueError`, django-environ → `ImproperlyConfigured` (python:3.12-slim) | усі три повідомлення |
+| 09 | `set -e` зупиняє на будь-якій помилці | `false \| true`, `false && …`, `if` — не зупиняють | примітка про винятки і `set -euo pipefail` |
+| 09 | CRLF: `$'\r': command not found` | `./crlf.sh` → `/usr/bin/env: 'bash\r'`; `bash crlf.sh` → `$'\r'` | обидва справжні повідомлення |
+| 10 | `.PHONY` без `clean`, `format`, `restart`… | GNU Make 4.3: `'clean' is up to date` після `touch clean` | повні списки `.PHONY` |
+| 10 | діаграма: `make test` → `pytest --tb=short` | Makefile сторінки: `python manage.py test` | виправлено вузол |
+| 11 | `GRANT ALL PRIVILEGES ON DATABASE` | postgres:16: `permission denied for schema public` | `ALTER DATABASE … OWNER TO myapp_user` |
+| 11 | `User=www-data` + сокет `/run/myapp.sock` | gunicorn від www-data: `Can't connect to /run/myapp.sock` | `RuntimeDirectory=myapp`, `/run/myapp/myapp.sock`; nginx → gunicorn 200 |
+| 11 | `STATIC_ROOT` у `.env`, але settings його не читає | `collectstatic`: `ImproperlyConfigured … STATIC_ROOT` | примітка (сторінка 08) |
+| 11 | runserver «однопотоковий» | `runserver --help`: `--nothreading` | «один процес (dev-сервер)» |
+| 12 | `uvicorn … --bind 0.0.0.0:8000` | uvicorn 0.54: `No such option '--bind'` | `--host 0.0.0.0 --port 8000` |
+| 12 | `-k uvicorn.workers.UvicornWorker` | uvicorn 0.54: DeprecationWarning | `uvicorn-worker`, `-k uvicorn_worker.UvicornWorker` |
+| 12 | сокет `/run/myapp.sock` | як 11 | `/run/myapp/myapp.sock` |
+| 12 | Django «завантажує файл у пам'ять» | `django.views.static.serve` → `FileResponse` | «віддає шматками» |
+| 13 | вигаданий traceback `[ERROR] Exception in application … could not connect to server` | Django 5.2 + gunicorn з недоступним PostgreSQL | справжній текст (`connection to server at … failed`); з DEBUG=False без LOGGING traceback у лог не йде |
+| 13 | `FileHandler` у `/var/log/myapp/` без застереження | без папки: `ValueError: Unable to configure handler 'file'` | папка має існувати й бути доступною на запис |
+| 13 | `try:` з тілом лише коментарем | `compile()` → `IndentationError` | `...` |
+| 14 | `apt-get install libpq-dev` «для psycopg2» | у python:3.12-slim немає gcc | `gcc libpq-dev`, лише для збирання з сирців; з `psycopg[binary]` не потрібно |
+| 14 | `docker run postgres:16` без пароля | `Database is uninitialized and superuser password is not specified` | `-e POSTGRES_PASSWORD=…` |
+| 14 | дані PostgreSQL зникають після перезапуску | `restart`, `stop`+`start` дані зберігають; зникають після `rm` + `run` без тому | уточнено |
+| 15 | healthcheck `pg_isready -U $POSTGRES_USER` | `compose config`: `variable is not set` → `-U  -d` | `$$POSTGRES_USER` + пояснення |
+| 15 | `worker`: `depends_on` без умов | `compose config` | `condition: service_healthy` |
+| 15 | `docker compose exec web ping db` | `ping` у slim немає (127) | `getent hosts db` |
+| 15 | ключ у `services:` — ім'я контейнера | `compose ps`: `проєкт-web-1` | ім'я сервісу |
+| 15 | застарілий текст помилки libpq | libpq 17 | `connection to server at "db" … failed` |
+| 16 | `deploy.yml` з `needs: test` | actionlint: `needs job "test" which does not exist` | job у тому самому `ci.yml` |
+| 16 | `safety check` | safety 3.8: вимагає облікового запису | `pip-audit` |
+| 16 | PR не можна змерджити, якщо CI впав | лише з branch protection | уточнено |
+| 16 | відкат `docker pull myapp:v1.2.3; docker compose up -d` | compose з `myapp:latest` тег не підхоплює | `image: myapp:${TAG:-latest}`, `TAG=v1.2.3 docker compose up -d` |
+| 16 | mermaid `{Ручне QA\n(або auto E2E)}` | mermaid 11: `Parse error on line 8` | мітка в лапках |
+| 17 | HPA `target:` без `type` | kubernetes-validate 1.31: `'type' is a required property` | `type: Utilization` |
+| 17 | HPA за CPU без `resources.requests` | документація k8s | `requests.cpu: 250m`, metrics-server |
+| 17 | Secret — «зашифровані дані» | за замовчуванням base64 | уточнено |
+| 17 | `kubectl` одразу після minikube | minikube kubectl не ставить | `minikube kubectl -- …` |
+| 18 | `Linus` у діаграмі; DigitalOcean $5, Ubuntu 22.04 | — | `Linux`; від $4, Ubuntu 24.04 LTS |
+
+Не перевірено (лишилось як є): реальний SSH на віддалений сервер, certbot, systemd на живому сервері (лише `systemd-analyze`),
+кластер Kubernetes (лише валідація схем), ціни хостингу, зовнішні посилання розділу 18 (проксі блокує).
+Розбіжності з новим курсом, лишені як є: довідник Django-центричний (деплой через systemd + gunicorn без Docker,
+`python-decouple`/`django-environ`, `psycopg2-binary`); у курсі деплой — Docker (уроки 48–49), psycopg 3, змінні середовища без бібліотек.
+
+## Урок 48. Docker
+
+Джерело — `module_5/lesson_46_Telegram_API/production_bot/Dockerfile` старого курсу. Перевірено справжньою збіркою
+(Docker 29, `python:3.12-slim`): сам `production_bot` і той самий Dockerfile над `news_hub` уроку 47.
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `production_bot/` | немає `.dockerignore`, а `Dockerfile` робить `COPY . .` | у проєкт покладено `.env` і `docker/ssl/privkey.pem` (обидва в `.gitignore`, тобто очікувані локально) → `docker run … ls /app` показує `.env`, `ls /app/docker/ssl` — `privkey.pem`: секрети й приватний ключ TLS — в образі й у кожному реєстрі, куди його штовхнуть | `.dockerignore` (`.env`, `.venv`, `tests`, `*.db`, …); тест `test_local_files_are_not_in_the_image` (перевіряє й `docker history`) |
+| той самий Dockerfile над `news_hub` з локальним `.venv` | контекст збірки 1.17 ГБ (27 с лише на передачу), образ 2.2 ГБ, шар `COPY . .` — 1.31 ГБ | `docker build --progress=plain`, `docker history` | 415 МБ, шар коду — 336 кБ (`**/__pycache__` у `.dockerignore`: шаблон без `**/` діє лише в корені контексту) |
+| `requirements.txt` (у `news_hub` — спільний з тестами) | в образі pytest, mypy, fakeredis; шар залежностей 289 МБ | `pip list` в контейнері | `requirements.txt` / `requirements-dev.txt`; шар 192 МБ; тест `test_dev_dependencies_are_not_installed` |
+| `CMD … --workers 4` | 4 процеси незалежно від ліміту пам'яті контейнера | `docker stats`: 969 МіБ проти 251 МіБ з одним процесом | один процес; `WEB_CONCURRENCY` за потреби; масштаб — кількістю контейнерів (урок 49) |
+| HEALTHCHECK | в образі немає; у `docker-compose.yml` — `curl` | `which curl` в образі → немає (curl-перевірка в Compose завжди падає — урок 49) | `HEALTHCHECK` через `python -c urllib…`; тест `test_healthcheck_reports_healthy` |
+| база за замовчуванням (для `news_hub`) | відносний `news_hub.db` у `/app` | локальний `news_hub.db` потрапив в образ → `alembic upgrade head` у контейнері: `file is not a database`; користувач без root не може створити файл у `/app` | `DATABASE_URL=sqlite+aiosqlite:////data/news_hub.db`, `/data` належить `app`; тест `test_migrations_run_on_a_volume` |
+
+Що в старому Dockerfile правильно й лишилось: `python:3.12-slim`, `requirements.txt` окремим шаром перед кодом, користувач без root, `CMD` в exec-формі.
+
+Проміжні перевірки (не дефекти старого коду, але на сторінці — з реальними числами):
+- порядок шарів: `COPY . .` перед `pip install` → перезбирання після зміни одного `.py` 39.9 с проти 0.6 с;
+- shell-форма `CMD uvicorn …` → PID 1 — `/bin/sh`, `docker stop` 10.2 с і код 137 (SIGKILL) проти 1.8 с і коду 0;
+- `docker run --env-file` бере значення з лапками буквально → `ADMIN_PASSWORD_HASH='$2b$…'` не проходить перевірку, контейнер
+  завершується з `RuntimeError` (урок 46: fail fast). Додано `python -m news_hub.security --env-file` (без лапок) і тест.
+
+Мутаційна перевірка тестів образу (`tests/docker/`): shell-форма CMD, без `USER app`, без `.env` у `.dockerignore`,
+HEALTHCHECK на інший порт — кожну ловить принаймні один тест; старий Dockerfile — 6 з 6 червоні.
+
+Обмеження середовища: Docker Hub відповідав 429 (ліміт анонімних pull) — образи тягнули через дзеркало `mirror.gcr.io`;
+pip у збірці ходить через проксі з власним CA, тому базовий `python:3.12-slim` у пісочниці локально доповнено сертифікатом
+(в образі курсу цього немає; розміри образів від цього змінились на ~250 кБ).
 
 ## Довідник Claude Code (`CLAUDE_DOC.md` старого курсу)
 

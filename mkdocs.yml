@@ -147,7 +147,31 @@ nav:
       - "45. WebSockets + практика: чат": modules/m4/lesson_45.md
       - "46. Security advanced": modules/m4/lesson_46.md
       - "47. Telegram Bot API": modules/m4/lesson_47.md
-    - "М5. Production": modules/m5_production.md
+    - "М5. Production":
+      - Огляд модуля: modules/m5_production.md
+      - "Бонус. Linux для розробника":
+          - "Урок": modules/m5/bonus_linux.md
+          - "Довідник":
+              - "Зміст": modules/m5/linux/index.md
+              - "1. Ментальна модель Linux": modules/m5/linux/01_linux_mental_model.md
+              - "2. Термінал і shell": modules/m5/linux/02_terminal_and_shell.md
+              - "3. Файлова система": modules/m5/linux/03_filesystem_navigation.md
+              - "4. Права доступу й користувачі": modules/m5/linux/04_files_permissions_users.md
+              - "5. Процеси, порти, сервіси": modules/m5/linux/05_processes_ports_services.md
+              - "6. Пакетні менеджери": modules/m5/linux/06_package_managers_and_software.md
+              - "7. SSH і сервер": modules/m5/linux/07_ssh_and_remote_server.md
+              - "8. Змінні середовища й секрети": modules/m5/linux/08_environment_variables_and_secrets.md
+              - "9. Bash-скрипти": modules/m5/linux/09_bash_scripts.md
+              - "10. Makefile": modules/m5/linux/10_makefile_basics.md
+              - "11. Деплой Django на Linux": modules/m5/linux/11_deploy_django_on_linux.md
+              - "12. Nginx, Gunicorn, Uvicorn": modules/m5/linux/12_nginx_gunicorn_uvicorn.md
+              - "13. Журнали й дебаг": modules/m5/linux/13_logs_monitoring_debugging.md
+              - "14. Docker basics": modules/m5/linux/14_docker_basics.md
+              - "15. Docker Compose": modules/m5/linux/15_docker_compose.md
+              - "16. DevOps workflow": modules/m5/linux/16_devops_workflow.md
+              - "17. Kubernetes: огляд": modules/m5/linux/17_kubernetes_overview.md
+              - "18. Roadmap": modules/m5/linux/18_roadmap_next_steps.md
+      - "48. Docker": modules/m5/lesson_48.md
     - "М6. Капстоун": modules/m6_capstone.md
     - "Self-paced. AI для розробників (бонус)": modules/bonus_ai.md
 
