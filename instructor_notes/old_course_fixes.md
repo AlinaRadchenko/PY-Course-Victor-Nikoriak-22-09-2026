@@ -1,7 +1,7 @@
 # Виправлення старого коду — нотатки викладача
 
 > Файл для викладача, у книгу курсу (`docs/`) не входить. Тут — усе, що довелося змінити в коді й
-> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–47,
+> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–50, бонуси Linux і CV,
 > бонус-урок pandas, довідники. На сторінках уроків цих списків немає — студенти бачать лише
 > правильний код і пояснення «чому так».
 
@@ -222,6 +222,187 @@
 | `production_bot/backend/models/subscription.py` | `user_id` FK на `users`, тариф | — | підписка = (`chat_id` BigInteger, слово): id груп у Telegram — понад 32 біти; тест `test_group_chat_id_fits` падає з `Integer` на PostgreSQL |
 
 Обмеження середовища: `api.telegram.org` заблоковано мережевою політикою — справжнім ботом не перевірено. Бот, webhook і polling перевірено на двійнику: uvicorn + `setWebhook` + update через webhook; `python -m news_hub.bot` + `getUpdates`. Ключа LLM немає — `/digest` на `FakeLLM`.
+
+## Бонус. Linux для розробника (довідник)
+
+Джерело — `module_5/lesson_Linux_DevOps_Basics/` старого курсу (18 розділів + `INDEX.md`), перенесено в `docs/modules/m5/linux/`.
+Команди запущено в контейнерах `ubuntu:24.04`, `debian`, `python:3.12-slim`, `postgres:16-alpine`, `nginx:1.27-alpine`
+(`nginx -t`, `systemd-analyze verify`, `docker compose config`, actionlint, kubernetes-validate, GNU Make 4.3, sshd у контейнері).
+Mermaid: `\n` → `<br>`, світла палітра й класи; parse error у розділі 16 виправлено.
+
+| Файл | Було | Як перевірено | Стало |
+|---|---|---|---|
+| 01 | «Ubuntu, Debian, CentOS»; рядок «CentOS / Rocky Linux» | CentOS Linux 7 — EOL 30.06.2024 (CentOS 8 — раніше) | Rocky Linux / AlmaLinux — наступники CentOS Linux |
+| 02 | `ls --all` як довга форма `ls -l -a` | `ls --all -l /` в ubuntu:24.04 | `ls -l --all` (довга форма лише `-a`) |
+| 02 | Ctrl+Z «відправити у background» | pty: `jobs` → `Stopped` | «призупинити (Stopped); далі `fg`/`bg`» |
+| 03 | `/usr/bin`: python, git, nginx | ubuntu:24.04: `/usr/sbin/nginx`, `python` немає | python3, git; nginx — у `/usr/sbin` |
+| 03 | `tree` без примітки | у ubuntu:24.04 немає | `sudo apt install tree` |
+| 03 | `rm -rf /` знищить систему | `rm: it is dangerous to operate recursively on '/'` (--preserve-root) | небезпечні `rm -rf /*` і `rm -rf "$DIR"/*` з порожньою змінною |
+| 04 | `w` на файлі — «змінювати і видаляти» | файл 777 у папці 555 не видаляється; 444 у папці з w — видаляється | видалення залежить від `w` на директорії |
+| 04 | `chown` без sudo | `Operation not permitted` | `sudo chown` |
+| 05 | nginx worker від користувача `nginx` | ubuntu: `www-data` | `www-data`, примітка про скорочений вивід |
+| 05 | вигаданий вивід `ss -tulpn`, runserver на 0.0.0.0:8000 | справжній `ss`/`lsof`: runserver слухає 127.0.0.1:8000 | справжній формат; примітка про 127.0.0.1 |
+| 05 | `journalctl -u nginx # всі логи Nginx` | (з документації) access/error — у /var/log/nginx | журнал сервісу — старт/стоп; `nginx -t` |
+| 06 | `pip install django` у системний Python | ubuntu:24.04 → `externally-managed-environment` (PEP 668) | лише у venv; не обходити `--break-system-packages` |
+| 06 | `.venv` 100+ МБ | venv з Django — 67 МБ | «десятки–сотні МБ» |
+| 06 | `which python` | у ubuntu:24.04 немає `python` | `which python3` |
+| 07 | «при наступних підключеннях перевірки не буде» | known_hosts; `ssh-keygen -R` в ubuntu:24.04 | SSH мовчки звіряє ключ з `known_hosts` |
+| 07 | `echo … >> ~/.ssh/authorized_keys` без каталогу | новий користувач: `Directory nonexistent` | `mkdir -p ~/.ssh` (вхід по ed25519 перевірено sshd у контейнері) |
+| 08 | `python` замість `/usr/bin/python3` | в Ubuntu `python` за замовчуванням немає | `python3` |
+| 08 | лише `KeyError: 'SECRET_KEY'` | decouple → `UndefinedValueError`, django-environ → `ImproperlyConfigured` (python:3.12-slim) | усі три повідомлення |
+| 09 | `set -e` зупиняє на будь-якій помилці | `false \| true`, `false && …`, `if` — не зупиняють | примітка про винятки і `set -euo pipefail` |
+| 09 | CRLF: `$'\r': command not found` | `./crlf.sh` → `/usr/bin/env: 'bash\r'`; `bash crlf.sh` → `$'\r'` | обидва справжні повідомлення |
+| 10 | `.PHONY` без `clean`, `format`, `restart`… | GNU Make 4.3: `'clean' is up to date` після `touch clean` | повні списки `.PHONY` |
+| 10 | діаграма: `make test` → `pytest --tb=short` | Makefile сторінки: `python manage.py test` | виправлено вузол |
+| 11 | `GRANT ALL PRIVILEGES ON DATABASE` | postgres:16: `permission denied for schema public` | `ALTER DATABASE … OWNER TO myapp_user` |
+| 11 | `User=www-data` + сокет `/run/myapp.sock` | gunicorn від www-data: `Can't connect to /run/myapp.sock` | `RuntimeDirectory=myapp`, `/run/myapp/myapp.sock`; nginx → gunicorn 200 |
+| 11 | `STATIC_ROOT` у `.env`, але settings його не читає | `collectstatic`: `ImproperlyConfigured … STATIC_ROOT` | примітка (сторінка 08) |
+| 11 | runserver «однопотоковий» | `runserver --help`: `--nothreading` | «один процес (dev-сервер)» |
+| 12 | `uvicorn … --bind 0.0.0.0:8000` | uvicorn 0.54: `No such option '--bind'` | `--host 0.0.0.0 --port 8000` |
+| 12 | `-k uvicorn.workers.UvicornWorker` | uvicorn 0.54: DeprecationWarning | `uvicorn-worker`, `-k uvicorn_worker.UvicornWorker` |
+| 12 | сокет `/run/myapp.sock` | як 11 | `/run/myapp/myapp.sock` |
+| 12 | Django «завантажує файл у пам'ять» | `django.views.static.serve` → `FileResponse` | «віддає шматками» |
+| 13 | вигаданий traceback `[ERROR] Exception in application … could not connect to server` | Django 5.2 + gunicorn з недоступним PostgreSQL | справжній текст (`connection to server at … failed`); з DEBUG=False без LOGGING traceback у лог не йде |
+| 13 | `FileHandler` у `/var/log/myapp/` без застереження | без папки: `ValueError: Unable to configure handler 'file'` | папка має існувати й бути доступною на запис |
+| 13 | `try:` з тілом лише коментарем | `compile()` → `IndentationError` | `...` |
+| 14 | `apt-get install libpq-dev` «для psycopg2» | у python:3.12-slim немає gcc | `gcc libpq-dev`, лише для збирання з сирців; з `psycopg[binary]` не потрібно |
+| 14 | `docker run postgres:16` без пароля | `Database is uninitialized and superuser password is not specified` | `-e POSTGRES_PASSWORD=…` |
+| 14 | дані PostgreSQL зникають після перезапуску | `restart`, `stop`+`start` дані зберігають; зникають після `rm` + `run` без тому | уточнено |
+| 15 | healthcheck `pg_isready -U $POSTGRES_USER` | `compose config`: `variable is not set` → `-U  -d` | `$$POSTGRES_USER` + пояснення |
+| 15 | `worker`: `depends_on` без умов | `compose config` | `condition: service_healthy` |
+| 15 | `docker compose exec web ping db` | `ping` у slim немає (127) | `getent hosts db` |
+| 15 | ключ у `services:` — ім'я контейнера | `compose ps`: `проєкт-web-1` | ім'я сервісу |
+| 15 | застарілий текст помилки libpq | libpq 17 | `connection to server at "db" … failed` |
+| 16 | `deploy.yml` з `needs: test` | actionlint: `needs job "test" which does not exist` | job у тому самому `ci.yml` |
+| 16 | `safety check` | safety 3.8: вимагає облікового запису | `pip-audit` |
+| 16 | PR не можна змерджити, якщо CI впав | лише з branch protection | уточнено |
+| 16 | відкат `docker pull myapp:v1.2.3; docker compose up -d` | compose з `myapp:latest` тег не підхоплює | `image: myapp:${TAG:-latest}`, `TAG=v1.2.3 docker compose up -d` |
+| 16 | mermaid `{Ручне QA\n(або auto E2E)}` | mermaid 11: `Parse error on line 8` | мітка в лапках |
+| 17 | HPA `target:` без `type` | kubernetes-validate 1.31: `'type' is a required property` | `type: Utilization` |
+| 17 | HPA за CPU без `resources.requests` | документація k8s | `requests.cpu: 250m`, metrics-server |
+| 17 | Secret — «зашифровані дані» | за замовчуванням base64 | уточнено |
+| 17 | `kubectl` одразу після minikube | minikube kubectl не ставить | `minikube kubectl -- …` |
+| 18 | `Linus` у діаграмі; DigitalOcean $5, Ubuntu 22.04 | — | `Linux`; від $4, Ubuntu 24.04 LTS |
+
+Не перевірено (лишилось як є): реальний SSH на віддалений сервер, certbot, systemd на живому сервері (лише `systemd-analyze`),
+кластер Kubernetes (лише валідація схем), ціни хостингу, зовнішні посилання розділу 18 (проксі блокує).
+Розбіжності з новим курсом, лишені як є: довідник Django-центричний (деплой через systemd + gunicorn без Docker,
+`python-decouple`/`django-environ`, `psycopg2-binary`); у курсі деплой — Docker (уроки 48–49), psycopg 3, змінні середовища без бібліотек.
+
+## Урок 48. Docker
+
+Джерело — `module_5/lesson_46_Telegram_API/production_bot/Dockerfile` старого курсу. Перевірено справжньою збіркою
+(Docker 29, `python:3.12-slim`): сам `production_bot` і той самий Dockerfile над `news_hub` уроку 47.
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `production_bot/` | немає `.dockerignore`, а `Dockerfile` робить `COPY . .` | у проєкт покладено `.env` і `docker/ssl/privkey.pem` (обидва в `.gitignore`, тобто очікувані локально) → `docker run … ls /app` показує `.env`, `ls /app/docker/ssl` — `privkey.pem`: секрети й приватний ключ TLS — в образі й у кожному реєстрі, куди його штовхнуть | `.dockerignore` (`.env`, `.venv`, `tests`, `*.db`, …); тест `test_local_files_are_not_in_the_image` (перевіряє й `docker history`) |
+| той самий Dockerfile над `news_hub` з локальним `.venv` | контекст збірки 1.17 ГБ (27 с лише на передачу), образ 2.2 ГБ, шар `COPY . .` — 1.31 ГБ | `docker build --progress=plain`, `docker history` | 415 МБ, шар коду — 336 кБ (`**/__pycache__` у `.dockerignore`: шаблон без `**/` діє лише в корені контексту) |
+| `requirements.txt` (у `news_hub` — спільний з тестами) | в образі pytest, mypy, fakeredis; шар залежностей 289 МБ | `pip list` в контейнері | `requirements.txt` / `requirements-dev.txt`; шар 192 МБ; тест `test_dev_dependencies_are_not_installed` |
+| `CMD … --workers 4` | 4 процеси незалежно від ліміту пам'яті контейнера | `docker stats`: 969 МіБ проти 251 МіБ з одним процесом | один процес; `WEB_CONCURRENCY` за потреби; масштаб — кількістю контейнерів (урок 49) |
+| HEALTHCHECK | в образі немає; у `docker-compose.yml` — `curl` | `which curl` в образі → немає (curl-перевірка в Compose завжди падає — урок 49) | `HEALTHCHECK` через `python -c urllib…`; тест `test_healthcheck_reports_healthy` |
+| база за замовчуванням (для `news_hub`) | відносний `news_hub.db` у `/app` | локальний `news_hub.db` потрапив в образ → `alembic upgrade head` у контейнері: `file is not a database`; користувач без root не може створити файл у `/app` | `DATABASE_URL=sqlite+aiosqlite:////data/news_hub.db`, `/data` належить `app`; тест `test_migrations_run_on_a_volume` |
+
+Що в старому Dockerfile правильно й лишилось: `python:3.12-slim`, `requirements.txt` окремим шаром перед кодом, користувач без root, `CMD` в exec-формі.
+
+Проміжні перевірки (не дефекти старого коду, але на сторінці — з реальними числами):
+- порядок шарів: `COPY . .` перед `pip install` → перезбирання після зміни одного `.py` 39.9 с проти 0.6 с;
+- shell-форма `CMD uvicorn …` → PID 1 — `/bin/sh`, `docker stop` 10.2 с і код 137 (SIGKILL) проти 1.8 с і коду 0;
+- `docker run --env-file` бере значення з лапками буквально → `ADMIN_PASSWORD_HASH='$2b$…'` не проходить перевірку, контейнер
+  завершується з `RuntimeError` (урок 46: fail fast). Додано `python -m news_hub.security --env-file` (без лапок) і тест.
+
+Мутаційна перевірка тестів образу (`tests/docker/`): shell-форма CMD, без `USER app`, без `.env` у `.dockerignore`,
+HEALTHCHECK на інший порт — кожну ловить принаймні один тест; старий Dockerfile — 6 з 6 червоні.
+
+Обмеження середовища: Docker Hub відповідав 429 (ліміт анонімних pull) — образи тягнули через дзеркало `mirror.gcr.io`;
+pip у збірці ходить через проксі з власним CA, тому базовий `python:3.12-slim` у пісочниці локально доповнено сертифікатом
+(в образі курсу цього немає; розміри образів від цього змінились на ~250 кБ).
+
+## Урок 49. Docker Compose + деплой
+
+Джерела: `production_bot/docker-compose.yml` і `nginx/default.conf` старого курсу (для `news_hub`); `Dockerfile`,
+`entrypoint.sh`, `docker-compose.yml`, `nginx/nginx.conf` Django-книги `notes_chat_app` (для `crispy_notes_project`).
+Обидва запущено майже без змін (шляхи до застосунку, порт 8080 замість 80, без SSL-блоку) — Docker 29, Compose v5.
+
+**news_hub (production_bot)**
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `docker-compose.yml`, `bot.healthcheck` | `curl -f http://localhost:8000/health` | `docker compose ps` → `bot … (unhealthy)`, журнал перевірки: `exec: "curl": executable file not found in $PATH` — API при цьому працює | HEALTHCHECK образу (python), у Compose — `/health/ready` |
+| `nginx.depends_on: [bot]` | без умови | curl кожні 2 с після `up`: `000 502 502 502 502 200` — ~10 с nginx віддає 502 | `condition: service_healthy` |
+| `nginx/default.conf` + uvicorn за замовчуванням | uvicorn довіряє `X-Forwarded-For` лише від 127.0.0.1 → IP клієнта для застосунку — адреса nginx | 5 невдалих входів → вхід адміна з правильним паролем: 429; у Redis один ключ `rate:login:172.19.0.6` = IP nginx: один зловмисник блокує вхід усім | nginx: `X-Forwarded-For $remote_addr`; uvicorn: `FORWARDED_ALLOW_IPS=172.28.0.10` (фіксована адреса nginx у мережі `edge`) |
+| те саме, «виправлення» `FORWARDED_ALLOW_IPS=*` з `$proxy_add_x_forwarded_for` | клієнтський заголовок дописується, uvicorn бере крайній лівий | 8 спроб входу з `X-Forwarded-For: 10.66.0.$i` → `401 ×8`, жодного 429 (ключі `rate:login:10.66.0.1…`) — захист від перебору пароля обходиться | див. рядок вище: 7 спроб → `401 ×5, 429 ×2`; інший клієнт (інша адреса) входить |
+| `postgres.environment` | `POSTGRES_PASSWORD: password` у compose, поруч `env_file: .env` | читання | `${POSTGRES_PASSWORD:?…}` з `.env`; без нього `docker compose config` падає |
+| `bot` без `depends_on: migrate` | API стартує паралельно з міграціями | читання | `condition: service_completed_successfully` |
+| `backend/app.py`, lifespan | `set_webhook()` без обробки помилок (те саме в `news_hub` уроку 47) | Telegram недоступний (`twin` не запущено) → `TelegramNetworkError` → `Application startup failed. Exiting.`, api по колу, новини недоступні | реєстрація — фонова задача з повторами (1, 2, 5, 10, 30 с), 401 — лише журнал; тести `test_api_starts_while_telegram_is_down`, `test_wrong_token_does_not_stop_api`; наживо: api healthy одразу, `бот зареєстрований (спроба 5)` після старту двійника |
+
+**news_hub — власний код попередніх уроків**
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `security.load_admin_settings` (урок 46) | хеш перевірявся лише `startswith("$2")` | `.env` Compose з хешем без лапок: Compose підставив `$eBDJ…` → порожньо (попередження `The "eBDJ…" variable is not set`), хеш обрізано до `$2b$12`, старт проходить, а вхід відповідає 500 | повний формат bcrypt (`$2b$12$` + 53 символи), інакше помилка при старті; тест `test_truncated_hash_fails_at_startup`; `.env.example`: значення з `$` — в одинарних лапках |
+| `HEALTHCHECK` образу (урок 48) для `bot`, `twin`, `migrate` | успадковується всіма ролями образу | `docker compose ps`: `twin (unhealthy)`, `bot (unhealthy)` — вони не слухають :8000; `up --wait` падає | `healthcheck: disable: true` для цих сервісів |
+
+**crispy_notes_project (Django-книга)**
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `entrypoint.sh` + bind mount `.:/app` | файл у git з режимом `100644`; `chmod +x` в образі перекривається bind mount | `docker compose up` на Linux: `exec: "./entrypoint.sh": permission denied` (на Windows Docker Desktop файли видно як виконувані — там працює) | без entrypoint і без bind mount: команди — у `command:` сервісів |
+| `entrypoint.sh`: `migrate` при старті кожного `web` | — | чиста база, `--scale web=2`, 3 запуски: друга репліка падає всі 3 рази — `UniqueViolation … pg_type_typname_nsp_index (auth_permission)`, `(hello_app_notebook)`, `ProgrammingError: column "name" of relation "django_content_type" does not exist` | окремий one-shot сервіс `release` (migrate + collectstatic --clear), `web` чекає `service_completed_successfully` |
+| `entrypoint.sh`: `uvicorn … --reload` | reloader у продакшн-контейнері | `docker top`: процес reloader + `spawn_main` | `daphne --proxy-headers` у exec-формі CMD; `docker stop` — 0.7 с, код 0 |
+| `nginx.conf`: `proxy_set_header Host $host` | `$host` без порту | стек на порту 8080: вхід формою → `403 Origin checking failed - http://localhost:8080 does not match any trusted origins`; на 80 (як у книзі) працює | `$http_host`; для https — `DJANGO_HTTPS=1` (`SECURE_PROXY_SSL_HEADER`) і `DJANGO_CSRF_TRUSTED_ORIGINS` |
+| `crispy_notes_project` (уроки 40–45): немає `STATIC_ROOT` | — | `collectstatic` → `ImproperlyConfigured: … STATIC_ROOT` | `STATIC_ROOT` (`DJANGO_STATIC_ROOT`) |
+| `DJANGO_DEBUG` за замовчуванням `1` | compose книги його не задає | через nginx `/no-such-page/` → сторінка з `DEBUG = True` (маршрути, налаштування) | `DJANGO_DEBUG=0` у `.env.example`; з `DEBUG=0` без `DJANGO_SECRET_KEY` — `ImproperlyConfigured` при старті; тести `tests_deploy.py` (5) |
+
+Проміжні перевірки (не дефекти, на сторінці — з числами): оновлення `docker compose up -d --build` — 21 з 60 запитів (кожні 0,5 с)
+отримали 502 (~10 с простою); nginx визначає адреси `web` лише при старті — після `--scale web=2` усі 10 запитів ішли в першу
+репліку, після `nginx -s reload` — 7/3; чат між двома репліками: з Redis доставлено 4 з 4, з `InMemoryChannelLayer` — 1 з 6.
+
+## Урок 50. CI/CD (GitHub Actions)
+
+Джерело — `.github/workflows/django-tests.yml` Django-книги `notes_chat_app`.
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `on.pull_request.branches: [main, master]` | PR в іншу гілку (PR поверх PR) не перевіряється | PR уроку 50 має базу `claude/wonderful-ride-cinspw` — з таким фільтром workflow не запустився б (правило GitHub: `branches` — base PR); ноутбук відтворює | `pull_request` без `branches`, лише `paths` |
+| `on.push` разом з `pull_request` (і в `notebooks.yml` репозиторію курсу) | кожен коміт PR перевіряється двічі | Actions: `notebooks.yml` runs 203/204 і 205/206 — `push` і `pull_request` на тих самих комітах `a9272e7`, `a54d686` | у нових workflows `push: branches: [main]` (`notebooks.yml` не змінювався) |
+| список модулів у `manage.py test notes_app.tests.test_models …` | новий файл тестів не запускається, поки його не допишуть | той самий прийом у `crispy_notes_project`: список модулів уроку 45 → `Ran 76 tests`, `manage.py test` → `Ran 81` (5 тестів `tests_deploy.py` мовчки пропущено) | `manage.py test` без списку |
+| `coverage run manage.py test …` після `manage.py test …` | ті самі тести двічі | читання | покриття — одним прогоном (вправа «Спробуй самостійно») |
+| без `permissions` | права `GITHUB_TOKEN` — з налаштувань репозиторію | читання | `contents: read`; `packages: write` лише job `publish` |
+| `selenium/standalone-chrome:latest` | незафіксований образ у CI | читання | у курсі Selenium-job немає (E2E — через smoke-тест стеку) |
+| `crispy_notes_project/requirements.txt` (урок 40): `djangorestframework-simplejwt>=5.3` | 5.3.0 імпортує `pkg_resources` (setuptools) | `uv pip install --resolution lowest-direct` на Python 3.10 → `ImportError: … JWTAuthentication … No module named 'pkg_resources'`; 5.3.1 і 5.4.0 — ок | `>=5.3.1`; job `min-versions` |
+
+Прогін на PR #64 (коміт `5c6f1b3`): news_hub — 6 jobs ✅, publish skipped; crispy_notes — 5 jobs ✅, publish skipped; перший же прогін зелений.
+`publish` (push у `main`) не запускався — перевірено лише `actionlint`.
+
+## Урок 51. Аудит проєктів курсу (зріз перед фінальним проєктом)
+
+Аудит `news_hub` і `crispy_notes_project` уроку 50: `architecture_audit.py`, `db_audit.sql`, `query_count.py` з папки уроку.
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `crispy_notes_project/hello_project/settings.py` (уроки 49, 50) | throttle DRF `login: 5/min` (урок 40) рахує спроби в кеші Django; `CACHES` не задано → LocMem, окремий у кожному процесі. `docker-compose.yml` уроку 49 пропонує `--scale web=2` | стек уроку 50, 12 спроб `POST /api/token/` через nginx: 1 репліка → `401×5, 429×7`; **2 репліки → `401×10, 429×2`** (кожна репліка — свої 5) | `CACHES` → `RedisCache` при `REDIS_URL`; стек уроку 49 з 2 репліками → `401×5, 429×7` (web-1: 4 запити, web-2: 8), ключ `:1:throttle_login_172.19.0.1` у Redis; сторінка 49 показує налаштування і вивід |
+| `news_hub/tables.py` `SubscriptionRow.chat_id` `index=True` (урок 47) | індекс `(chat_id)` поруч з `UNIQUE (chat_id, keyword)` | PostgreSQL 16, 200 000 підписок: `WHERE chat_id = … ORDER BY keyword` і з індексом, і без нього — `Index Only Scan using uq_subscription_chat_keyword`; `ix_subscriptions_chat_id` — 2304 kB, 0 сканувань | без змін у коді уроків; на сторінці 51 — як рекомендація (міграція `drop_index`) |
+| Django FK-індекси (`Note.user`, `Tag.user`, `ChatMessage.group`, M2M-таблиці) | окремий індекс FK поруч зі складеним/унікальним з тим самим першим стовпцем | `db_audit.sql` на базі нотаток: 11 таких пар (4 — у `auth_*` самого Django) | без змін; рекомендація `db_index=False` / `Meta.indexes` на сторінці 51 |
+| `NewsRepository.search` (`icontains`) | на PostgreSQL це `lower(title) LIKE '%…%'`: індекс trigram на `title` не використовується | 302 400 новин: без індексу 372 мс, з `gin (title gin_trgm_ops)` — 320 мс (той самий перегляд), з `gin (lower(title) gin_trgm_ops)` — 0.14 мс; 59 MB, 16 с на побудову | без змін; рекомендація на сторінці 51 |
+| `NewsRepository.find` (`OFFSET skip`) | глибокі сторінки читають усі попередні рядки | `OFFSET 300000 LIMIT 50` — 263.7 мс, `WHERE id > 300000 LIMIT 50` — 0.08 мс | без змін; keyset — рекомендація |
+
+N+1 не знайдено: `query_count.py` — сторінки `/notes/`, `/notebooks/`, `/shopping/`, `/todo/`, `/api/notes/` роблять однакову кількість запитів при 10 і 40 записах (8/7/8/8/4). Циклів імпорту немає в жодному проєкті.
+
+## Бонус М6. CV розробника (`module_5/CV_maker/`)
+
+Перенесено як є: `README.md`, `CV_mini_tutorial_UA.md` (і сторінка довідника в книзі), `cv_viktor_nikoriak_GeoAI.html` і PDF
+(особисте CV викладача з контактами — як у старому курсі), `generate_cv_pdf.py`.
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `generate_cv_pdf.py` | — | справжній `pdfkit` 1.0 + `wkhtmltopdf 0.12.6 (with patched qt)` (образ `surnet/alpine-wkhtmltopdf`, apt у пісочниці недоступний) → `PDF created`, 5 сторінок, як PDF старого курсу | без змін; додано необов'язкові аргументи `html pdf` (без них — як було) |
+| `README.md`, структура проєкту | `cv_viktor_nikoriak.html` (5 згадок) | такого файлу немає; справжній — `cv_viktor_nikoriak_GeoAI.html` | назву виправлено |
+| `CV_mini_tutorial_UA.md` | `##  **Навчальна вправа для студентів` — незакритий `**` | рендер MkDocs | `## Навчальна вправа для студентів` |
+| — | студентам лишалось редагувати CV викладача | — | `cv_template.html` (той самий CSS, поля в дужках): 1 сторінка в wkhtmltopdf |
+| — | wkhtmltopdf архівований, на новому Linux може не встановитись | Chromium (Playwright) з `CHROMIUM_PATH`: CV викладача 6 сторінок, шаблон 2; `wkhtmltopdf --disable-smart-shrinking` — ті самі 6 і 2 | `generate_cv_pdf_chromium.py`; різниця сторінок пояснена на сторінці (smart shrinking) |
+
+Не перевірено: `sudo apt install wkhtmltopdf` на Ubuntu (apt у пісочниці — 403), встановлення на Windows/macOS з README.
 
 ## Довідник Claude Code (`CLAUDE_DOC.md` старого курсу)
 
