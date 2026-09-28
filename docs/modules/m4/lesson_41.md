@@ -46,14 +46,14 @@
     2. `a.f`. Після `from b import f` у модулі `a` є власне ім'я `f`; код з `a` шукає саме його. Патч `b.f` змінить лише ім'я в `b`.
     3. Щоразу, коли ендпоінт просить `get_db`, FastAPI викликає `test_db`. Сам `get_db` при цьому не виконується — це стане важливим сьогодні.
 
-## Старт: що дає старий курс
+## Старт: з якого коду починаємо
 
-| Звідки | Що там | Куди в `news_hub` |
+| Що є | Що там | Куди в `news_hub` |
 |---|---|---|
-| `lesson_Django_Testing/TESTING_FOUNDATIONS.md` | піраміда тестів: багато швидких unit, менше integration | `tests/unit/` і `tests/integration/`, маркери |
-| `lesson_Django_Testing/MOCKING_AND_PATCHING.md` | «patch where used»; «мокай зовнішні межі, а не всю систему» | `tests/unit/test_scraper.py` — мок мережі |
-| `lesson_Django_Testing/TEST_DATA_AND_FIXTURES.md` | фабрики: у тесті видно лише важливі поля | `tests/factories.py` → `make_raw(...)` |
-| ноутбук `note_lesson_31_web_scraping.ipynb` (урок 31 старого курсу) | справжній фрагмент стрічки rbc.ua (клітинка 44), демо-розмітка (клітинка 12) | `tests/fixtures/*.html` |
+| `TESTING_FOUNDATIONS.md` | піраміда тестів: багато швидких unit, менше integration | `tests/unit/` і `tests/integration/`, маркери |
+| `MOCKING_AND_PATCHING.md` | «patch where used»; «мокай зовнішні межі, а не всю систему» | `tests/unit/test_scraper.py` — мок мережі |
+| `TEST_DATA_AND_FIXTURES.md` | фабрики: у тесті видно лише важливі поля | `tests/factories.py` → `make_raw(...)` |
+| ноутбук web scraping | справжній фрагмент стрічки rbc.ua (клітинка 44), демо-розмітка (клітинка 12) | `tests/fixtures/*.html` |
 | урок 39 курсу | 41 тест у трьох файлах, `TestClient`, fakeredis | основа; нічого не видалено |
 
 Теорію тестування з цих файлів тепер містить частина VIII [Django-книги](https://nikoriakviktot.github.io/notes_chat_app/08_testing_and_quality/). Тут — лише те, що з'являється в проєкті.
@@ -118,7 +118,7 @@ Unit-тести ганяють після кожної зміни — вони �
 
 Тести парсера в уроці 36 містили HTML прямо в коді — рядки, які автор тесту придумав сам. Тепер розмітка лежить у файлах `tests/fixtures/`:
 
-- `rbc_newsline_item.html` — **справжній** фрагмент стрічки rbc.ua з ноутбука web scraping старого курсу: `div.item > a > span.time`, контейнерів `newsline__item` немає;
+- `rbc_newsline_item.html` — **справжній** фрагмент стрічки rbc.ua з ноутбука web scraping: `div.item > a > span.time`, контейнерів `newsline__item` немає;
 - `demo_newsline.html` — демо-розмітка з того ж ноутбука: контейнери `newsline__item`, час в атрибуті `<time datetime="…">`.
 
 Файл видно в браузері; коли сайт змінить розмітку, його оновлюють збереженою сторінкою — і тести показують, що зламалось. Фікстура віддає вміст за назвою:
@@ -830,7 +830,7 @@ for item in raw:
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_41_api_testing/news_hub) — тести уроку 39, перебудовані за `lesson_Django_Testing/` старого курсу (`TESTING_FOUNDATIONS.md`, `MOCKING_AND_PATCHING.md`, `TEST_DATA_AND_FIXTURES.md`); HTML-фікстури — з `module_4/lessons/lesson_31_http_requests/note_lesson_31_web_scraping.ipynb` старого курсу.
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_41_api_testing/news_hub) — тести уроку 39, перебудовані за `TESTING_FOUNDATIONS.md`, `MOCKING_AND_PATCHING.md`, `TEST_DATA_AND_FIXTURES.md`; HTML-фікстури — з ноутбука web scraping.
 - Урок 25 курсу — [pytest і тестування](../m2/lesson_25.md): fixtures, `parametrize`, mock, покриття, піраміда тестів.
 - Django-книга, частина VIII: [основи тестування](https://nikoriakviktot.github.io/notes_chat_app/08_testing_and_quality/testing_foundations_full/), [pytest](https://nikoriakviktot.github.io/notes_chat_app/08_testing_and_quality/pytest_basics_full/), [Mock і patch](https://nikoriakviktot.github.io/notes_chat_app/08_testing_and_quality/mocking_and_patching_full/), [тестові дані й фікстури](https://nikoriakviktot.github.io/notes_chat_app/08_testing_and_quality/test_data_and_fixtures_full/), [практика](https://nikoriakviktot.github.io/notes_chat_app/08_testing_and_quality/testing_practice_project_full/).
 - pytest: [markers](https://docs.pytest.org/en/stable/how-to/mark.html), [hooks: pytest_collection_modifyitems](https://docs.pytest.org/en/stable/reference/reference.html#pytest.hookspec.pytest_collection_modifyitems), [monkeypatch](https://docs.pytest.org/en/stable/how-to/monkeypatch.html); [pytest-asyncio](https://pytest-asyncio.readthedocs.io/); [pytest-cov](https://pytest-cov.readthedocs.io/).

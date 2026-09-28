@@ -1,6 +1,6 @@
 # Урок 36. Typing + Pydantic
 
-З цього уроку FastAPI-гілка курсу будує **новинний агрегатор**: парсер стрічки новин, який крок за кроком обростає API, базою, кешем, підсумками від Gemini й Telegram-ботом. Починаємо не з нуля: у старому курсі вже є робочий парсер rbc.ua — функція `parse_rbc_news` з уроку про web scraping — і 168 новин, які вона зібрала.
+З цього уроку FastAPI-гілка курсу будує **новинний агрегатор**: парсер стрічки новин, який крок за кроком обростає API, базою, кешем, підсумками від Gemini й Telegram-ботом. Починаємо не з нуля: вже є робочий парсер rbc.ua — функція `parse_rbc_news` з уроку про web scraping — і 168 новин, які вона зібрала.
 
 Парсер повертає `list[dict]`. Словник нічого не гарантує: ключ може бути з одруківкою, значення — порожнім рядком, «дата» — лише `"14:19"`, URL — з чужого домену. Сьогодні два рефакторинги цього коду: **анотації типів** (їх перевіряє `mypy` до запуску) і **Pydantic-модель** `NewsItem` (вона перевіряє дані під час роботи). Pydantic — фундамент FastAPI: у наступному уроці ця сама модель стане відповіддю API.
 
@@ -30,7 +30,7 @@
 **Ноутбук заняття:** [`note_lesson_36_pydantic.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic.ipynb) — типи й моделі на справжніх новинах з перевірками.
 
 !!! note "Звідки дані"
-    Сайт `www.rbc.ua` зараз недоступний із середовища, де збирався курс, тому агрегатор працює на **знімку** — 168 новинах, які `parse_rbc_news` зібрала в старому курсі (`data/rbc_news_snapshot.json`). Код парсера той самий; як запустити його на свіжій сторінці — у [`README.md`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/news_hub/README.md) проєкту.
+    Сайт `www.rbc.ua` зараз недоступний із середовища, де збирався курс, тому агрегатор працює на **знімку** — 168 новинах, які `parse_rbc_news` зібрала раніше (`data/rbc_news_snapshot.json`). Код парсера той самий; як запустити його на свіжій сторінці — у [`README.md`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/news_hub/README.md) проєкту.
 
 ## Пригадай
 
@@ -44,7 +44,7 @@
     2. Отримує клас (`cls`), а не об'єкт — типовий спосіб написати «альтернативний конструктор», як `NewsItem.from_raw(...)` сьогодні.
     3. Типи й обмеження полів; `is_valid()` → `False`, помилки за полями, API — `400`. Pydantic робить те саме, FastAPI поверне `422`.
 
-## Старт: що дає парсер зі старого курсу
+## Старт: з якого коду починаємо
 
 Функція `parse_rbc_news(html) -> list[dict]` шукає на сторінці контейнери новин, а якщо їх немає — посилання `/news/` з текстом «14:19 Заголовок». Кожна новина — словник з п'ятьма рядками. Подивимось на те, що вона насправді зібрала (у папці `news_hub`):
 
@@ -100,7 +100,7 @@ print("шляхи:", Counter("/".join(urlsplit(n["url"]).path.split("/")[1:3]) f
 
 | Файл | Зміна | Навіщо |
 |---|---|---|
-| `news_hub/parser.py` | `parse_rbc_news` з ноутбука старого курсу: анотації всіх функцій, `list[dict]` → `list[RawNews]`, дві стратегії — окремі функції | mypy бачить ключі новини; функцію легше тестувати |
+| `news_hub/parser.py` | `parse_rbc_news` зі стартового ноутбука: анотації всіх функцій, `list[dict]` → `list[RawNews]`, дві стратегії — окремі функції | mypy бачить ключі новини; функцію легше тестувати |
 | `news_hub/models.py` | **новий** — `NewsItem`, `validate_news` (рефакторинг 2) | перевірка даних |
 | `news_hub/snapshot.py` | **новий** — завантаження знімка через `TypeAdapter` | знімок теж перевірений |
 | `tests/` | **нові** — 12 тестів | парсер, моделі, знімок |
@@ -366,7 +366,7 @@ Counter({('rbc.ua', 'ru', 'Новини'): 137, ('rbc.ua', 'uk', 'Новини')
 2 перевірених; ['title: String should have at least 10 characters', 'url: Value error, очікуємо новину з rbc.ua', 'published_time: Input should be in a valid time format, hour value is outside expected range of 0-23']
 ```
 
-Увесь знімок пройшов перевірку — парсер старого курсу збирав коректні новини. Але тепер це **доведено** кодом і тестом `test_snapshot_is_valid`, а не припущено.
+Увесь знімок пройшов перевірку — стартовий парсер збирав коректні новини. Але тепер це **доведено** кодом і тестом `test_snapshot_is_valid`, а не припущено.
 
 ### JSON Schema: опис моделі для інших програм
 
@@ -411,7 +411,7 @@ flowchart TD
     classDef error    fill:#ffebee,stroke:#c62828,stroke-width:3px;
     classDef warning  fill:#fff8e1,stroke:#e65100,stroke-width:2px;
 
-    subgraph BEFORE ["старий курс: словники скрізь"]
+    subgraph BEFORE ["до рефакторингу: словники скрізь"]
         direction LR
         H0["HTML rbc.ua"] --> P0["parse_rbc_news<br>list of dict"] --> U0["pandas, CSV, JSON<br>KeyError під час запуску"]
     end
@@ -461,7 +461,7 @@ HTML не містить ні мови, ні категорії — але во�
 1. `urlsplit(url)` ділить URL на частини: `hostname` → `www.rbc.ua`, `path` → `/ukr/news/…`;
 2. `source` — домен без `www.`;
 3. перша частина шляху → `lang` через `LANGS = {"ukr": "uk", "rus": "ru"}`;
-4. друга → `category` через словник `CATEGORIES` зі старого `news_dashboard`;
+4. друга → `category` через словник `CATEGORIES` з прототипу `news_dashboard`;
 5. `derived | {…}` — значення, які прийшли непорожніми, мають пріоритет над виведеними.
 
 ```python
@@ -562,11 +562,11 @@ URL — справжній, зі знімка. Чому категорія «Aut
 ### Що далі
 
 - Ноутбук заняття: [`note_lesson_36_pydantic.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_36_typing_pydantic/note_lesson_36_pydantic.ipynb).
-- Урок 37 — FastAPI над `NewsItem`: `GET /api/news`, `POST /api/scrape`, `/docs` з JSON Schema, Postman. Основа — `news_dashboard` старого курсу.
+- Урок 37 — FastAPI над `NewsItem`: `GET /api/news`, `POST /api/scrape`, `/docs` з JSON Schema, Postman. Основа — прототип `news_dashboard`.
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_36_typing_pydantic/news_hub); `parse_rbc_news` і знімок — з уроку про web scraping старого курсу (`module_4/lessons/lesson_31_http_requests`), словник категорій — з `news_dashboard` (`module_4/lessons/lesson_34_asyncio`).
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_36_typing_pydantic/news_hub); `parse_rbc_news` і знімок — зі стартового ноутбука про web scraping, словник категорій — з прототипу `news_dashboard`.
 - Python: [typing](https://docs.python.org/3/library/typing.html), [Type hints cheat sheet (mypy)](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html), [urllib.parse.urlsplit](https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlsplit)
 - Pydantic: [Models](https://docs.pydantic.dev/latest/concepts/models/), [Fields](https://docs.pydantic.dev/latest/concepts/fields/), [Validators](https://docs.pydantic.dev/latest/concepts/validators/), [Computed fields](https://docs.pydantic.dev/latest/concepts/fields/#the-computed_field-decorator), [Type Adapter](https://docs.pydantic.dev/latest/concepts/type_adapter/), [JSON Schema](https://docs.pydantic.dev/latest/concepts/json_schema/)
 - FastAPI: [Python Types Intro](https://fastapi.tiangolo.com/python-types/) — навіщо FastAPI анотації

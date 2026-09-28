@@ -6,7 +6,7 @@
 
 Сьогодні так запускаються обидва проєкти курсу:
 
-- **`news_hub`**: nginx → API → PostgreSQL + Redis; міграції — окремим кроком; Telegram-бот. Основа — `docker-compose.yml` з `production_bot` старого курсу;
+- **`news_hub`**: nginx → API → PostgreSQL + Redis; міграції — окремим кроком; Telegram-бот. Основа — `docker-compose.yml` зі стартового `production_bot`;
 - **`crispy_notes_project`** (Django, чат на WebSocket): nginx → daphne → PostgreSQL + Redis. Основа — `Dockerfile`, `entrypoint.sh`, `nginx.conf` і `docker-compose.yml` з [Django-книги](https://nikoriakviktot.github.io/notes_chat_app/) (кроки 8–9).
 
 Як і раніше, спершу запускаємо старі файли **без змін** і дивимось, що ламається. Потім виправляємо — і показуємо, як це все переноситься на сервер.
@@ -43,11 +43,11 @@
     2. `/health` — процес відповідає (його питає HEALTHCHECK образу); `/health/ready` — ще й база й Redis доступні, інакше 503.
     3. Лічильник у Redis за ключем `rate:login:<IP клієнта>`: 5 спроб за 300 с, далі 429. IP береться з `request.client.host`.
 
-## Старт: що дає старий курс
+## Старт: з якого коду починаємо
 
 | Звідки | Що там | Куди |
 |---|---|---|
-| `module_5/lesson_46_Telegram_API/production_bot/docker-compose.yml` | сервіси `bot` (FastAPI + aiogram), `nginx`, `postgres`, `redis`, `migrate`; healthchecks, томи | `news_hub/docker-compose.yml` |
+| `production_bot/docker-compose.yml` | сервіси `bot` (FastAPI + aiogram), `nginx`, `postgres`, `redis`, `migrate`; healthchecks, томи | `news_hub/docker-compose.yml` |
 | `production_bot/nginx/default.conf` | upstream, `proxy_set_header`, таймаут для webhook | `news_hub/nginx/nginx.conf` |
 | Django-книга `notes_chat_app`: `Dockerfile`, `entrypoint.sh`, `docker-compose.yml`, `nginx/nginx.conf` | `migrate` + `collectstatic` + uvicorn при старті, статика з тому, WebSocket через nginx | `crispy_notes_project/` |
 
@@ -840,7 +840,7 @@ $ curl localhost:8000/health/ready
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_5/lessons/lesson_49_compose_deploy/news_hub) — `docker-compose.yml` і `nginx.conf` з `module_5/lesson_46_Telegram_API/production_bot/` старого курсу `PY-Course-Victor-Nikoriak-23_02`; [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_5/lessons/lesson_49_compose_deploy/crispy_notes_project) — Docker-файли з Django-книги [notes_chat_app](https://nikoriakviktot.github.io/notes_chat_app/).
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_5/lessons/lesson_49_compose_deploy/news_hub) — `docker-compose.yml` і `nginx.conf` зі стартового `production_bot`; [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_5/lessons/lesson_49_compose_deploy/crispy_notes_project) — Docker-файли з Django-книги [notes_chat_app](https://nikoriakviktot.github.io/notes_chat_app/).
 - Поглиблено в Django-книзі: крок 8–9 — Docker Compose, entrypoint, nginx, PostgreSQL, Redis, production checklist ([розділ «Деплой»](https://nikoriakviktot.github.io/notes_chat_app/)).
 - Docker Compose: [Compose file reference](https://docs.docker.com/reference/compose-file/), [services: depends_on, healthcheck, profiles](https://docs.docker.com/reference/compose-file/services/), [interpolation](https://docs.docker.com/reference/compose-file/interpolation/), [`.env` і env_file](https://docs.docker.com/compose/how-tos/environment-variables/), [networks](https://docs.docker.com/reference/compose-file/networks/), [startup order](https://docs.docker.com/compose/how-tos/startup-order/).
 - Docker і firewall: [Packet filtering and firewalls](https://docs.docker.com/engine/network/packet-filtering-firewalls/).

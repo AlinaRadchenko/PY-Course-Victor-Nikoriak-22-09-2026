@@ -1,7 +1,7 @@
 # 11. Деплой Django на Linux
 
 !!! info "Довідник бонус-уроку «Linux для розробника»"
-    Теорія зі старого курсу (`module_5/lesson_Linux_DevOps_Basics/11_deploy_django_on_linux.md`), перенесена й перевірена. Урок з вправами — [Бонус. Linux](../bonus_linux.md).
+    Розділ перевірено: кожну команду виконано в контейнерах Ubuntu, Debian і `python:3.12-slim`. Урок з вправами — [Бонус. Linux](../bonus_linux.md).
 
 ## Навіщо це потрібно
 

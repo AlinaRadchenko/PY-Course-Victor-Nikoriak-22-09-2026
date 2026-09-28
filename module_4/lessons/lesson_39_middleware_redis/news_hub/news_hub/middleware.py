@@ -5,8 +5,8 @@
     rate_limit        — POST /api/scrape*: не більше N запитів за вікно з однієї адреси → 429;
     invalidate_cache  — успішний запис у новини → нова версія кешу (після COMMIT).
 
-Rate limit — `RateLimitRepository` + `RateLimitMiddleware` з `ai_bot` старого курсу
-(module_5/lesson_46_Telegram_API). Рефакторинг уроку 39:
+Rate limit — `RateLimitRepository` + `RateLimitMiddleware` зі стартового `ai_bot`.
+Рефакторинг уроку 39:
 - aiogram-middleware → HTTP-middleware FastAPI; ключ — адреса клієнта + дія, а не user_id Telegram;
 - `INCR`, а потім окремий `EXPIRE` (якщо count == 1) → одна транзакція `INCR` + `EXPIRE … NX`:
   якщо процес упаде між двома командами, ключ без TTL заблокує клієнта назавжди;

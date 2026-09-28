@@ -8,7 +8,7 @@
 | 1. Bootstrap CRUD | [`django_bootstrap_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_34_django_forms/django_bootstrap_project) | ModelForm, CRUD-views, PRG, повідомлення, `base.html` + Bootstrap 5 | [2](https://nikoriakviktot.github.io/notes_chat_app/tutorials/02_first_model/) |
 | 2. Crispy Dashboard | [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_34_django_forms/crispy_notes_project) | 3-рівневі шаблони, `{% crispy form %}`, context processor, компоненти | [4](https://nikoriakviktot.github.io/notes_chat_app/tutorials/04_templates_and_forms/) |
 
-Обидва проєкти — готовий код зі старого курсу; у кожного є покроковий `README.md` (фази А–З і кроки 0–9). На цій сторінці — **що саме змінилося, навіщо і як перевірити**. Теорія HTML, CSS, Bootstrap і форм — у розділах книги за посиланнями «Поглиблено».
+Обидва проєкти — готовий стартовий код; у кожного є покроковий `README.md` (фази А–З і кроки 0–9). На цій сторінці — **що саме змінилося, навіщо і як перевірити**. Теорія HTML, CSS, Bootstrap і форм — у розділах книги за посиланнями «Поглиблено».
 
 **Що потрібно з попередніх уроків:** проєкт уроку 33 (модель, view, маршрут, шаблон, адмінка), HTTP-методи `GET`/`POST`, статус-коди, перенаправлення (уроки 31–32).
 
@@ -686,7 +686,7 @@ class NotebookForm(forms.ModelForm):
 
 ### Знайди помилку
 
-Це `note_create` з `crispy_notes_project` у тому вигляді, як він був у старому курсі. Користувачка ставить прапорець «Закріпити нотатку», натискає «Зберегти» — нотатка створюється, але **не закріплена**. Форма валідна, помилок немає. Чому?
+Це `note_create` з `crispy_notes_project` у тому вигляді, як він був у стартовому коді. Користувачка ставить прапорець «Закріпити нотатку», натискає «Зберегти» — нотатка створюється, але **не закріплена**. Форма валідна, помилок немає. Чому?
 
 ```python title="hello_app/views.py — note_create (фрагмент)"
 if form.is_valid():
@@ -750,7 +750,7 @@ if form.is_valid():
 
 ## Документація і джерела
 
-- Код: [`django_bootstrap_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_34_django_forms/django_bootstrap_project) і [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_34_django_forms/crispy_notes_project) — зі старого курсу (`module_5/lesson_HTML_CSS_Bootstrap`); у курсі додано тести.
+- Код: [`django_bootstrap_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_34_django_forms/django_bootstrap_project) і [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_34_django_forms/crispy_notes_project) — стартовий код; у курсі додано тести.
 - Django-книга: [крок 2](https://nikoriakviktot.github.io/notes_chat_app/tutorials/02_first_model/), [крок 4](https://nikoriakviktot.github.io/notes_chat_app/tutorials/04_templates_and_forms/), [Django Forms](https://nikoriakviktot.github.io/notes_chat_app/04_forms_and_validation/django_forms_full/), [Crispy Forms](https://nikoriakviktot.github.io/notes_chat_app/04_forms_and_validation/crispy_forms_full/), [Bootstrap 5](https://nikoriakviktot.github.io/notes_chat_app/05_frontend_and_templates/bootstrap_5_full/)
 - Django: [Working with forms](https://docs.djangoproject.com/en/5.2/topics/forms/), [ModelForm](https://docs.djangoproject.com/en/5.2/topics/forms/modelforms/), [The messages framework](https://docs.djangoproject.com/en/5.2/ref/contrib/messages/), [Template inheritance](https://docs.djangoproject.com/en/5.2/ref/templates/language/#template-inheritance), [Context processors](https://docs.djangoproject.com/en/5.2/ref/templates/api/#writing-your-own-context-processors), [CSRF protection](https://docs.djangoproject.com/en/5.2/ref/csrf/)
 - [Bootstrap 5.3](https://getbootstrap.com/docs/5.3/getting-started/introduction/), [django-crispy-forms](https://django-crispy-forms.readthedocs.io/), [crispy-bootstrap5](https://github.com/django-crispy-forms/crispy-bootstrap5), [Post/Redirect/Get](https://en.wikipedia.org/wiki/Post/Redirect/Get)

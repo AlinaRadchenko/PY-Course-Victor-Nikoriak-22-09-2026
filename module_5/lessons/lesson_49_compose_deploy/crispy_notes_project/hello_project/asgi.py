@@ -1,7 +1,7 @@
 """
 asgi.py — точка входу для ASGI-серверів (Uvicorn, Daphne, Hypercorn).
 
-Код — notes_project/asgi.py з notes_chat_app старого курсу (module_5/lesson_Django_Async).
+Код — notes_project/asgi.py з notes_chat_app.
 Урок 45 курсу: WebSocket — лише з наших сторінок (AllowedHostsOriginValidator, див. нижче).
 Тут `runserver` теж запускає ASGI — daphne першим в INSTALLED_APPS.
 

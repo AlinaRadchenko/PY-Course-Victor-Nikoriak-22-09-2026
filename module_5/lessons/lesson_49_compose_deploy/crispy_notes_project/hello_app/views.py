@@ -2,8 +2,8 @@
 views.py — HTTP шар (тільки request/response).
 
 Урок 44 (крок 3 Django-книги: CRUD і архітектура) — рефакторинг views уроку 40:
-  - нотатки, записники й теги — class-based views з `notes_project_cbv` старого курсу
-    (lesson_Django_ORM_Database/notes_project_cbv/hello_app/views.py), адаптовані до цього проєкту:
+  - нотатки, записники й теги — class-based views зі стартового `notes_project_cbv`
+    (hello_app/views.py), адаптовані до цього проєкту:
     групи, `is_pinned`, «змінює лише автор»;
   - списки справ, покупок, нагадування й групи лишаються функціями — CBV не обов'язкові, обов'язкові тонкі views;
   - урок 45: group_chat — сторінка чату; повідомлення йдуть через WebSocket (consumers.py);
@@ -37,7 +37,7 @@ from . import selectors, services
 # ─────────────────────────────────────────────────────────────────────────────
 
 class SelectorQuerySetMixin:
-    """QuerySet для Detail/Update/Delete бере функція selectors — `UserQuerySetMixin` старого курсу.
+    """QuerySet для Detail/Update/Delete бере функція selectors — `UserQuerySetMixin` стартового `notes_project_cbv`.
 
     Старий міксин робив `super().get_queryset().filter(user=self.request.user)` — правило доступу
     жило у view. Тут view лише каже, ЯКЕ правило: `selector = selectors.notes_visible_to`.
@@ -714,7 +714,7 @@ def group_delete(request, pk):
 def group_chat(request, pk):
     """HTTP: сторінка чату групи (HTML + JS). Сам чат — WebSocket: hello_app/consumers.py (урок 45).
 
-    З notes_chat_app старого курсу; доступ — той самий selector, що в group_detail (урок 44): не учасник — 404.
+    З notes_chat_app; доступ — той самий selector, що в group_detail (урок 44): не учасник — 404.
     """
     group = selectors.get_group_with_members(pk, request.user)
     if group is None:

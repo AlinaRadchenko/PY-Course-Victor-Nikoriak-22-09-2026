@@ -1,7 +1,7 @@
 # 14. Docker: основи
 
 !!! info "Довідник бонус-уроку «Linux для розробника»"
-    Теорія зі старого курсу (`module_5/lesson_Linux_DevOps_Basics/14_docker_basics.md`), перенесена й перевірена. Урок з вправами — [Бонус. Linux](../bonus_linux.md). Docker для проєкту курсу — [урок 48](../lesson_48.md); Compose — урок 49.
+    Розділ перевірено: кожну команду виконано в контейнерах Ubuntu, Debian і `python:3.12-slim`. Урок з вправами — [Бонус. Linux](../bonus_linux.md). Docker для проєкту курсу — [урок 48](../lesson_48.md); Compose — урок 49.
 
 ## Навіщо це потрібно
 

@@ -212,7 +212,7 @@ views.note_list()
 
 | Tier | Де дивитись | Метод | HTML у шаблоні | Де Bootstrap-класи |
 |------|-------------|-------|----------------|--------------------|
-| **1 — Raw** | [`notes_project/forms.py`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-23_02/blob/main/module_5/lesson_Django_ORM_Database/notes_project/hello_app/forms.py) | `{{ form.as_p }}` | ~5 рядків | Ніде (немає стилів) |
+| **1 — Raw** | `notes_project/forms.py` | `{{ form.as_p }}` | ~5 рядків | Ніде (немає стилів) |
 | **2 — Manual** | [`django_bootstrap_project/`](../django_bootstrap_project/) | Ручний HTML | ~80 рядків | У шаблоні вручну |
 | **3 — Crispy** | **цей проєкт** `/notes/new/` | `{% crispy form %}` | **1 рядок** | У `forms.py` через Layout |
 
@@ -547,7 +547,7 @@ python manage.py runserver
 | `http://127.0.0.1:8000/admin/` | Django Admin |
 
 > **Tier 1 і Tier 2 як код для порівняння** (не як живі URL):
-> - Tier 1 (`form.as_p`): [`notes_project/hello_app/forms.py`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-23_02/blob/main/module_5/lesson_Django_ORM_Database/notes_project/hello_app/forms.py)
+> - Tier 1 (`form.as_p`): `notes_project/hello_app/forms.py`
 > - Tier 2 (manual Bootstrap): [`django_bootstrap_project/`](../django_bootstrap_project/)
 
 ---
@@ -860,7 +860,7 @@ LOGIN_REDIRECT_URL = '/notes/'
 
 **Мета:** показати що є у Django "з коробки", без жодних стилів.
 
-> Tier 1 реалізовано у [`notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-23_02/tree/main/module_5/lesson_Django_ORM_Database/notes_project/) — там форми без crispy.
+> Tier 1 реалізовано у стартовому `notes_project` — там форми без crispy.
 > Код нижче — для порівняння концепцій.
 
 ```python
@@ -1424,4 +1424,4 @@ crispy_notes_project/
 | [`../CRISPY_FORMS.md`](https://nikoriakviktot.github.io/notes_chat_app/04_forms_and_validation/crispy_forms_full/) | Повний довідник: FormHelper, Layout, Bootstrap компоненти, Dynamic API |
 | [`../ADVANCED_TEMPLATES.md §3`](https://nikoriakviktot.github.io/notes_chat_app/05_frontend_and_templates/advanced_templates_full/) | FormHelper + Layout — деталі |
 | [`../ADVANCED_TEMPLATES.md §5`](https://nikoriakviktot.github.io/notes_chat_app/05_frontend_and_templates/advanced_templates_full/) | SaaS Dashboard Architecture |
-| [`../../lesson_Django_ORM_Database/notes_project/README.md`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-23_02/blob/main/module_5/lesson_Django_ORM_Database/notes_project/README.md) | ORM, Services/Selectors, міграції — фундамент цього проєкту |
+| README стартового `notes_project` | ORM, Services/Selectors, міграції — фундамент цього проєкту |

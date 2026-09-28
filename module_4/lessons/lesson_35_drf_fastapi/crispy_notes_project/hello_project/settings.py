@@ -1,7 +1,7 @@
 """
 Django settings for crispy_notes_project.
 
-Що нового порівняно з notes_project (lesson_Django_ORM_Database):
+Що нового порівняно з notes_project:
   + crispy_forms      → FormHelper + Layout замість raw widget attrs
   + crispy_bootstrap5 → Bootstrap5 template pack для crispy
   - unfold            → прибрано (акцент цього проєкту — фронтенд, не адмін)

@@ -39,7 +39,7 @@ def test_split_only_between_lines() -> None:
 
 
 def test_old_split_cuts_inside_markup() -> None:
-    """Розріз кожні N символів (як split_long_message старого курсу) ламає теги й сутності."""
+    """Розріз кожні N символів (як split_long_message стартового ai_bot) ламає теги й сутності."""
     text = "\n".join(f"<b>{number:03}</b> Олена &amp; Ко" for number in range(400))
     chunks = [text[i: i + 4000] for i in range(0, len(text), 4000)]
     assert any(html_error(chunk) for chunk in chunks)

@@ -1,8 +1,7 @@
 """
 services.py — INSERT / UPDATE / DELETE with business logic.
 
-Скопійовано з notes_project. Детальна документація транзакцій:
-lesson_Django_ORM_Database/notes_project/hello_app/services.py
+Скопійовано з notes_project (там — детальна документація транзакцій, hello_app/services.py).
 """
 from django.db import transaction
 from django.db.models import F, Max

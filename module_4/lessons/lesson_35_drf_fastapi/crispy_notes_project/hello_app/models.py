@@ -1,9 +1,9 @@
 """
 models.py — Персональний менеджер записів
 
-Скопійовано з lesson_Django_ORM_Database/notes_project.
+Скопійовано з notes_project.
 У цьому проєкті акцент на Templates + Crispy Forms, а не на ORM.
-Детальні коментарі до ORM: ../lesson_Django_ORM_Database/notes_project/hello_app/models.py
+Детальні коментарі до ORM — у hello_app/models.py стартового notes_project.
 
 Архітектура (зв'язки між моделями):
     User ──1:1──► UserProfile

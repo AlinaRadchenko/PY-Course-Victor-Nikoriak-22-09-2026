@@ -17,7 +17,7 @@ $ curl -X POST http://127.0.0.1:8000/api/analyze/jobs -d '{"limit": 200}'       
 2. **Куди ходить сервер (SSRF).** Адмін додає RSS-джерело за URL, і сервер його завантажує. Але сервер стоїть **усередині** мережі: він бачить localhost, Redis, базу й адресу метаданих хмари `169.254.169.254`. URL — це прохання до сервера сходити туди від свого імені.
 3. **Хто нам пише (webhook).** Зовнішній планувальник запускає збір запитом до нас. Адреса публічна, тож відрізнити справжній запит від підробленого можна лише за підписом.
 
-Код — зі старого курсу: адмін-JWT і webhook Telegram з `production_bot`, захист від SSRF — з `OWASP_TOP_10.md` уроку про безпеку Django. Кожен шматок переносимо і перевіряємо тестом на атаку.
+Стартовий код: адмін-JWT і webhook Telegram з `production_bot`, захист від SSRF — з `OWASP_TOP_10.md`. Кожен шматок переносимо і перевіряємо тестом на атаку.
 
 | Урок | Крок агрегатора |
 |---|---|
@@ -53,17 +53,17 @@ $ curl -X POST http://127.0.0.1:8000/api/analyze/jobs -d '{"limit": 200}'       
     2. `SET NX` — одна атомарна команда «запиши, якщо ключа ще немає»; відповідь каже, чи вийшло. `GET` + `SET` — два кроки, між якими встигне інший запит.
     3. Робить новий запит на адресу з `Location` — сам, без питань. Ця адреса може вести куди завгодно, зокрема на інший хост.
 
-## Старт: що дає старий курс
+## Старт: з якого коду починаємо
 
 | Звідки | Що там | Куди в `news_hub` |
 |---|---|---|
-| `module_5/lesson_46_Telegram_API/production_bot/backend/core/security.py` | хеш пароля, `create_access_token`, `decode_token` | `news_hub/security.py` |
+| `production_bot/backend/core/security.py` | хеш пароля, `create_access_token`, `decode_token` | `news_hub/security.py` |
 | `production_bot/backend/api/deps.py`, `api/admin/auth.py` | `get_current_admin` (401 / 403), `POST /admin/auth/token` | `require_admin`, `POST /api/admin/token` |
 | `production_bot/backend/core/config.py` | `JWT_SECRET`, `ADMIN_PASSWORD`, `WEBHOOK_SECRET` зі змінних середовища | `load_admin_settings`, `load_webhook_secret` |
 | `production_bot/backend/api/webhook.py` | webhook Telegram: секретний шлях + заголовок | `news_hub/webhooks.py` |
-| `module_5/lesson_Django_authentication_and_security/OWASP_TOP_10.md` | A10 SSRF: «небезпечне завантаження аватара з URL» і захист | `news_hub/safe_fetch.py` |
+| `OWASP_TOP_10.md` | A10 SSRF: «небезпечне завантаження аватара з URL» і захист | `news_hub/safe_fetch.py` |
 
-Теорію — що таке JWT, bcrypt, OWASP Top 10 — старий курс і урок 40 уже пояснили. Тут — як ці шматки поводяться в **нашому** проєкті і які атаки їх обходять.
+Теорію — що таке JWT, bcrypt, OWASP Top 10 — урок 40 уже пояснив. Тут — як ці шматки поводяться в **нашому** проєкті і які атаки їх обходять.
 
 ## Рефакторинг 1. Адмін і JWT { #refactor-1 }
 
@@ -71,7 +71,7 @@ $ curl -X POST http://127.0.0.1:8000/api/analyze/jobs -d '{"limit": 200}'       
 
 Старий `security.py` хешує через `passlib`, а `admin/auth.py` робить це **при імпорті модуля**:
 
-```python title="production_bot/backend/api/admin/auth.py (старий курс)"
+```python title="production_bot/backend/api/admin/auth.py (стартовий код)"
 _ADMIN_PASSWORD_HASH = hash_password(settings.ADMIN_PASSWORD)
 ```
 
@@ -106,7 +106,7 @@ def verify_password(password: str, password_hash: str) -> bool:
 
 ### Налаштування: без «change-me»
 
-```python title="production_bot/backend/core/config.py (старий курс)"
+```python title="production_bot/backend/core/config.py (стартовий код)"
 JWT_SECRET: str = os.getenv("JWT_SECRET", "change-me-in-production")
 ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "change-me")
 ```
@@ -138,7 +138,7 @@ def load_admin_settings(env: Mapping[str, str] = os.environ) -> AdminSettings | 
 - **задано погано** — застосунок не стартує;
 - **задано добре** — працює.
 
-Справжній запуск з секретом зі старого конфігу:
+Справжній запуск з секретом зі стартового конфігу:
 
 ```text
 $ JWT_SECRET=change-me-in-production uvicorn news_hub.api:app
@@ -268,7 +268,7 @@ $ curl -X POST .../api/scrape -H "Authorization: Bearer $TOKEN" -d '{"source":"s
 
 ### Старий захист: перевірити рядок
 
-```python title="OWASP_TOP_10.md, A10 (старий курс)"
+```python title="OWASP_TOP_10.md, A10 (стартовий код)"
 ALLOWED_HOSTS_FOR_FETCH = ['i.imgur.com', 'avatars.githubusercontent.com']
 
 def is_safe_url(url):
@@ -323,7 +323,7 @@ class PolicyResolver(ThreadedResolver):
 | порт лише 80/443 | `http://example.com:6379/` — Redis, `:22` — SSH |
 | без `user:pass@` в URL | облікові дані чужого сервісу в нашому запиті |
 | IP-літерал в адресі — перевірити одразу | для `http://169.254.169.254/` aiohttp **не викликає** resolver |
-| перенаправлення вручну, кожне — знову через `check_url` і resolver, максимум 3 | старий захист обходили саме так |
+| перенаправлення вручну, кожне — знову через `check_url` і resolver, максимум 3 | захист до рефакторингу обходили саме так |
 | тайм-аут 10 с, до 2 МБ (читаємо частинами), тип `application/rss+xml` / `xml` | повільний чи безкінечний сервер не тримає нас; відповідь — лише стрічка |
 | `trust_env=False` | з `HTTP_PROXY` у середовищі з'єднання пішло б через проксі — повз наш resolver |
 
@@ -412,7 +412,7 @@ flowchart TD
 
 ### Було: секрет у шляху і в заголовку
 
-```python title="production_bot/backend/api/webhook.py (старий курс)"
+```python title="production_bot/backend/api/webhook.py (стартовий код)"
 @router.post(settings.WEBHOOK_PATH)                       # "/webhook/{WEBHOOK_SECRET}"
 async def handle_webhook(request: Request) -> dict:
     secret_header = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
@@ -658,7 +658,7 @@ def test_admin_me(anon: TestClient) -> None:
 
 ### Знайди помилку { #find-bug }
 
-Функція із захистом від SSRF і тест до неї (з уроку безпеки старого курсу, тест зелений):
+Функція із захистом від SSRF і тест до неї (з `OWASP_TOP_10.md`, тест зелений):
 
 ```python
 ALLOWED_HOSTS_FOR_FETCH = ['i.imgur.com', 'avatars.githubusercontent.com']
@@ -733,7 +733,7 @@ is_safe_url: True
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_46_security_advanced/news_hub) — `security.py` з `production_bot/backend/core/security.py`, `api/deps.py`, `api/admin/auth.py`; `webhooks.py` з `api/webhook.py`; `safe_fetch.py` — розділ A10 `OWASP_TOP_10.md` старого курсу `PY-Course-Victor-Nikoriak-23_02`.
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_46_security_advanced/news_hub) — `security.py` з `production_bot/backend/core/security.py`, `api/deps.py`, `api/admin/auth.py`; `webhooks.py` з `api/webhook.py`; `safe_fetch.py` — розділ A10 `OWASP_TOP_10.md`.
 - OWASP: [Top 10](https://owasp.org/Top10/), [SSRF Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html), [Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), [JSON Web Token for Java Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html) (атаки на JWT — не лише для Java).
 - Бібліотеки: [PyJWT](https://pyjwt.readthedocs.io/en/stable/usage.html), [bcrypt](https://github.com/pyca/bcrypt), [aiohttp — client reference](https://docs.aiohttp.org/en/stable/client_reference.html), Python — [`hmac`](https://docs.python.org/3/library/hmac.html), [`ipaddress`](https://docs.python.org/3/library/ipaddress.html), [`secrets`](https://docs.python.org/3/library/secrets.html).
 - FastAPI: [Security](https://fastapi.tiangolo.com/tutorial/security/), [OAuth2 з JWT](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/).

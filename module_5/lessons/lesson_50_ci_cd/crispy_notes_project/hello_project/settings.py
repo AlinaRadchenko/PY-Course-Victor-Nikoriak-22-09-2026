@@ -1,7 +1,7 @@
 """
 Django settings — уроки 40 (автентифікація й безпека), 44 (PostgreSQL) і 45 (WebSocket-чат).
 
-З уроку lesson_Django_authentication_and_security старого курсу:
+Зі стартового коду (автентифікація й безпека):
   + password reset/change flows   → EMAIL_BACKEND (console), /accounts/password_*/
   + security settings block       → SESSION_COOKIE_HTTPONLY, X_FRAME_OPTIONS, ...
   + Group-based sharing           → Django built-in Group model used in Note/ShoppingList
@@ -136,7 +136,7 @@ ASGI_APPLICATION = "hello_project.asgi.application"   # урок 45: HTTP + WebS
 # ── Channel layer (урок 45): розсилка повідомлень чату між з'єднаннями ─────────────────────────────
 # REDIS_URL є (docker compose up -d redis) → RedisChannelLayer: кілька процесів сервера бачать одні групи.
 # REDIS_URL немає → InMemoryChannelLayer: у пам'яті ОДНОГО процесу — для навчання, тестів і Colab.
-# З notes_chat_app старого курсу (settings.py).
+# З notes_chat_app (settings.py).
 REDIS_URL = os.environ.get("REDIS_URL")
 if REDIS_URL:
     CHANNEL_LAYERS = {"default": {"BACKEND": "channels_redis.core.RedisChannelLayer",

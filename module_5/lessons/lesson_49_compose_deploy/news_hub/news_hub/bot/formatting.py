@@ -1,6 +1,6 @@
 """Текст для Telegram у режимі parse_mode=HTML. Урок 47.
 
-Основа — `app/utils/text.py` і `app/utils/formatter.py` з `ai_bot` старого курсу (`escape_html`,
+Основа — `app/utils/text.py` і `app/utils/formatter.py` зі стартового `ai_bot` (`escape_html`,
 `split_long_message`). Рефакторинг:
 - **усе**, що прийшло ззовні (ім'я користувача, заголовок новини, ключове слово), екранується перед тим,
   як потрапити в HTML: Telegram відхиляє повідомлення з «<» чи «&» поза тегом — і бот мовчить;

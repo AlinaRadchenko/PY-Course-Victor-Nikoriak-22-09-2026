@@ -7,7 +7,7 @@ Django-гілка курсу веде той самий застосунок н�
 - **JWT** для API — вхід для програм, яким не підходить cookie браузера;
 - **налаштування безпеки** і `check --deploy`; карта ризиків OWASP Top 10 на нашому коді.
 
-Код — урок `lesson_Django_authentication_and_security` старого курсу: той самий `crispy_notes_project`, до якого додано групи, скидання пароля й блок налаштувань безпеки. Теорія — [частина VII Django-книги](https://nikoriakviktot.github.io/notes_chat_app/07_auth_and_security/): тут лише зміни в коді й те, що знайшли, коли зібрали все разом.
+Стартовий код — той самий `crispy_notes_project`, до якого додано групи, скидання пароля й блок налаштувань безпеки. Теорія — [частина VII Django-книги](https://nikoriakviktot.github.io/notes_chat_app/07_auth_and_security/): тут лише зміни в коді й те, що знайшли, коли зібрали все разом.
 
 | Урок | Django-гілка: застосунок нотаток | Проєкт |
 |---|---|---|
@@ -44,11 +44,11 @@ Django-гілка курсу веде той самий застосунок н�
     2. Ні: хеш — односторонній. Можна лише порахувати хеш іншого рядка й порівняти.
     3. У cookie `sessionid`: у ній лише випадковий ключ, а дані сесії (хто увійшов) — на сервері, в таблиці `django_session`. Детально — [Сесії в Django-книзі](https://nikoriakviktot.github.io/notes_chat_app/07_auth_and_security/sessions_flow_full/).
 
-## Старт: що дає старий курс
+## Старт: з якого коду починаємо
 
-`lesson_Django_authentication_and_security/crispy_notes_project` — той самий проєкт, що в уроці 34, плюс:
+Стартовий `crispy_notes_project` — той самий проєкт, що в уроці 34, плюс:
 
-| Файл | Що змінилось у старому курсі |
+| Файл | Що змінилось у стартовому коді |
 |---|---|
 | `models.py`, міграція `0003` | `Note.group`, `ShoppingList.group` → `ForeignKey(Group, SET_NULL, null=True)` |
 | `selectors.py` | нотатки й списки: `Q(user=user) \| Q(group__in=user.groups.all())`; вибір груп користувача |
@@ -70,7 +70,7 @@ Django-гілка курсу веде той самий застосунок н�
 | учасник групи нотатки | так | ні |
 | інший користувач | ні — `404` | ні — `404` |
 
-```diff title="hello_app/selectors.py (з уроку старого курсу)"
+```diff title="hello_app/selectors.py (стартовий код)"
  def get_user_notes(user, archived=False, notebook=None, search=None):
 +    user_groups = user.groups.all()
      qs = Note.objects.filter(
@@ -80,7 +80,7 @@ Django-гілка курсу веде той самий застосунок н�
 +    ).select_related('notebook', 'group').prefetch_related('tags')
 ```
 
-```diff title="hello_app/views.py, note_edit і note_delete (з уроку старого курсу)"
+```diff title="hello_app/views.py, note_edit і note_delete (стартовий код)"
 -    note = get_object_or_404(Note, pk=pk, user=request.user)
 +    user_groups = request.user.groups.all()
 +    note = get_object_or_404(
@@ -225,7 +225,7 @@ True False
 
 ### Зміна й скидання пароля
 
-`path("accounts/", include("django.contrib.auth.urls"))` уже дає всі сторінки; урок старого курсу додав 7 шаблонів у `templates/registration/` і `EMAIL_BACKEND = "…console.EmailBackend"` — лист друкується в термінал `runserver` замість справжньої пошти.
+`path("accounts/", include("django.contrib.auth.urls"))` уже дає всі сторінки; стартовий код додав 7 шаблонів у `templates/registration/` і `EMAIL_BACKEND = "…console.EmailBackend"` — лист друкується в термінал `runserver` замість справжньої пошти.
 
 ```mermaid
 sequenceDiagram
@@ -268,7 +268,7 @@ nobody@example.com   → 302 /accounts/password_reset/done/
 
 ## Рефакторинг 4b. JWT для API { #jwt }
 
-Сесія (cookie + CSRF) зручна браузеру на тому самому сайті. Мобільному застосунку, скрипту чи Telegram-боту (урок 47) потрібне інше: отримати **токен** і надсилати його в заголовку `Authorization: Bearer …`. У `production_bot` старого курсу токени видавались вручну через PyJWT; у Django — готовий пакет `djangorestframework-simplejwt`.
+Сесія (cookie + CSRF) зручна браузеру на тому самому сайті. Мобільному застосунку, скрипту чи Telegram-боту (урок 47) потрібне інше: отримати **токен** і надсилати його в заголовку `Authorization: Bearer …`. У прототипі `production_bot` токени видавались вручну через PyJWT; у Django — готовий пакет `djangorestframework-simplejwt`.
 
 | | Сесія (cookie) | JWT (Bearer) |
 |---|---|---|
@@ -438,7 +438,7 @@ Too Many Requests: /api/token/
 
 ## Налаштування безпеки і `check --deploy` { #settings }
 
-Урок старого курсу додав блок налаштувань; урок 40 — `SECRET_KEY`, `DEBUG` і `ALLOWED_HOSTS` зі змінних середовища:
+Стартовий код додав блок налаштувань; урок 40 — `SECRET_KEY`, `DEBUG` і `ALLOWED_HOSTS` зі змінних середовища:
 
 ```python title="hello_project/settings.py (фрагмент)"
 # Цим ключем підписуються сесії, токени скидання пароля і JWT. Хто його знає — підробить будь-який токен.
@@ -666,7 +666,7 @@ print("підроблений токен →", response.status_code, [note["titl
 
 ## Документація і джерела
 
-- Код: [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_40_auth_security/crispy_notes_project) — проєкт уроку 35 + `lesson_Django_authentication_and_security/crispy_notes_project` старого курсу (`module_5`).
+- Код: [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_40_auth_security/crispy_notes_project) — проєкт уроку 35 + групи, скидання пароля й налаштування безпеки зі стартового `crispy_notes_project`.
 - Django-книга, частина VII: [огляд](https://nikoriakviktot.github.io/notes_chat_app/07_auth_and_security/), [автентифікація](https://nikoriakviktot.github.io/notes_chat_app/07_auth_and_security/auth_basics_full/), [сесії](https://nikoriakviktot.github.io/notes_chat_app/07_auth_and_security/sessions_flow_full/), [права доступу](https://nikoriakviktot.github.io/notes_chat_app/07_auth_and_security/permissions_full/), [архітектура безпеки Django](https://nikoriakviktot.github.io/notes_chat_app/07_auth_and_security/django_security_architecture_full/), [типові помилки](https://nikoriakviktot.github.io/notes_chat_app/07_auth_and_security/security_misconceptions_full/), [OWASP Top 10](https://nikoriakviktot.github.io/notes_chat_app/07_auth_and_security/owasp_top_10_full/).
 - Django: [Password management](https://docs.djangoproject.com/en/5.2/topics/auth/passwords/), [Using the authentication system](https://docs.djangoproject.com/en/5.2/topics/auth/default/), [Deployment checklist](https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/), [Security in Django](https://docs.djangoproject.com/en/5.2/topics/security/)
 - DRF: [Authentication](https://www.django-rest-framework.org/api-guide/authentication/), [Permissions](https://www.django-rest-framework.org/api-guide/permissions/), [Throttling](https://www.django-rest-framework.org/api-guide/throttling/); [Simple JWT](https://django-rest-framework-simplejwt.readthedocs.io/)

@@ -1,5 +1,5 @@
-"""Знімок стрічки rbc.ua — 168 новин, зібраних `parse_rbc_news` у старому курсі
-(module_4/lessons/lesson_31_http_requests/rbc_news.json). Поки сайт недоступний
+"""Знімок стрічки rbc.ua — 168 новин, зібраних `parse_rbc_news`
+(файл rbc_news.json). Поки сайт недоступний
 із середовища курсу, агрегатор працює на цьому знімку.
 """
 import json

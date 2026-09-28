@@ -1,4 +1,4 @@
-"""Alembic env — async-версія з production_bot старого курсу.
+"""Alembic env — async-версія зі стартового production_bot.
 
 Зміна уроку 38: адреса бази — з news_hub.db.DATABASE_URL (змінна середовища), а не з alembic.ini,
 тож застосунок і міграції завжди дивляться в ту саму базу.

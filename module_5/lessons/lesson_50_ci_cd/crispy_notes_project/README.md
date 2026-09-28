@@ -29,7 +29,7 @@
 > ```
 >
 > **Урок 45 курсу — рефакторинг 6: груповий чат на WebSocket (крок 7B Django-книги).** Це `crispy_notes_project`
-> з уроку 44 плюс чат із `notes_chat_app` старого курсу (`module_5/lesson_Django_Async`): модель `ChatMessage`,
+> з уроку 44 плюс чат із прототипу `notes_chat_app`: модель `ChatMessage`,
 > `hello_app/consumers.py` (`GroupChatConsumer`), `hello_project/routing.py` і `asgi.py`, сторінка
 > `/groups/<pk>/chat/` з `static/hello_app/js/group_chat.js`. Урок 45 робить consumer ще одним транспортом над тими
 > самими selectors і services (урок 44): право писати перевіряється на кожне повідомлення, вилученого з групи
@@ -52,7 +52,7 @@
 > **Урок 44 — рефакторинг 5: архітектура (крок 3 Django-книги).** Це `crispy_notes_project` з уроку 40
 > (сторінки + DRF API + групи й JWT). Урок 44 змінює, **як** він влаштований, а не що він уміє:
 >
-> - нотатки, записники й теги — class-based views з `notes_project_cbv` старого курсу (`LoginRequiredMixin`,
+> - нотатки, записники й теги — class-based views зі стартового `notes_project_cbv` (`LoginRequiredMixin`,
 >   `OwnerRequiredMixin`, `SelectorQuerySetMixin`); списки справ, покупок і групи — тонкі функції;
 > - «хто що бачить» і «хто що змінює» — функції `selectors.*_visible_to` / `*_owned_by`: одне правило для списку,
 >   сторінки, редагування й API; у `views.py` і `api.py` немає `Model.objects` (перевіряє `tests_architecture.py`);
@@ -73,7 +73,7 @@
 > python manage.py migrate && python manage.py test
 > ```
 >
-> Нижче — туторіал уроку автентифікації старого курсу без змін (урок 40).
+> Нижче — стартовий туторіал автентифікації без змін (урок 40).
 
 # CrispyNotes — Django Автентифікація та Безпека
 
@@ -608,7 +608,7 @@ SQL (спрощено):
 
 ```bash
 # 1. Перейти до папки проєкту
-cd module_5/lesson_Django_authentication_and_security/crispy_notes_project
+cd crispy_notes_project
 
 # 2. Встановити залежності
 pip install -r requirements.txt

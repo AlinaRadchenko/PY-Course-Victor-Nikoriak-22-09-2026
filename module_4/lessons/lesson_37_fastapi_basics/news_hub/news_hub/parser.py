@@ -1,7 +1,6 @@
 """Парсер стрічки новин rbc.ua.
 
-Код — функція `parse_rbc_news` зі старого курсу
-(module_4/lessons/lesson_31_http_requests/note_lesson_31_web_scraping.ipynb).
+Стартовий код — функція `parse_rbc_news` з ноутбука про web scraping.
 Рефакторинг уроку 36: анотації типів, `list[dict]` → `list[RawNews]`,
 пошук тегів винесено в `_find_tag`; логіку розбору не змінено.
 

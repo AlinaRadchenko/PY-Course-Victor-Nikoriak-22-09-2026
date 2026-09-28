@@ -1,7 +1,7 @@
 """
 Django settings — урок 40: автентифікація й безпека.
 
-З уроку lesson_Django_authentication_and_security старого курсу:
+Зі стартового коду (автентифікація й безпека):
   + password reset/change flows   → EMAIL_BACKEND (console), /accounts/password_*/
   + security settings block       → SESSION_COOKIE_HTTPONLY, X_FRAME_OPTIONS, ...
   + Group-based sharing           → Django built-in Group model used in Note/ShoppingList

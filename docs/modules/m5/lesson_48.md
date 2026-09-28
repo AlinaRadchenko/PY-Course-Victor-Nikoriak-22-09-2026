@@ -4,7 +4,7 @@
 
 Сьогодні агрегатор стає **образом Docker**. Це один файл-рецепт (`Dockerfile`), з якого на будь-якій машині з Docker виходить той самий застосунок з тими самими бібліотеками.
 
-Основа — `Dockerfile` з `production_bot` старого курсу. Ми збираємо його над `news_hub` без змін, дивимось, що потрапило в образ, скільки він важить і як зупиняється. Потім виправляємо крок за кроком.
+Основа — `Dockerfile` зі стартового `production_bot`. Ми збираємо його над `news_hub` без змін, дивимось, що потрапило в образ, скільки він важить і як зупиняється. Потім виправляємо крок за кроком.
 
 | Урок | Крок агрегатора |
 |---|---|
@@ -42,9 +42,9 @@
     2. Усе, що потрапило в git чи в код, бачить кожен, хто має копію, — і назавжди, навіть після видалення (історія). Секрети — лише в змінних середовища.
     3. Після `yield` — закриває сесію бота, клієнт LLM, з'єднання з Redis і пул бази. Якщо процес вбити, ця частина не виконається.
 
-## Старт: що дає старий курс
+## Старт: з якого коду починаємо
 
-```dockerfile title="production_bot/Dockerfile (старий курс)"
+```dockerfile title="production_bot/Dockerfile (стартовий код)"
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -706,7 +706,7 @@ $ docker inspect -f '{{.State.ExitCode}}' fb
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_5/lessons/lesson_48_docker/news_hub) — `Dockerfile` з `module_5/lesson_46_Telegram_API/production_bot/Dockerfile` старого курсу `PY-Course-Victor-Nikoriak-23_02`.
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_5/lessons/lesson_48_docker/news_hub) — `Dockerfile` зі стартового `production_bot`.
 - Docker: [Dockerfile reference](https://docs.docker.com/reference/dockerfile/), [build cache](https://docs.docker.com/build/cache/), [.dockerignore](https://docs.docker.com/build/concepts/context/#dockerignore-files), [best practices](https://docs.docker.com/build/building/best-practices/), [HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck), [shell і exec форми](https://docs.docker.com/reference/dockerfile/#shell-and-exec-form), [volumes](https://docs.docker.com/engine/storage/volumes/), [networking](https://docs.docker.com/engine/network/), [`docker run --env-file`](https://docs.docker.com/reference/cli/docker/container/run/#env).
 - Python-образи: [python на Docker Hub](https://hub.docker.com/_/python) (варіанти `slim`, `alpine`).
 - uvicorn: [deployment](https://www.uvicorn.org/deployment/), [налаштування](https://www.uvicorn.org/settings/) (`--workers`: «Defaults to the $WEB_CONCURRENCY environment variable if available, or 1»). FastAPI: [FastAPI in Containers](https://fastapi.tiangolo.com/deployment/docker/).

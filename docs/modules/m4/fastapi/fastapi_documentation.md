@@ -1,7 +1,6 @@
 # FastAPI: архітектура, async і production-патерни
 
 !!! info "Довідник до уроків 37–50"
-    Документ зі старого курсу (`module_4/lessons/lesson_34_asyncio/lesson_34_fastapi_documentation.md`), перенесений як є.
     Розділи 1–5 — до [уроку 37](../lesson_37.md) (там вони працюють на проєкті `news_hub` і з реальними вимірами), 6–8 — до уроку 38 (база даних), 9–10 — до уроків 48–50 (Docker, деплой).
 
 **Складність:** intermediate → advanced

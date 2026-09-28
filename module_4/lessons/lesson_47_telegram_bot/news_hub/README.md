@@ -4,7 +4,7 @@
 
 | Урок | Крок |
 |---|---|
-| 36 | парсер зі старого курсу з анотаціями типів; `NewsItem` на Pydantic |
+| 36 | стартовий парсер з анотаціями типів; `NewsItem` на Pydantic |
 | 37 | FastAPI: `GET /api/news`, `POST /api/scrape`, `/docs`, Postman |
 | 38 | SQLAlchemy: новини в базі, унікальний `url`, повний CRUD, Alembic |
 | 39 | middleware, кеш і rate limit на Redis, фоновий збір |
@@ -20,7 +20,7 @@
 ```
 news_hub/
 ├── news_hub/
-│   ├── parser.py     ← parse_rbc_news зі старого курсу + типи: HTML → list[RawNews]
+│   ├── parser.py     ← стартовий parse_rbc_news + типи: HTML → list[RawNews]
 │   ├── rss.py        ← урок 42: parse_pravda_rss — RSS «Української правди» → list[RawNews] (написав Claude Code)
 │   ├── models.py     ← NewsItem (Pydantic), validate_news, is_allowed_host (rbc.ua, pravda.com.ua, epravda.com.ua)
 │   ├── snapshot.py   ← знімок стрічки: data/rbc_news_snapshot.json → list[RawNews]
@@ -42,7 +42,7 @@ news_hub/
 │   └── api.py        ← FastAPI: /api/news (+ CRUD, кеш), /stats, POST /api/scrape, /api/scrape/jobs,
 │                       POST /api/news/{id}/analyze, /api/analyze/jobs; урок 46: /api/admin/token, /api/sources,
 │                       POST /api/webhooks/scrape; запис — лише з токеном адміна; урок 47: POST /api/telegram/webhook
-├── data/rbc_news_snapshot.json   ← 168 новин, зібраних parse_rbc_news у старому курсі
+├── data/rbc_news_snapshot.json   ← 168 новин, зібраних parse_rbc_news
 ├── migrations/       ← урок 38: Alembic — версії схеми бази (0001: таблиця news; 0002: колонки аналізу LLM; 0003: таблиця sources; 0004: таблиця subscriptions)
 ├── alembic.ini
 ├── docker-compose.yml ← PostgreSQL 16 (урок 38) і Redis 7 (урок 39) для розробки
@@ -67,7 +67,7 @@ news_hub/
     └── live/         ← урок 43: справжні виклики моделі — лише pytest -m llm (потрібен ключ і мережа)
 ```
 
-Джерела коду: `bot/` — `module_5/lesson_46_Telegram_API/ai_bot/app/` (`bot.py`, `handlers/commands.py`, `middlewares/`, `utils/`) і `echo_bot/`; `notify.py` — `production_bot/backend/workers/notifications.py`; webhook — `production_bot/backend/api/webhook.py` і `app.py`; `security.py` — `production_bot/backend/core/security.py`, `api/deps.py` і `api/admin/auth.py`; `webhooks.py` — `production_bot/backend/api/webhook.py`; `safe_fetch.py` — розділ A10 (SSRF) `module_5/lesson_Django_authentication_and_security/OWASP_TOP_10.md`; `llm.py` — `ai_bot/app/services/ai_service.py` (пул моделей Gemini, circuit breaker), `analysis.py` замінює `news_dashboard/app/nlp.py`; Redis-клієнт — `production_bot/backend/core/redis.py`, rate limit — `ai_bot/app/middlewares/rate_limit.py` і `repositories/rate_limit_repo.py`, фоновий збір — `/api/scrape/archive` з `news_dashboard`; база й репозиторій — `module_5/lesson_46_Telegram_API/production_bot/backend/core/database.py`, `repositories/base.py`, `migrations/` старого курсу; API і скрапер — `module_4/lessons/lesson_34_asyncio/news_dashboard/app/main.py` і `scraper.py` старого курсу `PY-Course-Victor-Nikoriak-23_02`; `parse_rbc_news` — ноутбук `module_4/lessons/lesson_31_http_requests/note_lesson_31_web_scraping.ipynb` старого курсу `PY-Course-Victor-Nikoriak-23_02`; словник категорій — `module_4/lessons/lesson_34_asyncio/news_dashboard/app/scraper.py` там само. Знімок — `rbc_news.json` з того ж уроку.
+Джерела коду: `bot/` — стартовий `ai_bot/app/` (`bot.py`, `handlers/commands.py`, `middlewares/`, `utils/`) і `echo_bot/`; `notify.py` — `production_bot/backend/workers/notifications.py`; webhook — `production_bot/backend/api/webhook.py` і `app.py`; `security.py` — `production_bot/backend/core/security.py`, `api/deps.py` і `api/admin/auth.py`; `webhooks.py` — `production_bot/backend/api/webhook.py`; `safe_fetch.py` — розділ A10 (SSRF) конспекту `OWASP_TOP_10.md`; `llm.py` — `ai_bot/app/services/ai_service.py` (пул моделей Gemini, circuit breaker), `analysis.py` замінює `news_dashboard/app/nlp.py`; Redis-клієнт — `production_bot/backend/core/redis.py`, rate limit — `ai_bot/app/middlewares/rate_limit.py` і `repositories/rate_limit_repo.py`, фоновий збір — `/api/scrape/archive` з `news_dashboard`; база й репозиторій — стартовий `production_bot/backend/core/database.py`, `repositories/base.py`, `migrations/`; API і скрапер — прототип `news_dashboard/app/main.py` і `scraper.py`; `parse_rbc_news` — ноутбук про веб-скрапінг `note_lesson_31_web_scraping.ipynb`; словник категорій — `news_dashboard/app/scraper.py`. Знімок — `rbc_news.json` поруч із тим самим ноутбуком.
 
 ## Запуск
 

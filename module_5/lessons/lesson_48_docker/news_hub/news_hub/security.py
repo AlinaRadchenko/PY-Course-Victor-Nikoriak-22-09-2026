@@ -1,6 +1,6 @@
 """Адмін-доступ: пароль (bcrypt) → JWT → `require_admin` на кожному ендпоінті запису. Урок 46.
 
-Основа — `production_bot` старого курсу (module_5/lesson_46_Telegram_API/production_bot/backend):
+Основа — стартовий `production_bot` (`backend/`):
 `core/security.py` (хеш пароля, `create_access_token`, `decode_token`), `api/deps.py`
 (`get_current_admin`: 401 — недійсний чи прострочений токен, 403 — не адмін) і `api/admin/auth.py`
 (`POST /admin/auth/token`). Рефакторинг уроку 46:

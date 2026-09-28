@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field, HttpUrl, ValidationError, fie
 
 from .parser import RawNews
 
-# Розділ сайту в URL → назва категорії (словник — з news_dashboard старого курсу)
+# Розділ сайту в URL → назва категорії (словник — з прототипу news_dashboard)
 CATEGORIES: dict[str, str] = {
     "news": "Новини", "economic": "Економіка", "economics": "Економіка",
     "politics": "Політика", "society": "Суспільство", "sport": "Спорт",

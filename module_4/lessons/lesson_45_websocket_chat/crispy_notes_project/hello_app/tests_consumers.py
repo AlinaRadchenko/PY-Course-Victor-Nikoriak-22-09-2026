@@ -1,7 +1,7 @@
 """
 tests_consumers.py — unit тести WebSocket Consumer (GroupChatConsumer)
 
-Урок 45: notes_app/tests/test_consumers.py з notes_chat_app старого курсу без змін (лише імпорти hello_app).
+Урок 45: notes_app/tests/test_consumers.py з notes_chat_app без змін (лише імпорти hello_app).
 Нові тести уроку — tests_chat.py.
 
 РІВЕНЬ ТЕСТУВАННЯ:

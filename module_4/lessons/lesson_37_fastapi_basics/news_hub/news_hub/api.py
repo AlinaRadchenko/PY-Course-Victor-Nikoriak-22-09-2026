@@ -1,6 +1,6 @@
 """HTTP API агрегатора: FastAPI поверх парсера й моделі з уроку 36.
 
-Основа — `news_dashboard/app/main.py` старого курсу (618 рядків: скрапінг, MongoDB, NLP,
+Основа — `app/main.py` прототипу `news_dashboard` (618 рядків: скрапінг, MongoDB, NLP,
 архів, тренди). Рефакторинг уроку 37 лишає ядро — `/health`, `GET /api/news` з фільтрами,
 `/api/news/count`, `/api/news/stats`, `POST /api/scrape`, `DELETE /api/news` — і змінює:
 - `NewsItem` у відповіді — модель з уроку 36, а не друга копія полів;

@@ -1,7 +1,7 @@
 """Збирання бота: Bot, Dispatcher, middleware, роутер, меню команд. Урок 47.
 
 Основа — `app/bot.py` з `ai_bot` (фабрики `create_bot` / `create_dispatcher`, `set_bot_commands`) і
-`backend/app.py` з `production_bot` старого курсу. Рефакторинг:
+`backend/app.py` зі стартового `production_bot`. Рефакторинг:
 - `TelegramAPIServer.from_base(api_url)`: бот ходить на двійник Telegram або локальний Bot API server;
   без `api_url` — на api.telegram.org, як раніше;
 - залежності — параметрами фабрики (база, Redis, LLM, адміни), а не глобальним `config`: ті самі фабрики

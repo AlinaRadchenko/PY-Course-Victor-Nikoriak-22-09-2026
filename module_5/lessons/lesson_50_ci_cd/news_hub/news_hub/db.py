@@ -1,7 +1,7 @@
 """Підключення до бази: engine (пул з'єднань), фабрика сесій, базовий клас моделей, сесія на запит.
 
-Код — `backend/core/database.py` з `production_bot` старого курсу
-(module_5/lesson_46_Telegram_API). Рефакторинг уроку 38:
+Стартовий код — `backend/core/database.py` зі стартового `production_bot`.
+Рефакторинг уроку 38:
 - адреса бази — зі змінної середовища `DATABASE_URL`; без неї — файл SQLite поруч із проєктом,
   щоб урок працював без PostgreSQL (ноутбук, Colab);
 - `pool_size` / `max_overflow` — лише для PostgreSQL (у SQLite своя модель з'єднань);

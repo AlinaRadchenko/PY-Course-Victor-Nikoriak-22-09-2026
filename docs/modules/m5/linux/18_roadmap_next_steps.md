@@ -1,7 +1,7 @@
 # 18. Roadmap і наступні кроки
 
 !!! info "Довідник бонус-уроку «Linux для розробника»"
-    Теорія зі старого курсу (`module_5/lesson_Linux_DevOps_Basics/18_roadmap_next_steps.md`), перенесена й перевірена. Урок з вправами — [Бонус. Linux](../bonus_linux.md).
+    Розділ перевірено: кожну команду виконано в контейнерах Ubuntu, Debian і `python:3.12-slim`. Урок з вправами — [Бонус. Linux](../bonus_linux.md).
 
 ## Ти пройшов цей урок
 

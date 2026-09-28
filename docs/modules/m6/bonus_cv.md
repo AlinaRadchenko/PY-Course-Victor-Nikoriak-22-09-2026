@@ -2,10 +2,10 @@
 
 Курс закінчується фінальним проєктом (уроки 51–52), а після нього — пошук роботи чи стажування. Перше, що побачить рекрутер, — не код, а **CV**. Цей бонус-урок (поза нумерацією 1–52) — про дві речі:
 
-1. **що** писати: як з «я робив» зробити «я створив цінність» — туторіал старого курсу;
+1. **що** писати: як з «я робив» зробити «я створив цінність» — туторіал;
 2. **як** робити CV інженерно: зміст і дизайн у HTML, PDF — однією командою, версії — у Git.
 
-Код — `CV_maker` зі старого курсу (`module_5/CV_maker/`): HTML-резюме викладача, скрипт `generate_cv_pdf.py` (`pdfkit` → `wkhtmltopdf`), README з інструкціями і туторіал.
+Стартовий код — `CV_maker`: HTML-резюме викладача, скрипт `generate_cv_pdf.py` (`pdfkit` → `wkhtmltopdf`), README з інструкціями і туторіал.
 
 | Крок | Матеріал | Що там |
 |---|---|---|
@@ -57,12 +57,12 @@ flowchart TD
 ```bash
 cd module_6/bonus/cv_maker
 pip install pdfkit                               # + wkhtmltopdf (README: Windows, macOS, Linux)
-python generate_cv_pdf.py                        # CV викладача, як у старому курсі
+python generate_cv_pdf.py                        # CV викладача
 python generate_cv_pdf.py cv_template.html CV_Name_Surname.pdf
 ```
 
 ```text
-PDF created: …/module_6/bonus/cv_maker/CV_Viktor_Nikoriak_GeoAI.pdf     ← 5 сторінок, як PDF у старому курсі
+PDF created: …/module_6/bonus/cv_maker/CV_Viktor_Nikoriak_GeoAI.pdf     ← 5 сторінок
 PDF created: /tmp/CV_Template.pdf                                          ← шаблон: 1 сторінка
 ```
 
@@ -146,6 +146,6 @@ CV генерується з даних Python-функцією, яка вста
 
 ## Документація і джерела
 
-- Код: [`cv_maker`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_6/bonus/cv_maker) — `module_5/CV_maker/` старого курсу `PY-Course-Victor-Nikoriak-23_02` (README, туторіал, HTML-CV викладача, `generate_cv_pdf.py`).
+- Код: [`cv_maker`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_6/bonus/cv_maker) — README, туторіал, HTML-CV викладача, `generate_cv_pdf.py`.
 - [pdfkit](https://pypi.org/project/pdfkit/), [wkhtmltopdf](https://wkhtmltopdf.org/), [Playwright для Python: `page.pdf()`](https://playwright.dev/python/docs/api/class-page#page-pdf).
 - CSS для друку: [`break-inside` / `page-break-inside`](https://developer.mozilla.org/en-US/docs/Web/CSS/break-inside).

@@ -1,6 +1,6 @@
 """Завантаження сторінок rbc.ua: паралельно (`asyncio.gather`) або по черзі.
 
-Код — `news_dashboard/app/scraper.py` старого курсу (module_4/lessons/lesson_34_asyncio).
+Стартовий код — `app/scraper.py` прототипу `news_dashboard`.
 Рефакторинг уроку 37:
 - власний `_parse_page` (друга копія парсера зі своїм словником категорій) → `parse_rbc_news` з уроку 36;
 - NLP при парсингі прибрано — аналіз тексту повернеться в уроці 43 (Gemini);

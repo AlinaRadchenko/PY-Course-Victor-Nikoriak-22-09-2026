@@ -2,7 +2,7 @@
 
 В уроці 36 агрегатор навчився **перевіряти** новини: парсер `parse_rbc_news` дає сирі рядки, модель `NewsItem` пропускає лише правильні. Але все це живе в Python-процесі: скористатися агрегатором може лише той, хто імпортує модуль. Сьогодні агрегатор стає **сервісом** — HTTP API, який можна викликати з браузера, Postman, іншої програми чи (в уроці 47) Telegram-бота.
 
-Знову не з нуля: у старому курсі вже є FastAPI-застосунок агрегатора — `news_dashboard/app/main.py` (618 рядків, 16 ендпоінтів, MongoDB, NLP, архівний парсер). Беремо з нього ядро й робимо три рефакторинги проєкту `news_hub` з уроку 36.
+Знову не з нуля: вже є FastAPI-застосунок агрегатора — `news_dashboard/app/main.py` (618 рядків, 16 ендпоінтів, MongoDB, NLP, архівний парсер). Беремо з нього ядро й робимо три рефакторинги проєкту `news_hub` з уроку 36.
 
 | Урок | Крок агрегатора |
 |---|---|
@@ -15,7 +15,7 @@
 | 47 | Telegram-бот |
 | 48–50 | Docker, Compose, CI/CD |
 
-Проєкт: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_37_fastapi_basics/news_hub). Поруч — [`fastapi_demo`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_37_fastapi_basics/fastapi_demo) зі старого курсу: шість ендпоінтів, на яких видно, що з сервером робить блокуючий код.
+Проєкт: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_37_fastapi_basics/news_hub). Поруч — [`fastapi_demo`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_37_fastapi_basics/fastapi_demo) — стартовий код: шість ендпоінтів, на яких видно, що з сервером робить блокуючий код.
 
 **Що потрібно з попередніх уроків:** `async`/`await` і `asyncio.gather` (27, 31), REST — ресурси, методи, статус-коди, OpenAPI (32), FastAPI-версія API нотаток (35), `NewsItem` і `validate_news` (36).
 
@@ -30,7 +30,7 @@
 
 **Ноутбук заняття:** [`note_lesson_37_fastapi.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_37_fastapi_basics/note_lesson_37_fastapi.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_37_fastapi_basics/note_lesson_37_fastapi.ipynb) — API агрегатора через `TestClient`, без запуску сервера.
 
-**Довідник:** [FastAPI: архітектура, async і production-патерни](fastapi/fastapi_documentation.md) — документ зі старого курсу; розділи 1–5 — до цього уроку.
+**Довідник:** [FastAPI: архітектура, async і production-патерни](fastapi/fastapi_documentation.md): розділи 1–5 — до цього уроку.
 
 ## Пригадай
 
@@ -44,11 +44,11 @@
     2. `await asyncio.sleep` віддає керування циклу подій — поки корутина спить, виконуються інші. `time.sleep` зупиняє весь потік разом із циклом подій. Сьогодні побачимо це на сервері в цифрах.
     3. `201 Created`; неправильні дані — `400` або `422`. FastAPI для помилок перевірки завжди повертає `422`.
 
-## Старт: що дає `news_dashboard` старого курсу
+## Старт: з якого коду починаємо
 
 `news_dashboard/app/main.py` — застосунок, що вміє все одразу: парсить rbc.ua (разом або по черзі), зберігає в MongoDB, рахує тональність і ключові слова (spaCy), збирає архів за роки у фоні, будує тренди. Для першого кроку це забагато — беремо ядро, решту переносимо в уроки, де для неї з'явиться основа:
 
-| Ендпоінти старого `main.py` | Що з ними | Коли повернуться |
+| Ендпоінти стартового `main.py` | Що з ними | Коли повернуться |
 |---|---|---|
 | `/health`, `GET /api/news`, `/api/news/count`, `/api/news/stats`, `POST /api/scrape`, `DELETE /api/news` | **беремо** — ядро агрегатора | урок 37 |
 | MongoDB (`motor`) у кожному ендпоінті | → `NewsStore` через `Depends` | урок 38 — SQLAlchemy |
@@ -170,7 +170,7 @@ for params in ({"limit": 0}, {"limit": "abc"}, {"lang": "en"}):
 
 ## Рефакторинг 2. Сховище через `Depends` і `lifespan` { #refactor-2 }
 
-У старому коді кожен ендпоінт сам діставав базу: `db = get_db()` → `db.news.find(query)`. Ендпоінт знає про MongoDB, а протестувати його без MongoDB неможливо. Виносимо «де лежать новини» в клас з тим самим контрактом:
+У стартовому коді кожен ендпоінт сам діставав базу: `db = get_db()` → `db.news.find(query)`. Ендпоінт знає про MongoDB, а протестувати його без MongoDB неможливо. Виносимо «де лежать новини» в клас з тим самим контрактом:
 
 ```diff title="GET /api/news: було → стало"
  @app.get("/api/news", response_model=list[NewsItem])
@@ -325,13 +325,13 @@ print(response.status_code, response.json()["detail"][0]["loc"], response.json()
 422 ['body', 'mode'] Input should be 'async' or 'sequential'
 ```
 
-Повторний збір не дублює новин (`news_saved: 0`): ключ сховища — `url`, як `upsert` зі `$setOnInsert` у старому коді.
+Повторний збір не дублює новин (`news_saved: 0`): ключ сховища — `url`, як `upsert` зі `$setOnInsert` у стартовому коді.
 
 Обмеження `pages` лише сайтом rbc.ua — не формальність. Старий `ScrapeRequest` приймав будь-які URL: хто завгодно міг змусити сервер завантажити довільну адресу — зокрема внутрішню, недоступну ззовні (`http://localhost:…`, адреси хмарної інфраструктури). Це **SSRF** (Server-Side Request Forgery) — розберемо в уроці 46.
 
 ### Живий збір
 
-`scraper.py` — `scrape_all_async` і `scrape_sequential` старого курсу: `aiohttp`, `asyncio.gather`, час початку й кінця кожної сторінки (у `news_dashboard` з них будувалась діаграма Ганта «разом vs по черзі»). Змінилося: розбір — `parse_rbc_news` з уроку 36 замість другої копії парсера; сторінка з кодом помилки (`403`, `503`) — помилка, а не «0 новин»:
+`scraper.py` — `scrape_all_async` і `scrape_sequential` з прототипу `news_dashboard`: `aiohttp`, `asyncio.gather`, час початку й кінця кожної сторінки (у `news_dashboard` з них будувалась діаграма Ганта «разом vs по черзі»). Змінилося: розбір — `parse_rbc_news` з уроку 36 замість другої копії парсера; сторінка з кодом помилки (`403`, `503`) — помилка, а не «0 новин»:
 
 ```python
 report = api.post("/api/scrape", json={"pages": ["https://www.rbc.ua/ukr/news/"]}).json()
@@ -521,7 +521,7 @@ flowchart TD
     class a0h,a2a,a2b,a2c success
 ```
 
-Перевіримо на [`fastapi_demo`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_37_fastapi_basics/fastapi_demo) зі старого курсу. Сервер — `uvicorn app.main:app --port 8001`, навантаження — `python load_test.py` (одночасні запити, загальний час). Результати з машини, де збирався курс (4 ядра, один процес uvicorn; числа на іншій машині будуть трохи інші, співвідношення — ті самі):
+Перевіримо на [`fastapi_demo`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_37_fastapi_basics/fastapi_demo). Сервер — `uvicorn app.main:app --port 8001`, навантаження — `python load_test.py` (одночасні запити, загальний час). Результати з машини, де збирався курс (4 ядра, один процес uvicorn; числа на іншій машині будуть трохи інші, співвідношення — ті самі):
 
 | Ендпоінт | Як написаний | Одночасних запитів | Загальний час |
 |---|---|---:|---:|
@@ -552,7 +552,7 @@ flowchart TD
     classDef error    fill:#ffebee,stroke:#c62828,stroke-width:3px;
     classDef warning  fill:#fff8e1,stroke:#e65100,stroke-width:2px;
 
-    subgraph OLD ["старий news_dashboard: 16 ендпоінтів в одному main.py"]
+    subgraph OLD ["до рефакторингу: news_dashboard,<br>16 ендпоінтів в одному main.py"]
         direction LR
         E0["ендпоінт"] --> M0["MongoDB<br>напряму: get_db()"]
         E0 --> S0["scraper.py<br>власний _parse_page + NLP"]
@@ -713,7 +713,7 @@ async def scrape_page(url: str, store: StoreDep) -> dict[str, int]:
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_37_fastapi_basics/news_hub) — API й скрапер з `news_dashboard/app/main.py` і `scraper.py` старого курсу (`module_4/lessons/lesson_34_asyncio`); [`fastapi_demo`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_37_fastapi_basics/fastapi_demo) — там само.
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_37_fastapi_basics/news_hub) — API й скрапер з `news_dashboard/app/main.py` і `scraper.py` прототипу `news_dashboard`; [`fastapi_demo`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_37_fastapi_basics/fastapi_demo) — там само.
 - Довідник курсу: [FastAPI: архітектура, async і production-патерни](fastapi/fastapi_documentation.md).
 - FastAPI: [First Steps](https://fastapi.tiangolo.com/tutorial/first-steps/), [Query Parameters and String Validations](https://fastapi.tiangolo.com/tutorial/query-params-str-validations/), [Request Body](https://fastapi.tiangolo.com/tutorial/body/), [Response Model](https://fastapi.tiangolo.com/tutorial/response-model/), [Handling Errors](https://fastapi.tiangolo.com/tutorial/handling-errors/), [Dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/), [Lifespan Events](https://fastapi.tiangolo.com/advanced/events/), [Testing](https://fastapi.tiangolo.com/tutorial/testing/), [Testing Dependencies with Overrides](https://fastapi.tiangolo.com/advanced/testing-dependencies/), [Concurrency and async / await](https://fastapi.tiangolo.com/async/)
 - [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)

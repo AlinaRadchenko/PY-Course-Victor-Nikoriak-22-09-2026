@@ -1,6 +1,6 @@
 """Команди бота агрегатора. Урок 47.
 
-Основа — `app/handlers/commands.py` з `ai_bot` старого курсу: `Router`, `CommandStart()`, `Command(...)`,
+Основа — `app/handlers/commands.py` зі стартового `ai_bot`: `Router`, `CommandStart()`, `Command(...)`,
 залежності в параметрах handler (з `InjectMiddleware`). Рефакторинг:
 - замість розмови з LLM — команди новинного агрегатора над тим самим `NewsRepository`, що в API;
 - кожен рядок, що прийшов ззовні (ім'я, заголовок, слово), — через `esc` / `link` (formatting.py);
