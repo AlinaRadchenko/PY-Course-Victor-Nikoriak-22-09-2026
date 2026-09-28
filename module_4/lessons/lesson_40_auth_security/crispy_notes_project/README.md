@@ -1,5 +1,5 @@
-> **Урок 40 курсу — рефакторинг 4: автентифікація й безпека.** Це `crispy_notes_project` з уроку 35 (сторінки + DRF API) плюс код уроку
-> `lesson_Django_authentication_and_security` старого курсу (туторіал нижче — без змін): спільний доступ через `Group`, зміна й скидання пароля,
+> **Урок 40 курсу — рефакторинг 4: автентифікація й безпека.** Це `crispy_notes_project` з уроку 35 (сторінки + DRF API) плюс стартовий код
+> автентифікації й безпеки (туторіал нижче — без змін): спільний доступ через `Group`, зміна й скидання пароля,
 > блок налаштувань безпеки. Урок 40 додає JWT для API (`djangorestframework-simplejwt`: `/api/token/`, `/api/token/refresh/`),
 > throttle на видачу токена, `SECRET_KEY`/`DEBUG` зі змінних середовища і тести `hello_app/tests_auth.py`.
 > Змінювати й видаляти нотатку — і на сторінках, і через API — може лише її автор (`403` для учасника групи).
@@ -546,7 +546,7 @@ SQL (спрощено):
 
 ```bash
 # 1. Перейти до папки проєкту
-cd module_5/lesson_Django_authentication_and_security/crispy_notes_project
+cd crispy_notes_project
 
 # 2. Встановити залежності
 pip install -r requirements.txt

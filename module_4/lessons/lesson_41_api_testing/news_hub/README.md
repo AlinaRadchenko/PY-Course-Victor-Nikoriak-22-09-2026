@@ -4,7 +4,7 @@
 
 | Урок | Крок |
 |---|---|
-| 36 | парсер зі старого курсу з анотаціями типів; `NewsItem` на Pydantic |
+| 36 | стартовий парсер з анотаціями типів; `NewsItem` на Pydantic |
 | 37 | FastAPI: `GET /api/news`, `POST /api/scrape`, `/docs`, Postman |
 | 38 | SQLAlchemy: новини в базі, унікальний `url`, повний CRUD, Alembic |
 | 39 | middleware, кеш і rate limit на Redis, фоновий збір |
@@ -18,7 +18,7 @@
 ```
 news_hub/
 ├── news_hub/
-│   ├── parser.py     ← parse_rbc_news зі старого курсу + типи: HTML → list[RawNews]
+│   ├── parser.py     ← стартовий parse_rbc_news + типи: HTML → list[RawNews]
 │   ├── models.py     ← NewsItem (Pydantic), validate_news: RawNews → перевірені / відхилені
 │   ├── snapshot.py   ← знімок стрічки: data/rbc_news_snapshot.json → list[RawNews]
 │   ├── scraper.py    ← урок 37: сторінки rbc.ua через aiohttp — разом (gather) або по черзі
@@ -29,7 +29,7 @@ news_hub/
 │   ├── middleware.py ← урок 39: X-Request-ID / X-Process-Time, rate limit → 429, інвалідація кешу
 │   ├── jobs.py       ← урок 39: фоновий збір, статус задачі в Redis
 │   └── api.py        ← FastAPI: /api/news (+ CRUD, кеш), /stats, POST /api/scrape, /api/scrape/jobs
-├── data/rbc_news_snapshot.json   ← 168 новин, зібраних parse_rbc_news у старому курсі
+├── data/rbc_news_snapshot.json   ← 168 новин, зібраних parse_rbc_news
 ├── migrations/       ← урок 38: Alembic — версії схеми бази (0001: таблиця news)
 ├── alembic.ini
 ├── docker-compose.yml ← PostgreSQL 16 (урок 38) і Redis 7 (урок 39) для розробки
@@ -46,7 +46,7 @@ news_hub/
                         скрапер проти локального aiohttp-сервера
 ```
 
-Джерела коду: Redis-клієнт — `production_bot/backend/core/redis.py`, rate limit — `ai_bot/app/middlewares/rate_limit.py` і `repositories/rate_limit_repo.py`, фоновий збір — `/api/scrape/archive` з `news_dashboard`; база й репозиторій — `module_5/lesson_46_Telegram_API/production_bot/backend/core/database.py`, `repositories/base.py`, `migrations/` старого курсу; API і скрапер — `module_4/lessons/lesson_34_asyncio/news_dashboard/app/main.py` і `scraper.py` старого курсу `PY-Course-Victor-Nikoriak-23_02`; `parse_rbc_news` — ноутбук `module_4/lessons/lesson_31_http_requests/note_lesson_31_web_scraping.ipynb` старого курсу `PY-Course-Victor-Nikoriak-23_02`; словник категорій — `module_4/lessons/lesson_34_asyncio/news_dashboard/app/scraper.py` там само. Знімок — `rbc_news.json` з того ж уроку.
+Джерела коду: Redis-клієнт — `production_bot/backend/core/redis.py`, rate limit — `ai_bot/app/middlewares/rate_limit.py` і `repositories/rate_limit_repo.py`, фоновий збір — `/api/scrape/archive` з `news_dashboard`; база й репозиторій — стартовий `production_bot/backend/core/database.py`, `repositories/base.py`, `migrations/`; API і скрапер — прототип `news_dashboard/app/main.py` і `scraper.py`; `parse_rbc_news` — ноутбук про веб-скрапінг `note_lesson_31_web_scraping.ipynb`; словник категорій — `news_dashboard/app/scraper.py`. Знімок — `rbc_news.json` поруч із тим самим ноутбуком.
 
 ## Запуск
 

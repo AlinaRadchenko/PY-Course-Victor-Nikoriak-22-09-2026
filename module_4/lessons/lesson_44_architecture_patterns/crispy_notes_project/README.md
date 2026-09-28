@@ -1,7 +1,7 @@
 > **Урок 44 курсу — рефакторинг 5: архітектура (крок 3 Django-книги).** Це `crispy_notes_project` з уроку 40
 > (сторінки + DRF API + групи й JWT). Урок 44 змінює, **як** він влаштований, а не що він уміє:
 >
-> - нотатки, записники й теги — class-based views з `notes_project_cbv` старого курсу (`LoginRequiredMixin`,
+> - нотатки, записники й теги — class-based views зі стартового `notes_project_cbv` (`LoginRequiredMixin`,
 >   `OwnerRequiredMixin`, `SelectorQuerySetMixin`); списки справ, покупок і групи — тонкі функції;
 > - «хто що бачить» і «хто що змінює» — функції `selectors.*_visible_to` / `*_owned_by`: одне правило для списку,
 >   сторінки, редагування й API; у `views.py` і `api.py` немає `Model.objects` (перевіряє `tests_architecture.py`);
@@ -22,7 +22,7 @@
 > python manage.py migrate && python manage.py test
 > ```
 >
-> Нижче — туторіал уроку автентифікації старого курсу без змін (урок 40).
+> Нижче — стартовий туторіал автентифікації без змін (урок 40).
 
 # CrispyNotes — Django Автентифікація та Безпека
 
@@ -557,7 +557,7 @@ SQL (спрощено):
 
 ```bash
 # 1. Перейти до папки проєкту
-cd module_5/lesson_Django_authentication_and_security/crispy_notes_project
+cd crispy_notes_project
 
 # 2. Встановити залежності
 pip install -r requirements.txt

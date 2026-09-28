@@ -29,11 +29,11 @@ python app.py
 | `app.py` | інтерфейс Dash: `dcc.Interval` → `update_data()` → `STATE.advance(n)`; `render()` → `STATE.snapshot()` → графіки |
 | `test_stream_core.py` | перевірки: `python test_stream_core.py` |
 
-## Що виправлено порівняно з версією зі старого курсу
+## Чим цей код відрізняється від прототипу
 
-Старий `app_transactions_dash.py` (урок 19 курсу 23_02) мав проблеми з генерацією:
+Прототип `app_transactions_dash.py` мав проблеми з генерацією:
 
-| Проблема | Що відбувалося | Як виправлено |
+| Проблема прототипу | Що відбувалося | Як зроблено тут |
 |---|---|---|
 | один генератор у глобальній змінній, `next()` з кількох потоків | Dash виконує callback-и паралельно → `ValueError: generator already executing`. На навантажувальному тесті падали 1500 з 1800 викликів | `next()` лише в `MarketState.advance()` під `threading.Lock` |
 | графіки читали `deque`, поки в них писали | непослідовні графіки, ризик `RuntimeError` | усі графіки малюються з одного знімка `snapshot()` |

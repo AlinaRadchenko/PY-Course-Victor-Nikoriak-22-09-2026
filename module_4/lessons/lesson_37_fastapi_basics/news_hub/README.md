@@ -4,7 +4,7 @@
 
 | Урок | Крок |
 |---|---|
-| 36 | парсер зі старого курсу з анотаціями типів; `NewsItem` на Pydantic |
+| 36 | стартовий парсер з анотаціями типів; `NewsItem` на Pydantic |
 | **37** | **FastAPI: `GET /api/news`, `POST /api/scrape`, `/docs`, Postman** ← ти тут |
 | 38 | SQLAlchemy: новини в базі, унікальний `url` |
 | 39 | middleware, кеш і rate limit на Redis |
@@ -18,19 +18,19 @@
 ```
 news_hub/
 ├── news_hub/
-│   ├── parser.py     ← parse_rbc_news зі старого курсу + типи: HTML → list[RawNews]
+│   ├── parser.py     ← стартовий parse_rbc_news + типи: HTML → list[RawNews]
 │   ├── models.py     ← NewsItem (Pydantic), validate_news: RawNews → перевірені / відхилені
 │   ├── snapshot.py   ← знімок стрічки: data/rbc_news_snapshot.json → list[RawNews]
 │   ├── scraper.py    ← урок 37: сторінки rbc.ua через aiohttp — разом (gather) або по черзі
 │   ├── store.py      ← урок 37: NewsStore — сховище в пам'яті (урок 38 → SQLAlchemy)
 │   └── api.py        ← урок 37: FastAPI — /api/news, /api/news/stats, POST /api/scrape
-├── data/rbc_news_snapshot.json   ← 168 новин, зібраних parse_rbc_news у старому курсі
+├── data/rbc_news_snapshot.json   ← 168 новин, зібраних parse_rbc_news
 ├── postman/news_hub.postman_collection.json   ← 7 запитів з перевірками
 ├── examples/         ← before_dict.py / after_typed.py — що бачить mypy
 └── tests/            ← pytest: моделі, парсер, знімок, API (TestClient)
 ```
 
-Джерела коду: API і скрапер — `module_4/lessons/lesson_34_asyncio/news_dashboard/app/main.py` і `scraper.py` старого курсу `PY-Course-Victor-Nikoriak-23_02`; `parse_rbc_news` — ноутбук `module_4/lessons/lesson_31_http_requests/note_lesson_31_web_scraping.ipynb` старого курсу `PY-Course-Victor-Nikoriak-23_02`; словник категорій — `module_4/lessons/lesson_34_asyncio/news_dashboard/app/scraper.py` там само. Знімок — `rbc_news.json` з того ж уроку.
+Джерела коду: API і скрапер — прототип `news_dashboard/app/main.py` і `scraper.py`; `parse_rbc_news` — ноутбук про веб-скрапінг `note_lesson_31_web_scraping.ipynb`; словник категорій — `news_dashboard/app/scraper.py`. Знімок — `rbc_news.json` поруч із тим самим ноутбуком.
 
 ## Запуск
 
