@@ -1,7 +1,7 @@
 # Виправлення старого коду — нотатки викладача
 
 > Файл для викладача, у книгу курсу (`docs/`) не входить. Тут — усе, що довелося змінити в коді й
-> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–42,
+> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–47,
 > бонус-урок pandas, довідники. На сторінках уроків цих списків немає — студенти бачать лише
 > правильний код і пояснення «чому так».
 
@@ -114,6 +114,114 @@
 | 10 | папка `ui/pages/` — Streamlit автоматично додає 5 порожніх сторінок у меню | Streamlit AppTest | `ui/views/` |
 
 А ще: пороги ризику в UI (0,3 / 0,5) не збігались з бекендом (0,5 / 0,75); `delta="vs overall"` — підпис без порівняння; `requirements.txt` з `==` під Python 3.11, без колес для 3.13. Усе виправлено й перелічено в [README проєкту](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/depression_dashboard/README.md). Streamlit-дашборд після змін пройдено через `streamlit.testing.AppTest` проти живого бекенду: 5 розділів, форма прогнозу, жодного винятку.
+
+## Урок 43. Інтеграція LLM API
+
+Джерела: `module_5/lesson_46_Telegram_API/ai_bot/app/services/ai_service.py` (+ `handlers/chat.py`, `config/settings.py`) і `module_4/lessons/lesson_34_asyncio/news_dashboard/app/nlp.py`.
+
+| Де | Було | Як перевірено | Стало (`news_hub/llm.py`, `analysis.py`) |
+|---|---|---|---|
+| `ai_service.py`, docstring | «google-genai SDK НЕ підтримує native async» → `asyncio.to_thread` | `client.aio.models.generate_content` є в google-genai з 1.x | асинхронний клієнт, без потоків |
+| `_call_gemini_sync` | новий `genai.Client` на кожен виклик («Client не thread-safe») | потоків більше немає | один клієнт на застосунок (`lifespan`) |
+| `_classify_error` | класифікація за словами в тексті винятку; результат ніде не використовується — **будь-яка** помилка веде до наступної моделі | невалідний ключ: Gemini відповідає `400 INVALID_ARGUMENT` «API key not valid» — старий код пробував усі 4 моделі й рахував збій | `APIError.code`; 400/401/403 — одразу `LLMUnavailable`, без перебору пулу; тест `test_gemini_client_error_stops_at_once` |
+| `_circuit_record_failure` | `GET` + `SETEX` — не атомарно: одночасні збої перезаписують лічильник | Redis 7: 20 одночасних збоїв → лічильник 3 (на fakeredis гонки не видно — урок 41; у ноутбуці — Redis із затримкою мережі) | `INCR` + `EXPIRE … NX` у транзакції; тест `test_breaker_counts_concurrent_failures` |
+| `ask()` + `handlers/chat.py` | збій повертався **рядком** («😔 AI сервіс наразі недоступний…»), а `chat.py` перевіряв `is None` — текст помилки зберігався в історію як відповідь асистента й ішов у наступні промпти | читання коду: `ask()` ніде не повертає `None` | винятки `LLMUnavailable` / `CircuitOpen` → 502 / 503 |
+| `nlp.py` | тональність за основами слів («загин» −, «перемог» +), ключові слова — частота, тема — з URL (у знімку rbc.ua всі 168 новин мають категорію «Новини») | знімок | `NewsAnalysis` від LLM, перевірка Pydantic; розділ сайту лишився в `category`, тема — `ai_category` |
+
+Знахідки в новому коді уроку (під час перевірки, до коміту) — «Знайди помилку» й розділ «Контракт з провайдером» уроку побудовано на першій:
+
+| Що | Як знайдено | Стало |
+|---|---|---|
+| `response_schema=NewsAnalysis` з `extra="forbid"` → у схемі `additionalProperties`, Gemini відповідає `400 Unknown name "additional_properties"`; усі тести з FakeLLM зелені | `pytest -m llm` з невалідним ключем: Google перевіряє структуру запиту раніше за ключ | `response_json_schema`; контрактний тест `test_gemini_accepts_request_shape` |
+| тайм-аут ловився як `httpx.TransportError`, а SDK з встановленим aiohttp кидає `TimeoutError` / `aiohttp.ClientError` → 500 замість наступної моделі | `timeout=0.001` проти справжнього API | `NETWORK_ERRORS`; параметризований тест на 4 типи |
+| `google-genai>=1.21` у першій версії requirements — там немає `response_json_schema` у `GenerateContentConfig`, до 1.39 — `client.aio.aclose()` | прогін на мінімальних версіях | `>=1.39`; `httpx>=0.28.1` (вимога google-genai), `typing-extensions>=4.14` (anthropic 1.x) |
+| aiohttp 3.10.0–3.10.9: google-genai при помилці запиту звертається до `aiohttp.ClientConnectorDNSError` → `AttributeError` замість `LLMUnavailable` | контрактний тест на мінімальних версіях | `aiohttp>=3.10.10` |
+| клієнт Gemini не закривав aiohttp-сесію → на 3.10 `RuntimeError: Event loop is closed` при виході | прогін ноутбука на 3.10 | `LLMClient.aclose()`, виклик у `lifespan` |
+
+## Урок 44. Архітектура застосунків і патерни
+
+Джерела: `crispy_notes_project` уроку 40 (код `lesson_Django_authentication_and_security` старого курсу) і `module_5/lesson_Django_ORM_Database/notes_project_cbv/` (CBV).
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `selectors.get_todo_list_detail`, `get_shopping_list_detail`, views `*_edit` / `*_delete` | `.get(Q(user=u) \| Q(shared_with=u), pk=…)` — M2M з OR дає рядок на кожного, з ким поділено: список, поділений з двома, — `MultipleObjectsReturned` (500) для власника на сторінці, редагуванні й видаленні | тест: поділити з ann і bob → `get()` повертає 2 рядки | `todo_lists_visible_to` / `shopping_lists_visible_to` з `.distinct()`; тест `test_list_shared_with_two_users_is_returned_once` |
+| `get_user_shopping_lists` vs `get_shopping_list_detail` | список груп є в «Мої списки», а сторінка списку групи — 404 (різні правила доступу у двох selectors); відмітити товар учасник групи теж не міг | тест: учасник групи → `/shopping/<pk>/` → 404 | одне правило `shopping_lists_visible_to`; тест `test_every_listed_shopping_list_opens` |
+| `views.tag_create` | `redirect(request.GET['next'])` без перевірки — відкритий редирект (`?next=https://evil…`) | тест з `https://evil.example` і `//evil.example` | `url_has_allowed_host_and_scheme` у `TagCreateView.next_url` |
+| `views.notebook_create` | опис записника дописувався у view після `create_notebook` (другий `save`) | читання коду | параметр `description` у `services.create_notebook` |
+| `views.group_delete` | не учасник групи отримував 403 (а неіснуюча група — 404): видно, що група існує | читання коду | 404 для обох (`get_group_with_members`) |
+| `views.group_detail` (remove) | `User.objects.get(pk=…)` — будь-який користувач сайту | читання коду | `selectors.get_group_member` — лише учасник |
+| `notes_project_cbv` `NoteCreateView` / `UserQuerySetMixin` | `is_pinned` не передавався в сервіс (як в уроці 34); міксин `filter(user=…)` ховав нотатки групи | перенос на проєкт з групами | `NoteFormMixin.note_fields`, `SelectorQuerySetMixin` + `OwnerRequiredMixin` |
+| `requirements.txt` | `django-debug-toolbar>=4.0` — з Django 5.2 не імпортується (`get_storage_class`), `debug_toolbar_urls` лише з 4.4 | прогін на мінімальних версіях (Python 3.10) | `>=4.4.3` (4.4.4 має баг з `jinja2`, pip однаково бере новішу) |
+
+Знахідка в новому коді уроку (до коміту): фільтри `NoteListView` спершу читались у `setup()` — він виконується до `dispatch()`, тобто до `LoginRequiredMixin`: анонім з `?tag=1` робив запит до бази з `AnonymousUser` (`TypeError`). Перенесено в `get()`; тест `test_anonymous_is_redirected_before_any_query` (0 запитів). Використано на сторінці як приклад життєвого циклу CBV.
+
+«Знайди помилку» уроку побудовано на M2M + OR без `distinct()`.
+
+## Урок 45. WebSockets + практика: чат
+
+Джерело: `module_5/lesson_Django_Async/notes_chat_app/` старого курсу (= застосунок Django-книги, крок 7B): `consumers.py`, `routing.py`, `asgi.py`, `ChatMessage`, `group_chat.html`, `js/group_chat.js`, `tests/test_consumers.py` (9 тестів — перенесено без змін, проходять).
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `notes_project/asgi.py` | `AuthMiddlewareStack(URLRouter(...))` без перевірки `Origin` — Cross-Site WebSocket Hijacking: будь-який сайт, відкритий у браузері залогіненого користувача, під'єднується до чату (cookie сесії йде з будь-якої сторінки) і читає історію | тест з `Origin: https://evil.example` → `connect()` = `(True, None)` | `AllowedHostsOriginValidator`; тести `ChatOriginTests` (чужий сайт, `localhost.evil.example`, без Origin) |
+| `consumers.GroupChatConsumer` | членство перевіряється лише в `connect()`: вилучений з групи учасник з відкритою вкладкою далі отримує всі повідомлення й пише (повідомлення зберігаються) | тест: `group.user_set.remove(ann)` → Анна отримує наступне повідомлення, її повідомлення збережено | `services.post_chat_message` перевіряє членство на кожне повідомлення (→ close 4403); `remove_user_from_group` / `delete_group` надсилають подію `member.removed` / `group.deleted` після COMMIT → consumer закриває з'єднання |
+| `consumers.py` | ORM у consumer (`Group.objects.get`, `ChatMessage.objects…`) — правило членства вдруге, окремо від сторінок групи | `tests_architecture` (ast) | `selectors.is_group_member` / `recent_chat_messages`, `services.post_chat_message` |
+| `js/group_chat.js` | перепідключення з backoff без кінця: відмову в handshake (не учасник) браузер бачить як 1006 — спроба кожні 30 с назавжди | читання коду | коди 4000–4999 — без перепідключення; не більше 5 невдалих спроб поспіль |
+| `views.group_chat` | `get_object_or_404(Group)` + перевірка членства у view | — | `selectors.get_group_with_members`, не учасник → 404 (як сторінки групи в уроці 44) |
+| `templates/notes_app/group_chat.html` | чотири багаторядкові `{# … #}` — у Django `{#` лише однорядковий, тож текст іде в HTML; рядок «inline <script> з {{ group.pk }}» відкриває справжній `<script>`, який поглинає решту сторінки разом з `#chat-config` → `group_chat.js`: `Cannot read properties of null (reading 'dataset')`, чат не підключається взагалі. Тести старого курсу сторінку не рендерили | наживо (Playwright): статус «Підключення...» назавжди, помилки в консолі | `{% comment %} … {% endcomment %}`; тест `test_template_comments_are_not_rendered` (на старому шаблоні — червоний) |
+
+Знахідка в новому коді уроку (до коміту): `AllowedHostsOriginValidator` читає `ALLOWED_HOSTS`/`DEBUG` один раз при імпорті `asgi.py` — у тестах (`DEBUG=False`, порожній `ALLOWED_HOSTS`) відхиляв і власні сторінки; стек винесено у `websocket_application()`, тест збирає його з `override_settings(ALLOWED_HOSTS=['localhost'])`. На сервері треба `DJANGO_ALLOWED_HOSTS` — інакше чат не підключиться (сказано на сторінці уроку).
+
+«Знайди помилку» уроку побудовано на перевірці членства лише в `connect()`.
+
+## Урок 46. Security advanced
+
+Джерела:
+- `module_5/lesson_46_Telegram_API/production_bot/backend/`:
+  - `core/security.py`, `core/config.py`;
+  - `api/deps.py`, `api/admin/auth.py`;
+  - `api/webhook.py`;
+- `module_5/lesson_Django_authentication_and_security/OWASP_TOP_10.md`, розділ A10 (SSRF).
+
+У `news_hub` уроку 43 не було жодної автентифікації: `DELETE /api/news`, збір і платний аналіз LLM міг запустити будь-хто.
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `core/security.py` + `api/admin/auth.py` | `passlib` `CryptContext(schemes=["bcrypt"])`; `auth.py` хешує пароль **при імпорті** (`_ADMIN_PASSWORD_HASH = hash_password(...)`) | чиста установка (`passlib 1.7.4`, `bcrypt 5.0.0`): `(trapped) error reading bcrypt version`, потім `ValueError: password cannot be longer than 72 bytes` — застосунок не стартує | `bcrypt` напряму; пароль > 72 байт — «не той пароль» (bcrypt 5 кидає `ValueError` і в `checkpw` → було б 500); тест |
+| `core/config.py` | `JWT_SECRET` за замовчуванням `"change-me-in-production"`, `ADMIN_PASSWORD="change-me"`; `validate()` перевіряє лише «не порожній» | `validate()` пропускає; токен, підписаний `"change-me-in-production"`, приймається (`{'sub': 'admin', 'role': 'admin', …}`); PyJWT сам попереджає: ключ 23 байти < 32 | без значень за замовчуванням: нічого не задано → 503; секрет < 32 символів → застосунок не стартує; у env — хеш пароля, не пароль |
+| `core/config.py` | `JWT_ALGORITHM` з env | — | алгоритм у коді (HS256); `decode` вимагає `exp`, `sub`, `role`; тести `alg: none`, HS512 тим самим секретом, без `role` |
+| `api/admin/auth.py` | ім'я — `!=`, при чужому імені пароль не перевіряється (відповідь швидша — видно, що ім'я не те); без ліміту спроб | читання коду | `hmac.compare_digest` для імені, bcrypt завжди; 5 спроб за 5 хв з адреси → 429 |
+| `api/webhook.py` | секрет у **шляху** `/webhook/{SECRET}` + заголовок, порівняння `!=` | uvicorn пише шлях у журнал: `"POST /webhook/s3cr3t-from-env HTTP/1.1" 200 OK` | для власних webhook — підпис HMAC(час + тіло), вікно 5 хв, повтор → 409 (Redis `SET NX`), `compare_digest`; для Telegram (урок 47) — `verify_secret_token` з `compare_digest`, секрет не в URL |
+| `OWASP_TOP_10.md`, A10 | захист SSRF: `urlparse(url).hostname in ALLOWED_HOSTS_FOR_FETCH`, потім `requests.get(url)` — `requests` сам іде за перенаправленням | локальний демо-сервер: дозволений хост відповідає `302 → http://localhost:<порт>/latest/meta-data/`; `is_safe_url: True`, фінальна адреса — внутрішня, відповідь `INTERNAL: aws_secret_access_key=...` | `safe_fetch`: перевірка IP **після DNS** у resolver з'єднання, кожне перенаправлення вручну через ті самі перевірки, порти 80/443, розмір, тип; тест `test_redirect_is_checked_again` (внутрішній сервер не отримує жодного запиту) |
+
+Знахідки в новому коді уроку (до коміту):
+- `POST /api/webhooks/scrape` з підписаним, але не-JSON тілом відповідав 500: `error.errors()` містить сирі `bytes`, а JSONResponse їх не серіалізує. Виправлено: `include_input=False`, тест `test_signature_is_checked_before_json`.
+- Тест з другим `TestClient(app)` проходив на новому Starlette й падав на мінімальних версіях. Причина: `Queue is bound to a different event loop` — база тесту живе в циклі першого клієнта. Тепер тест використовує той самий клієнт.
+
+Обмеження середовища: `www.pravda.com.ua` заблоковано мережевою політикою (`connect_rejected`). Справжню стрічку через `POST /api/sources/{id}/fetch` не завантажено — відповідь `HTTP 403` від проксі середовища. Позитивний шлях перевірено на локальному aiohttp-сервері з фікстурою `pravda_rss.xml`.
+
+«Знайди помилку» уроку побудовано на SSRF-захисті з `OWASP_TOP_10.md` (перенаправлення).
+
+## Урок 47. Telegram Bot API
+
+Джерела — `module_5/lesson_46_Telegram_API/` старого курсу:
+- `ai_bot/app/`: `bot.py`, `handlers/commands.py`, `middlewares/`, `utils/`;
+- `echo_bot/`;
+- `production_bot/backend/`: `app.py`, `api/webhook.py`, `workers/notifications.py`, `models/subscription.py`.
+
+Код старого курсу запущено без змін (`aiogram 3.15.0` з його `requirements.txt`) проти двійника Telegram Bot API. Двійник відтворює задокументовані правила HTML-розмітки: «<», «>», «&» поза тегом — помилка «can't parse entities».
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `ai_bot/app/handlers/commands.py`, `/start` | `f"Привіт, <b>{user.first_name}</b>!…"` з `parse_mode=HTML` — ім'я не екрановано | `/start` від `<Олена>` → `TelegramBadRequest: … can't parse entities: unexpected character`; від `Tom & Jerry` → `… unsupported entity`: бот мовчить | `esc(...)` для всього зовнішнього; тест `test_start_escapes_user_name` |
+| `ai_bot/app/utils/formatter.py`, `split_long_message` | розріз кожні 4000 символів | довга відповідь AI з блоком коду (`format_ai_response`) → 4 частини, 2 з них з розірваним `<pre>`: «can't find end tag» | `split_message` по рядках; тести `test_split_only_between_lines`, `test_old_split_cuts_inside_markup` |
+| `ai_bot/app/utils/formatter.py` | regex у docstring без `r"…"` | Python 3.13: `SyntaxWarning: invalid escape sequence '\w'` (ще `'\s'`, `'\*'`) при імпорті | у перенесеному коді docstring без таких послідовностей |
+| `ai_bot/app/handlers/*.py` + `bot.py` | `router = Router(...)` — змінна модуля | другий `create_dispatcher(redis)` у тому ж процесі → `RuntimeError: Router is already attached to <Dispatcher …>` (тести, API + polling) | `build_router()` — новий роутер на кожен диспетчер |
+| `production_bot/backend/app.py`, lifespan | при зупинці `await bot.delete_webhook()` | читання коду: під час перезапуску (новий процес уже поставив webhook) старий його видаляє — Telegram перестає надсилати update | webhook не видаляється при зупинці; тест `test_lifespan_sets_webhook_and_keeps_it`; наживо — після зупинки uvicorn `getWebhookInfo` показує той самий url |
+| `production_bot/backend/workers/notifications.py` | `while True` + `sleep(3600)`; `except Exception: logger.warning` на кожне повідомлення | читання коду: заблокований користувач (403) отримує спробу щогодини назавжди; 429 не обробляється | розсилка після збору лише нових новин (`insert_new`); 403 → підписки чату видаляються; 429 → `retry_after`; тести `test_blocked_chat_loses_subscriptions`, `test_retry_after_429` |
+| `production_bot/backend/models/subscription.py` | `user_id` FK на `users`, тариф | — | підписка = (`chat_id` BigInteger, слово): id груп у Telegram — понад 32 біти; тест `test_group_chat_id_fits` падає з `Integer` на PostgreSQL |
+
+Обмеження середовища: `api.telegram.org` заблоковано мережевою політикою — справжнім ботом не перевірено. Бот, webhook і polling перевірено на двійнику: uvicorn + `setWebhook` + update через webhook; `python -m news_hub.bot` + `getUpdates`. Ключа LLM немає — `/digest` на `FakeLLM`.
 
 ## Довідник Claude Code (`CLAUDE_DOC.md` старого курсу)
 
