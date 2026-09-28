@@ -358,6 +358,23 @@ pip у збірці ходить через проксі з власним CA, �
 отримали 502 (~10 с простою); nginx визначає адреси `web` лише при старті — після `--scale web=2` усі 10 запитів ішли в першу
 репліку, після `nginx -s reload` — 7/3; чат між двома репліками: з Redis доставлено 4 з 4, з `InMemoryChannelLayer` — 1 з 6.
 
+## Урок 50. CI/CD (GitHub Actions)
+
+Джерело — `.github/workflows/django-tests.yml` Django-книги `notes_chat_app`.
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `on.pull_request.branches: [main, master]` | PR в іншу гілку (PR поверх PR) не перевіряється | PR уроку 50 має базу `claude/wonderful-ride-cinspw` — з таким фільтром workflow не запустився б (правило GitHub: `branches` — base PR); ноутбук відтворює | `pull_request` без `branches`, лише `paths` |
+| `on.push` разом з `pull_request` (і в `notebooks.yml` репозиторію курсу) | кожен коміт PR перевіряється двічі | Actions: `notebooks.yml` runs 203/204 і 205/206 — `push` і `pull_request` на тих самих комітах `a9272e7`, `a54d686` | у нових workflows `push: branches: [main]` (`notebooks.yml` не змінювався) |
+| список модулів у `manage.py test notes_app.tests.test_models …` | новий файл тестів не запускається, поки його не допишуть | той самий прийом у `crispy_notes_project`: список модулів уроку 45 → `Ran 76 tests`, `manage.py test` → `Ran 81` (5 тестів `tests_deploy.py` мовчки пропущено) | `manage.py test` без списку |
+| `coverage run manage.py test …` після `manage.py test …` | ті самі тести двічі | читання | покриття — одним прогоном (вправа «Спробуй самостійно») |
+| без `permissions` | права `GITHUB_TOKEN` — з налаштувань репозиторію | читання | `contents: read`; `packages: write` лише job `publish` |
+| `selenium/standalone-chrome:latest` | незафіксований образ у CI | читання | у курсі Selenium-job немає (E2E — через smoke-тест стеку) |
+| `crispy_notes_project/requirements.txt` (урок 40): `djangorestframework-simplejwt>=5.3` | 5.3.0 імпортує `pkg_resources` (setuptools) | `uv pip install --resolution lowest-direct` на Python 3.10 → `ImportError: … JWTAuthentication … No module named 'pkg_resources'`; 5.3.1 і 5.4.0 — ок | `>=5.3.1`; job `min-versions` |
+
+Прогін на PR #64 (коміт `5c6f1b3`): news_hub — 6 jobs ✅, publish skipped; crispy_notes — 5 jobs ✅, publish skipped; перший же прогін зелений.
+`publish` (push у `main`) не запускався — перевірено лише `actionlint`.
+
 ## Довідник Claude Code (`CLAUDE_DOC.md` старого курсу)
 
 Старий довідник датовано 2025-05. Ми попросили AI-агента звірити його з документацією. Агент знайшов справжні застарілі місця, але **сам помилився** щонайменше в чотирьох пунктах. Кожне твердження нижче тому перевірено ще раз — за `claude --help` установленої версії і за документацією.

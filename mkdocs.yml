@@ -173,6 +173,7 @@ nav:
               - "18. Roadmap": modules/m5/linux/18_roadmap_next_steps.md
       - "48. Docker": modules/m5/lesson_48.md
       - "49. Docker Compose + деплой": modules/m5/lesson_49.md
+      - "50. CI/CD (GitHub Actions)": modules/m5/lesson_50.md
     - "М6. Капстоун": modules/m6_capstone.md
     - "Self-paced. AI для розробників (бонус)": modules/bonus_ai.md
 
