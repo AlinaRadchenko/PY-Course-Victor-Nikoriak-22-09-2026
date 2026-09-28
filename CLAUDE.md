@@ -206,7 +206,6 @@ python tools/generate_student.py --check              # CI (notebooks.yml): exit
 - Removes cells tagged `"instructor"`; clears all outputs and execution counts.
 - Output: `<name>_student.ipynb` in the same folder, with its own Colab badge and `metadata.lms` (`notebook_path` = student path) via the logic of `sync_notebook_metadata.py`.
 - After editing a master notebook: run `sync_notebook_metadata.py`, then `generate_student.py`, commit both. Markdown `<details>` answers and worked examples stay in the student copy on purpose.
-- `module_1/lessons/lesson_04_conditions_and_control/python_lesson_bool_logic_student.ipynb` has no master in this repo (legacy file); the generator leaves it alone.
 
 ### Notebook links on book pages
 A notebook that has a student copy is linked **only** like this (template: `tools/templates/lesson_page.md`):
