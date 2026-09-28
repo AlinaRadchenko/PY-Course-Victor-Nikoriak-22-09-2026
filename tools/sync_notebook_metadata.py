@@ -259,7 +259,12 @@ def dump_notebook(nb, like_text):
     return text + "\n" if like_text.endswith("\n") else text
 
 
-SOLUTIONS_SUFFIX = "){ .solutions-link }"
+EXERCISES_PAIR_RE = re.compile(
+    r"\[Відкрити вправи в Colab\]\(https://colab\.research\.google\.com/github/" + REPO_URL_RE + r"/blob/" + BRANCH_URL_RE
+    + r"/([^)\s]+_student\.ipynb)\)\{ \.md-button \.md-button--primary \} "
+    r"\[Переглянути розв’язки\]\(https://github\.com/" + REPO_URL_RE + r"/blob/" + BRANCH_URL_RE
+    + r"/([^)\s]+\.ipynb)\)\{ \.solutions-link \}"
+)
 
 
 def has_student_copy(target):
@@ -272,16 +277,22 @@ def sync_doc(path, errors):
     rel = path.relative_to(ROOT).as_posix()
     text = path.read_bytes().decode("utf-8")
 
+    # Ноутбук зі студентською копією — лише повною парою: кнопка вправ на X_student.ipynb, одразу за нею розв’язки на X.ipynb
+    paired = set()
+    for m in EXERCISES_PAIR_RE.finditer(text):
+        student, master = unquote(m[1]), unquote(m[2])
+        if student == master[:-len(".ipynb")] + "_student.ipynb":
+            paired.update(range(m.start(), m.end()))
+
     for m in DOCS_REPO_LINK_RE.finditer(text):
         target = unquote((m[1] or m[2]).rstrip("/"))
         if not (ROOT / target).exists():
             errors.append(f"{rel}: link to missing file {target}")
-        elif has_student_copy(target):
-            # вправи — лише студентська копія; майстер з рішеннями — лише як «Переглянути розв’язки» на GitHub
-            if m[2] or not text.startswith(SOLUTIONS_SUFFIX, m.end()):
-                errors.append(f"{rel}: {target} has a student copy — link it as "
-                              f"[Відкрити вправи в Colab](<colab …_student.ipynb>){{ .md-button .md-button--primary }} "
-                              f"[Переглянути розв’язки](<github {target}>){SOLUTIONS_SUFFIX[1:]}")
+        elif (has_student_copy(target) or target.endswith("_student.ipynb")) and m.start() not in paired:
+            master = target.replace("_student.ipynb", ".ipynb")
+            errors.append(f"{rel}: {master} has a student copy — link it as the pair "
+                          f"[Відкрити вправи в Colab](<colab {master[:-6]}_student.ipynb>){{ .md-button .md-button--primary }} "
+                          f"[Переглянути розв’язки](<github {master}>){{ .solutions-link }}")
 
     def badge_sub(m):
         return m[1] + " " + BADGE_MD.format(url=colab_url(unquote(m[2])))

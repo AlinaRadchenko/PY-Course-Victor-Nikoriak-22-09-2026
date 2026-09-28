@@ -32,9 +32,16 @@ def test_buttons_are_accepted_and_get_no_extra_badge(page) -> None:
     assert errors == [] and synced == original
 
 
+OTHER_STUDENT = "module_6/lessons/lesson_52_graduation_pitch/note_lesson_52_pitch_student.ipynb"
+
+
 @pytest.mark.parametrize("text", [
     f"[`x.ipynb`]({GH}{MASTER}) {BADGE}({CO}{MASTER})\n",       # стара форма: GitHub + Colab на розв'язки
     f"[розв'язки]({GH}{MASTER})\n",                               # GitHub без класу solutions-link
+    f"[Переглянути розв’язки]({GH}{MASTER}){{ .solutions-link }}\n",   # лише розв'язки, без кнопки вправ
+    f"[Відкрити вправи в Colab]({CO}{OTHER_STUDENT}){{ .md-button .md-button--primary }} "
+    f"[Переглянути розв’язки]({GH}{MASTER}){{ .solutions-link }}\n",   # кнопка на чужий _student
+    f"[Відкрити вправи в Colab]({CO}{MASTER.replace('.ipynb', '_student.ipynb')}){{ .md-button .md-button--primary }}\n",
 ])
 def test_master_with_student_copy_cannot_be_linked_directly(page, text: str) -> None:
     _, _, errors = page(text)
