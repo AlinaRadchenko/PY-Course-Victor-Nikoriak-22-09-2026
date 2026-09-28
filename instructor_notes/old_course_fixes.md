@@ -1,7 +1,7 @@
 # Виправлення старого коду — нотатки викладача
 
 > Файл для викладача, у книгу курсу (`docs/`) не входить. Тут — усе, що довелося змінити в коді й
-> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–44,
+> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–45,
 > бонус-урок pandas, довідники. На сторінках уроків цих списків немає — студенти бачать лише
 > правильний код і пояснення «чому так».
 
@@ -156,6 +156,23 @@
 Знахідка в новому коді уроку (до коміту): фільтри `NoteListView` спершу читались у `setup()` — він виконується до `dispatch()`, тобто до `LoginRequiredMixin`: анонім з `?tag=1` робив запит до бази з `AnonymousUser` (`TypeError`). Перенесено в `get()`; тест `test_anonymous_is_redirected_before_any_query` (0 запитів). Використано на сторінці як приклад життєвого циклу CBV.
 
 «Знайди помилку» уроку побудовано на M2M + OR без `distinct()`.
+
+## Урок 45. WebSockets + практика: чат
+
+Джерело: `module_5/lesson_Django_Async/notes_chat_app/` старого курсу (= застосунок Django-книги, крок 7B): `consumers.py`, `routing.py`, `asgi.py`, `ChatMessage`, `group_chat.html`, `js/group_chat.js`, `tests/test_consumers.py` (9 тестів — перенесено без змін, проходять).
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `notes_project/asgi.py` | `AuthMiddlewareStack(URLRouter(...))` без перевірки `Origin` — Cross-Site WebSocket Hijacking: будь-який сайт, відкритий у браузері залогіненого користувача, під'єднується до чату (cookie сесії йде з будь-якої сторінки) і читає історію | тест з `Origin: https://evil.example` → `connect()` = `(True, None)` | `AllowedHostsOriginValidator`; тести `ChatOriginTests` (чужий сайт, `localhost.evil.example`, без Origin) |
+| `consumers.GroupChatConsumer` | членство перевіряється лише в `connect()`: вилучений з групи учасник з відкритою вкладкою далі отримує всі повідомлення й пише (повідомлення зберігаються) | тест: `group.user_set.remove(ann)` → Анна отримує наступне повідомлення, її повідомлення збережено | `services.post_chat_message` перевіряє членство на кожне повідомлення (→ close 4403); `remove_user_from_group` / `delete_group` надсилають подію `member.removed` / `group.deleted` після COMMIT → consumer закриває з'єднання |
+| `consumers.py` | ORM у consumer (`Group.objects.get`, `ChatMessage.objects…`) — правило членства вдруге, окремо від сторінок групи | `tests_architecture` (ast) | `selectors.is_group_member` / `recent_chat_messages`, `services.post_chat_message` |
+| `js/group_chat.js` | перепідключення з backoff без кінця: відмову в handshake (не учасник) браузер бачить як 1006 — спроба кожні 30 с назавжди | читання коду | коди 4000–4999 — без перепідключення; не більше 5 невдалих спроб поспіль |
+| `views.group_chat` | `get_object_or_404(Group)` + перевірка членства у view | — | `selectors.get_group_with_members`, не учасник → 404 (як сторінки групи в уроці 44) |
+| `templates/notes_app/group_chat.html` | чотири багаторядкові `{# … #}` — у Django `{#` лише однорядковий, тож текст іде в HTML; рядок «inline <script> з {{ group.pk }}» відкриває справжній `<script>`, який поглинає решту сторінки разом з `#chat-config` → `group_chat.js`: `Cannot read properties of null (reading 'dataset')`, чат не підключається взагалі. Тести старого курсу сторінку не рендерили | наживо (Playwright): статус «Підключення...» назавжди, помилки в консолі | `{% comment %} … {% endcomment %}`; тест `test_template_comments_are_not_rendered` (на старому шаблоні — червоний) |
+
+Знахідка в новому коді уроку (до коміту): `AllowedHostsOriginValidator` читає `ALLOWED_HOSTS`/`DEBUG` один раз при імпорті `asgi.py` — у тестах (`DEBUG=False`, порожній `ALLOWED_HOSTS`) відхиляв і власні сторінки; стек винесено у `websocket_application()`, тест збирає його з `override_settings(ALLOWED_HOSTS=['localhost'])`. На сервері треба `DJANGO_ALLOWED_HOSTS` — інакше чат не підключиться (сказано на сторінці уроку).
+
+«Знайди помилку» уроку побудовано на перевірці членства лише в `connect()`.
 
 ## Довідник Claude Code (`CLAUDE_DOC.md` старого курсу)
 
