@@ -144,6 +144,11 @@ if REDIS_URL:
 else:
     CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
+# Кеш Django — у ньому DRF рахує спроби throttle («login»: 5/min). Типовий кеш — пам'ять ОДНОГО процесу:
+# з --scale web=2 кожна репліка рахувала б свої 5 спроб. REDIS_URL є → кеш спільний для всіх процесів.
+if REDIS_URL:
+    CACHES = {"default": {"BACKEND": "django.core.cache.backends.redis.RedisCache", "LOCATION": REDIS_URL}}
+
 # ── Messages → Bootstrap alert variants ─────────────────────────────────────────
 from django.contrib.messages import constants as messages_constants
 MESSAGE_TAGS = {

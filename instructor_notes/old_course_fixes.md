@@ -375,6 +375,20 @@ pip у збірці ходить через проксі з власним CA, �
 Прогін на PR #64 (коміт `5c6f1b3`): news_hub — 6 jobs ✅, publish skipped; crispy_notes — 5 jobs ✅, publish skipped; перший же прогін зелений.
 `publish` (push у `main`) не запускався — перевірено лише `actionlint`.
 
+## Урок 51. Аудит проєктів курсу (зріз перед фінальним проєктом)
+
+Аудит `news_hub` і `crispy_notes_project` уроку 50: `architecture_audit.py`, `db_audit.sql`, `query_count.py` з папки уроку.
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `crispy_notes_project/hello_project/settings.py` (уроки 49, 50) | throttle DRF `login: 5/min` (урок 40) рахує спроби в кеші Django; `CACHES` не задано → LocMem, окремий у кожному процесі. `docker-compose.yml` уроку 49 пропонує `--scale web=2` | стек уроку 50, 12 спроб `POST /api/token/` через nginx: 1 репліка → `401×5, 429×7`; **2 репліки → `401×10, 429×2`** (кожна репліка — свої 5) | `CACHES` → `RedisCache` при `REDIS_URL`; стек уроку 49 з 2 репліками → `401×5, 429×7` (web-1: 4 запити, web-2: 8), ключ `:1:throttle_login_172.19.0.1` у Redis; сторінка 49 показує налаштування і вивід |
+| `news_hub/tables.py` `SubscriptionRow.chat_id` `index=True` (урок 47) | індекс `(chat_id)` поруч з `UNIQUE (chat_id, keyword)` | PostgreSQL 16, 200 000 підписок: `WHERE chat_id = … ORDER BY keyword` і з індексом, і без нього — `Index Only Scan using uq_subscription_chat_keyword`; `ix_subscriptions_chat_id` — 2304 kB, 0 сканувань | без змін у коді уроків; на сторінці 51 — як рекомендація (міграція `drop_index`) |
+| Django FK-індекси (`Note.user`, `Tag.user`, `ChatMessage.group`, M2M-таблиці) | окремий індекс FK поруч зі складеним/унікальним з тим самим першим стовпцем | `db_audit.sql` на базі нотаток: 11 таких пар (4 — у `auth_*` самого Django) | без змін; рекомендація `db_index=False` / `Meta.indexes` на сторінці 51 |
+| `NewsRepository.search` (`icontains`) | на PostgreSQL це `lower(title) LIKE '%…%'`: індекс trigram на `title` не використовується | 302 400 новин: без індексу 372 мс, з `gin (title gin_trgm_ops)` — 320 мс (той самий перегляд), з `gin (lower(title) gin_trgm_ops)` — 0.14 мс; 59 MB, 16 с на побудову | без змін; рекомендація на сторінці 51 |
+| `NewsRepository.find` (`OFFSET skip`) | глибокі сторінки читають усі попередні рядки | `OFFSET 300000 LIMIT 50` — 263.7 мс, `WHERE id > 300000 LIMIT 50` — 0.08 мс | без змін; keyset — рекомендація |
+
+N+1 не знайдено: `query_count.py` — сторінки `/notes/`, `/notebooks/`, `/shopping/`, `/todo/`, `/api/notes/` роблять однакову кількість запитів при 10 і 40 записах (8/7/8/8/4). Циклів імпорту немає в жодному проєкті.
+
 ## Бонус М6. CV розробника (`module_5/CV_maker/`)
 
 Перенесено як є: `README.md`, `CV_mini_tutorial_UA.md` (і сторінка довідника в книзі), `cv_viktor_nikoriak_GeoAI.html` і PDF

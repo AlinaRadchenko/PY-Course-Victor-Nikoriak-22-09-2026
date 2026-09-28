@@ -176,6 +176,7 @@ nav:
       - "50. CI/CD (GitHub Actions)": modules/m5/lesson_50.md
     - "М6. Капстоун":
       - Огляд модуля: modules/m6_capstone.md
+      - "51. Робота над фінальним проєктом": modules/m6/lesson_51.md
       - "Бонус. CV розробника":
           - "Урок": modules/m6/bonus_cv.md
           - "Довідник: сильне CV": modules/m6/cv/cv_tutorial.md
