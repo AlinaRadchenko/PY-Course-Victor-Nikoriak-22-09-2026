@@ -229,7 +229,7 @@ working tree → staging area → local repository → commit graph → branches
 - Система здачі й перевірки завдань (Google Apps Script): `tools/qa_suite.py`, `client.py`, `config.json`, `exam_engine.py`, `course_platform.py`, `course_ui.py`, `bootstrap.py`, `dashboard.ipynb`, `run_data/`. Від рішення залежить і конвенція «захищеної системної клітинки» (`SYSTEM_READY`, `require_student()`) з `CLAUDE.md` — зараз вона є лише у 2 ноутбуках.
 - `SETUP.md`, `install_course.*`, `start_course.*` (Voila), кореневий `docker-compose.yml`.
 - Домашні завдання: `assignments/` містить лише `test1.py`; у старому репо — `home_work_5.ipynb`, `survival_simulator/`.
-- Self-paced трек «AI для розробників» (`docs/modules/bonus_ai.md`) — заглушка; посилання в ній на `data/plan_md/migration_plan.md` неправильне (файл — `.claude/plan_md/migration_plan.md`, і це внутрішній документ, не для студентів).
+- Self-paced трек «AI для розробників» (`docs/modules/bonus_ai.md`) — заглушка (веде на уроки 1, 25, 42 і довідник Claude Code; власного контенту треку ще немає).
 
 **Переключення LMS (`Python_Curse`) — остання фаза**
 
