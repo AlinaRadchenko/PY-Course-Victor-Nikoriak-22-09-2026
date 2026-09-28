@@ -1,7 +1,7 @@
 # Виправлення старого коду — нотатки викладача
 
 > Файл для викладача, у книгу курсу (`docs/`) не входить. Тут — усе, що довелося змінити в коді й
-> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–46,
+> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–47,
 > бонус-урок pandas, довідники. На сторінках уроків цих списків немає — студенти бачать лише
 > правильний код і пояснення «чому так».
 
@@ -201,6 +201,27 @@
 Обмеження середовища: `www.pravda.com.ua` заблоковано мережевою політикою (`connect_rejected`). Справжню стрічку через `POST /api/sources/{id}/fetch` не завантажено — відповідь `HTTP 403` від проксі середовища. Позитивний шлях перевірено на локальному aiohttp-сервері з фікстурою `pravda_rss.xml`.
 
 «Знайди помилку» уроку побудовано на SSRF-захисті з `OWASP_TOP_10.md` (перенаправлення).
+
+## Урок 47. Telegram Bot API
+
+Джерела — `module_5/lesson_46_Telegram_API/` старого курсу:
+- `ai_bot/app/`: `bot.py`, `handlers/commands.py`, `middlewares/`, `utils/`;
+- `echo_bot/`;
+- `production_bot/backend/`: `app.py`, `api/webhook.py`, `workers/notifications.py`, `models/subscription.py`.
+
+Код старого курсу запущено без змін (`aiogram 3.15.0` з його `requirements.txt`) проти двійника Telegram Bot API. Двійник відтворює задокументовані правила HTML-розмітки: «<», «>», «&» поза тегом — помилка «can't parse entities».
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `ai_bot/app/handlers/commands.py`, `/start` | `f"Привіт, <b>{user.first_name}</b>!…"` з `parse_mode=HTML` — ім'я не екрановано | `/start` від `<Олена>` → `TelegramBadRequest: … can't parse entities: unexpected character`; від `Tom & Jerry` → `… unsupported entity`: бот мовчить | `esc(...)` для всього зовнішнього; тест `test_start_escapes_user_name` |
+| `ai_bot/app/utils/formatter.py`, `split_long_message` | розріз кожні 4000 символів | довга відповідь AI з блоком коду (`format_ai_response`) → 4 частини, 2 з них з розірваним `<pre>`: «can't find end tag» | `split_message` по рядках; тести `test_split_only_between_lines`, `test_old_split_cuts_inside_markup` |
+| `ai_bot/app/utils/formatter.py` | regex у docstring без `r"…"` | Python 3.13: `SyntaxWarning: invalid escape sequence '\w'` (ще `'\s'`, `'\*'`) при імпорті | у перенесеному коді docstring без таких послідовностей |
+| `ai_bot/app/handlers/*.py` + `bot.py` | `router = Router(...)` — змінна модуля | другий `create_dispatcher(redis)` у тому ж процесі → `RuntimeError: Router is already attached to <Dispatcher …>` (тести, API + polling) | `build_router()` — новий роутер на кожен диспетчер |
+| `production_bot/backend/app.py`, lifespan | при зупинці `await bot.delete_webhook()` | читання коду: під час перезапуску (новий процес уже поставив webhook) старий його видаляє — Telegram перестає надсилати update | webhook не видаляється при зупинці; тест `test_lifespan_sets_webhook_and_keeps_it`; наживо — після зупинки uvicorn `getWebhookInfo` показує той самий url |
+| `production_bot/backend/workers/notifications.py` | `while True` + `sleep(3600)`; `except Exception: logger.warning` на кожне повідомлення | читання коду: заблокований користувач (403) отримує спробу щогодини назавжди; 429 не обробляється | розсилка після збору лише нових новин (`insert_new`); 403 → підписки чату видаляються; 429 → `retry_after`; тести `test_blocked_chat_loses_subscriptions`, `test_retry_after_429` |
+| `production_bot/backend/models/subscription.py` | `user_id` FK на `users`, тариф | — | підписка = (`chat_id` BigInteger, слово): id груп у Telegram — понад 32 біти; тест `test_group_chat_id_fits` падає з `Integer` на PostgreSQL |
+
+Обмеження середовища: `api.telegram.org` заблоковано мережевою політикою — справжнім ботом не перевірено. Бот, webhook і polling перевірено на двійнику: uvicorn + `setWebhook` + update через webhook; `python -m news_hub.bot` + `getUpdates`. Ключа LLM немає — `/digest` на `FakeLLM`.
 
 ## Довідник Claude Code (`CLAUDE_DOC.md` старого курсу)
 

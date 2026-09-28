@@ -146,6 +146,7 @@ nav:
       - "44. Архітектура застосунків і патерни": modules/m4/lesson_44.md
       - "45. WebSockets + практика: чат": modules/m4/lesson_45.md
       - "46. Security advanced": modules/m4/lesson_46.md
+      - "47. Telegram Bot API": modules/m4/lesson_47.md
     - "М5. Production": modules/m5_production.md
     - "М6. Капстоун": modules/m6_capstone.md
     - "Self-paced. AI для розробників (бонус)": modules/bonus_ai.md
