@@ -22,7 +22,7 @@
 
 **Задача розділу.** Набір тестів для тарифів, конвеєра подій і SMS-сповіщень сервісу — у проєкті [`delivery_tests/`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_2/lessons/lesson_25_pytest_testing/delivery_tests). Повний розбір — у розділі [«Практика»](#practice).
 
-**Ноутбук заняття:** [`note_lesson_25_pytest.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_25_pytest_testing/note_lesson_25_pytest.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_25_pytest_testing/note_lesson_25_pytest.ipynb)
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_25_pytest_testing/note_lesson_25_pytest_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_25_pytest_testing/note_lesson_25_pytest.ipynb){ .solutions-link }
 
 !!! note "Встановлення"
     pytest — стороння бібліотека: `pip install pytest pytest-cov` в активованому середовищі (урок 2). У Colab pytest уже є.
@@ -767,7 +767,7 @@ def test_parse_two(rejected):
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_25_pytest.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_25_pytest_testing/note_lesson_25_pytest.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_25_pytest_testing/note_lesson_25_pytest.ipynb) — тести пишуться у файли й запускаються pytest прямо з ноутбука: промокод, баг на межі, конвеєр подій, mock SMS-шлюзу, перевірка AI-коду.
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_25_pytest_testing/note_lesson_25_pytest_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_25_pytest_testing/note_lesson_25_pytest.ipynb){ .solutions-link } — тести пишуться у файли й запускаються pytest прямо з ноутбука: промокод, баг на межі, конвеєр подій, mock SMS-шлюзу, перевірка AI-коду.
 - Практикум викладача: [`basics/`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_2/lessons/lesson_25_pytest_testing/basics) — 5 файлів з тестами від першого `assert` до `parametrize`.
 - Наступне заняття — урок 26, практикум П5: динамічне програмування. Тести з сьогоднішнього уроку допоможуть переконатися, що швидке рішення дає ту саму відповідь, що й повільне.
 - Далі в курсі: тестування Django (уроки 33–34), тести HTTP API з `httpx` (урок 41), запуск тестів у CI через GitHub Actions (урок 50).

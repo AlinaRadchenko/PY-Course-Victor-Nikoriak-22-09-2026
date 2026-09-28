@@ -18,7 +18,7 @@
 
 **Задача розділу.** Каса віддає дев'ять рядків, п'ять із них зіпсовані. Програма має прийняти чотири правильні чеки й для кожного пропущеного рядка пояснити, що з ним не так. Повний код — у розділі [«Практика»](#practice).
 
-**Ноутбук заняття:** [`note_lesson_13_exceptions.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_13_exceptions/note_lesson_13_exceptions.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_13_exceptions/note_lesson_13_exceptions.ipynb)
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_13_exceptions/note_lesson_13_exceptions_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_13_exceptions/note_lesson_13_exceptions.ipynb){ .solutions-link }
 
 ## Пригадай
 
@@ -741,7 +741,7 @@ except ValueError:
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_13_exceptions.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_13_exceptions/note_lesson_13_exceptions.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_13_exceptions/note_lesson_13_exceptions.ipynb) — той самий день каси: прогнози, `parse_line` і `load_orders`, вправи з перевірками.
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_13_exceptions/note_lesson_13_exceptions_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_13_exceptions/note_lesson_13_exceptions.ipynb){ .solutions-link } — той самий день каси: прогнози, `parse_line` і `load_orders`, вправи з перевірками.
 - Довідник: [`notes_exceptions.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_13_exceptions/notes_exceptions.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_13_exceptions/notes_exceptions.ipynb) і сторінка [Exceptions & Error Handling](../../reference/python_core/exceptions.md) — стислий повтор усієї теми.
 - Наступне заняття: [Урок 14. Файли, менеджери контексту та JSON](lesson_14.md). Рядки каси прийдуть з файлу: з'являться `FileNotFoundError` і `with`, який закриває файл навіть тоді, коли всередині стався виняток.
 

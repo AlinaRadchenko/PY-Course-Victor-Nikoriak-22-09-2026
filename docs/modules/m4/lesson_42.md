@@ -26,7 +26,7 @@
 - рецензувати результат агента: діф, тести, які він змінив, рішення, які він ухвалив сам;
 - знаходити в «робочому» AI-коді вади, яких не видно на скриншоті.
 
-**Ноутбук заняття:** [`note_lesson_42_ai_review.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/note_lesson_42_ai_review.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/note_lesson_42_ai_review.ipynb) — ключ AI не потрібен: вправи на справжньому результаті агента.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/note_lesson_42_ai_review_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/note_lesson_42_ai_review.ipynb){ .solutions-link } — ключ AI не потрібен: вправи на справжньому результаті агента.
 
 ## Пригадай
 
@@ -548,7 +548,7 @@ def test_pravda_rss_broken_xml_is_empty_list() -> None:
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_42_ai_review.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/note_lesson_42_ai_review.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/note_lesson_42_ai_review.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/note_lesson_42_ai_review_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/note_lesson_42_ai_review.ipynb){ .solutions-link }.
 - Урок 43 — LLM усередині агрегатора: Gemini дає підсумок і категорію новини. Відповідь моделі — теж «дані від AI»: її перевірятиме Pydantic, а виклик API мокатимемо за правилами уроку 41.
 
 ## Документація і джерела

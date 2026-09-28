@@ -80,6 +80,7 @@ PY-Course-Victor-Nikoriak-22-09-2026/
 │   ├── sync_notebook_metadata.py ← generates the Colab badge + metadata.lms of every notebook
 │   ├── generate_student.py     ← master notebook → `<name>_student.ipynb` next to it (solutions and `instructor` cells removed); `--check` in CI
 │   ├── test_generate_student.py ← its tests (`cd tools && python -m pytest`)
+│   ├── templates/lesson_page.md ← template of a book lesson page (header, notebook buttons, section order)
 │   └── lessons_v5.json         ← v5.0 lesson titles (1–52), stream slug
 │
 ├── assignments/                ← empty — homework not migrated yet
@@ -133,8 +134,8 @@ Current bonus lessons: `pandas_data_analysis` (module 3, before lesson 29) — i
 
 | File pattern | Purpose |
 |---|---|
-| `note_lesson_NN_*.ipynb` | Main v5.0 lesson notebook (linked from the book page `docs/modules/mN/lesson_NN.md`) |
-| `*_student.ipynb` | Student-facing notebook (solutions stripped) |
+| `note_lesson_NN_*.ipynb` | Main v5.0 lesson notebook — master with solutions (the book links it only as «Переглянути розв’язки») |
+| `*_student.ipynb` | Student-facing notebook (solutions stripped, `tools/generate_student.py`) — the book's main «Відкрити вправи в Colab» button |
 | `konspekt_*.ipynb` or `notes_*.ipynb` | Instructor lecture notes |
 | `python_lesson_*_grup_N.ipynb` | Group-specific variant (groups 1–4) |
 | `final_project_auto.ipynb` | Automated final project for the lesson |
@@ -206,6 +207,13 @@ python tools/generate_student.py --check              # CI (notebooks.yml): exit
 - Output: `<name>_student.ipynb` in the same folder, with its own Colab badge and `metadata.lms` (`notebook_path` = student path) via the logic of `sync_notebook_metadata.py`.
 - After editing a master notebook: run `sync_notebook_metadata.py`, then `generate_student.py`, commit both. Markdown `<details>` answers and worked examples stay in the student copy on purpose.
 - `module_1/lessons/lesson_04_conditions_and_control/python_lesson_bool_logic_student.ipynb` has no master in this repo (legacy file); the generator leaves it alone.
+
+### Notebook links on book pages
+A notebook that has a student copy is linked **only** like this (template: `tools/templates/lesson_page.md`):
+```markdown
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/<dir>/<name>_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/<dir>/<name>.ipynb){ .solutions-link } — опис.
+```
+The main button opens the student copy (no solutions) in Colab; the small link shows the master notebook on GitHub for self-check. `sync_notebook_metadata.py --check` fails on any other GitHub/Colab link to a master that has a student copy, and doesn't add a Colab badge to links with `{ … }` attributes. Styles: `.solutions-link` and `.md-button` in `docs/stylesheets/extra.css`. Notebooks without a student copy keep the plain form `[`file.ipynb`](github) [![Open In Colab](…)](colab)`.
 
 ### qa_suite.py — QA & load testing
 ```bash
@@ -474,7 +482,7 @@ If `sync_exams` says "Lesson not found for lesson_id":
 5. Add protected system cell with `SYSTEM_READY`, `COMPLETED_TASKS`, `require_system()`, `require_student()`
 6. Wrap solutions in `# BEGIN SOLUTION … # END SOLUTION`
 7. Tag instructor-only cells with `"tags": ["instructor"]`
-8. Run `python tools/generate_student.py module_N/lessons/lesson_NN_topic_slug/<notebook>.ipynb` (or without arguments for all) to produce `*_student.ipynb`; CI checks it with `--check`
+8. Run `python tools/generate_student.py module_N/lessons/lesson_NN_topic_slug/<notebook>.ipynb` (or without arguments for all) to produce `*_student.ipynb`; CI checks it with `--check`. On the book page link it with the «Відкрити вправи в Colab» button + «Переглянути розв’язки» (see «Notebook links on book pages», template `tools/templates/lesson_page.md`)
 9. Add lesson config to `tools/config.json`
 10. `course.yaml` / `course.json` already list all v5.0 lesson numbers per module — change them only for a lesson outside the v5.0 table
 11. Run `python tools/qa_suite.py --unit` to verify API integration

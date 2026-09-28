@@ -28,7 +28,7 @@
 - пояснити, чому `docker stop` зупиняє один контейнер за секунду, а інший — за десять;
 - перевірити образ тестами.
 
-**Ноутбук заняття:** [`note_lesson_48_docker.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_48_docker/note_lesson_48_docker.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_48_docker/note_lesson_48_docker.ipynb). У Colab немає Docker, тому в ноутбуці — те, що можна перевірити без нього: `.dockerignore`, кеш шарів, змінні середовища, сигнали. Команди Docker — з реальним виводом, щоб повторити локально.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_48_docker/note_lesson_48_docker_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_48_docker/note_lesson_48_docker.ipynb){ .solutions-link }. У Colab немає Docker, тому в ноутбуці — те, що можна перевірити без нього: `.dockerignore`, кеш шарів, змінні середовища, сигнали. Команди Docker — з реальним виводом, щоб повторити локально.
 
 ## Пригадай
 
@@ -701,7 +701,7 @@ $ docker inspect -f '{{.State.ExitCode}}' fb
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_48_docker.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_48_docker/note_lesson_48_docker.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_48_docker/note_lesson_48_docker.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_48_docker/note_lesson_48_docker_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_48_docker/note_lesson_48_docker.ipynb){ .solutions-link }.
 - Урок 49: мережа, том, порядок запуску (спершу база, потім міграції, потім API) і nginx — в одному `docker-compose.yml`; той самий підхід для Django-проєкту нотаток; деплой на сервер.
 
 ## Документація і джерела

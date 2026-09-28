@@ -42,7 +42,7 @@ False
 
 **Задача розділу.** Кошик замовлення з грошима як об'єктом-значенням: `len(cart)`, `"Узвар" in cart`, `cart.total` і позиції, які неможливо створити з нульовою кількістю. Повний код — у розділі [«Практика»](#practice).
 
-**Ноутбук заняття:** [`note_lesson_23_property_dunder.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_23_property_decorators_dunder/note_lesson_23_property_dunder.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_23_property_decorators_dunder/note_lesson_23_property_dunder.ipynb)
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_23_property_decorators_dunder/note_lesson_23_property_dunder_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_23_property_decorators_dunder/note_lesson_23_property_dunder.ipynb){ .solutions-link }
 
 ## Пригадай
 
@@ -936,7 +936,7 @@ class Money:
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_23_property_dunder.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_23_property_decorators_dunder/note_lesson_23_property_dunder.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_23_property_decorators_dunder/note_lesson_23_property_dunder.ipynb) — прогнози й вправи з перевірками: кошик, гроші, дескриптор `Range`, реєстр способів оплати.
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_23_property_decorators_dunder/note_lesson_23_property_dunder_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_23_property_decorators_dunder/note_lesson_23_property_dunder.ipynb){ .solutions-link } — прогнози й вправи з перевірками: кошик, гроші, дескриптор `Range`, реєстр способів оплати.
 - Практикум на реальних даних: [`lab_lesson_23_cars_descriptors.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_23_property_decorators_dunder/lab_lesson_23_cars_descriptors.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_23_property_decorators_dunder/lab_lesson_23_cars_descriptors.ipynb) — автомобілі з уроку 21: від `set_mpg()` до `@property` і дескриптора `PositiveNumber` на датасеті `mpg`.
 - Наступне заняття — урок 24 «Ітератори advanced»: сьогодні `__iter__` повертав готовий ітератор списку, а далі — власний `__next__`, генератори з `.send()` і конвеєри з `itertools`.
 - Урок 25 — тестування з `pytest`: перевірки на кшталт наших `assert` стануть справжніми тестами.

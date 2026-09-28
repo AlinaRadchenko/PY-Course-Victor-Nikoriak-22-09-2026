@@ -21,7 +21,7 @@
 
 **Задача розділу.** Лічильники, кеш звітів, черга SMS і рейтинг кур'єрів для диспетчерської. Повний приклад — у розділі [«Практика»](#practice).
 
-**Ноутбук заняття:** [`note_lesson_30_redis.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/lessons/lesson_30_redis_overview/note_lesson_30_redis.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/lessons/lesson_30_redis_overview/note_lesson_30_redis.ipynb) — зі встановленням Redis прямо в Colab.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/lessons/lesson_30_redis_overview/note_lesson_30_redis_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/lessons/lesson_30_redis_overview/note_lesson_30_redis.ipynb){ .solutions-link } — зі встановленням Redis прямо в Colab.
 
 ## Пригадай
 
@@ -668,7 +668,7 @@ print("очікували 2000, маємо:", r.get("orders:buggy"))
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_30_redis.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/lessons/lesson_30_redis_overview/note_lesson_30_redis.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/lessons/lesson_30_redis_overview/note_lesson_30_redis.ipynb) — встановлення Redis у Colab, лічильники, структури, кеш, черга й rate limit з перевірками.
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/lessons/lesson_30_redis_overview/note_lesson_30_redis_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/lessons/lesson_30_redis_overview/note_lesson_30_redis.ipynb){ .solutions-link } — встановлення Redis у Colab, лічильники, структури, кеш, черга й rate limit з перевірками.
 - Наступний урок — 31, HTTP: `requests`, `httpx`, `aiohttp` — як програми говорять мережею.
 - Redis на практиці у веб-застосунку — урок 39 «Middlewares і кешування»; Celery з Redis-брокером і Docker — уроки 48–49; Pub/Sub для чату — урок 45.
 

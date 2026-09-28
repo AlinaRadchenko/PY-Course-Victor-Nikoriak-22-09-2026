@@ -35,7 +35,7 @@
 - підключити PostgreSQL через одну змінну середовища, не ламаючи SQLite для тестів і Colab;
 - впізнати в коді патерни Repository, Service layer, Strategy, Decorator, Factory, Dependency Injection, Unit of Work — і пояснити, яку проблему кожен розв'язує.
 
-**Ноутбук заняття:** [`note_lesson_44_architecture.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_44_architecture_patterns/note_lesson_44_architecture.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_44_architecture_patterns/note_lesson_44_architecture.ipynb) — selectors без HTTP, життєвий цикл CBV, кількість SQL-запитів, патерни `news_hub`.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_44_architecture_patterns/note_lesson_44_architecture_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_44_architecture_patterns/note_lesson_44_architecture.ipynb){ .solutions-link } — selectors без HTTP, життєвий цикл CBV, кількість SQL-запитів, патерни `news_hub`.
 
 ## Пригадай
 
@@ -799,7 +799,7 @@ MultipleObjectsReturned: get() returned more than one TodoList -- it returned 2!
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_44_architecture.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_44_architecture_patterns/note_lesson_44_architecture.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_44_architecture_patterns/note_lesson_44_architecture.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_44_architecture_patterns/note_lesson_44_architecture_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_44_architecture_patterns/note_lesson_44_architecture.ipynb){ .solutions-link }.
 - Урок 45 — чат на WebSocket: ще один транспорт (consumer) над тими самими services і selectors.
 - Урок 47 — Telegram-бот агрегатора: ще один транспорт над `analyze_news` і `NewsRepository`.
 

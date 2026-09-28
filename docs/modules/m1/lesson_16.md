@@ -16,7 +16,7 @@
 
 **Задача розділу.** Звіт диспетчера за зміну: пара поїздок для ваучера, найпопулярніший маршрут, постійні клієнти — кожне за один прохід по журналу. Повний код — у розділі [«Практика»](#practice).
 
-**Ноутбук заняття:** [`note_lesson_16_hashing.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_16_practicum_hashing/note_lesson_16_hashing.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_16_practicum_hashing/note_lesson_16_hashing.ipynb)
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_16_practicum_hashing/note_lesson_16_hashing_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_16_practicum_hashing/note_lesson_16_hashing.ipynb){ .solutions-link }
 
 ## Пригадай
 
@@ -620,7 +620,7 @@ group_anagrams(["літо", "клоун", "тіло", "таксі", "уклон"
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_16_hashing.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_16_practicum_hashing/note_lesson_16_hashing.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_16_practicum_hashing/note_lesson_16_hashing.ipynb) — та сама зміна диспетчера: прогнози, лічильники кроків, вправи з перевірками.
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_16_practicum_hashing/note_lesson_16_hashing_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_16_practicum_hashing/note_lesson_16_hashing.ipynb){ .solutions-link } — та сама зміна диспетчера: прогнози, лічильники кроків, вправи з перевірками.
 - Наступне заняття: [Урок 17. Огляд модуля 1](lesson_17.md) — усе разом: типи, колекції, функції, винятки, файли, Git і три практикуми.
 - У модулі 2 повернемося до hashable з іншого боку: як зробити ключем словника **власний** клас (`__hash__` і `__eq__`).
 

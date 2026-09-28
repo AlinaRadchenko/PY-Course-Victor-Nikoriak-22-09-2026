@@ -25,7 +25,7 @@
 - порахувати ринок знизу вгору і чесно позначити, що є фактом, а що — припущенням;
 - показати демо, яке не зламається на сцені, і відповісти на незручні питання.
 
-**Ноутбук заняття:** [`note_lesson_52_pitch.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_52_graduation_pitch/note_lesson_52_pitch.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_52_graduation_pitch/note_lesson_52_pitch.ipynb) — 5 «чому» як дерево причин, питання за The Mom Test, ринок знизу вгору, розбір і перевірка деку, бюджет часу на слайди.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_52_graduation_pitch/note_lesson_52_pitch_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_52_graduation_pitch/note_lesson_52_pitch.ipynb){ .solutions-link } — 5 «чому» як дерево причин, питання за The Mom Test, ринок знизу вгору, розбір і перевірка деку, бюджет часу на слайди.
 
 ## Пригадай
 
@@ -452,7 +452,7 @@ python module_6/lessons/lesson_52_graduation_pitch/pitch_check.py my_deck.md
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_52_pitch.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_52_graduation_pitch/note_lesson_52_pitch.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_52_graduation_pitch/note_lesson_52_pitch.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_52_graduation_pitch/note_lesson_52_pitch_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_6/lessons/lesson_52_graduation_pitch/note_lesson_52_pitch.ipynb){ .solutions-link }.
 - [Бонус. CV розробника](bonus_cv.md): як описати фінальний проєкт у CV тими самими фактами, що й у питчі.
 
 ## Документація і джерела

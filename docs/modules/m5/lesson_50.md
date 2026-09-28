@@ -26,7 +26,7 @@
 - давати workflow лише потрібні права й не світити секрети в журналах;
 - публікувати образ у реєстр з `main`.
 
-**Ноутбук заняття:** [`note_lesson_50_ci_cd.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_50_ci_cd/note_lesson_50_ci_cd.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_50_ci_cd/note_lesson_50_ci_cd.ipynb) — workflow як дані: чи запуститься він на цей PR, у якому порядку підуть jobs, що розгорне matrix, які права отримає токен.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_50_ci_cd/note_lesson_50_ci_cd_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_50_ci_cd/note_lesson_50_ci_cd.ipynb){ .solutions-link } — workflow як дані: чи запуститься він на цей PR, у якому порядку підуть jobs, що розгорне matrix, які права отримає токен.
 
 ## Пригадай
 
@@ -541,7 +541,7 @@ jobs:
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_50_ci_cd.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_50_ci_cd/note_lesson_50_ci_cd.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_50_ci_cd/note_lesson_50_ci_cd.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_50_ci_cd/note_lesson_50_ci_cd_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_5/lessons/lesson_50_ci_cd/note_lesson_50_ci_cd.ipynb){ .solutions-link }.
 - Модуль 6 — капстоун: власний проєкт з тестами, Docker, Compose і CI з перших днів.
 
 ## Документація і джерела

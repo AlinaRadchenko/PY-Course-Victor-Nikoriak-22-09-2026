@@ -19,7 +19,7 @@
 
 **Задача розділу.** Meteo API v2 і Streamlit-карта погоди. Повний приклад — у розділі [«Практика»](#practice).
 
-**Ноутбук заняття:** [`note_lesson_32_rest.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_32_rest_api_design/note_lesson_32_rest.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_32_rest_api_design/note_lesson_32_rest.ipynb) — сервер запускається прямо в ноутбуці.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_32_rest_api_design/note_lesson_32_rest_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_32_rest_api_design/note_lesson_32_rest.ipynb){ .solutions-link } — сервер запускається прямо в ноутбуці.
 
 ## Пригадай
 
@@ -902,7 +902,7 @@ print(response.status_code, response.json())
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_32_rest.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_32_rest_api_design/note_lesson_32_rest.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_32_rest_api_design/note_lesson_32_rest.ipynb) — ресурси, коди, пагінація, `PATCH`, GraphQL і клієнт з перевірками.
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_32_rest_api_design/note_lesson_32_rest_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_32_rest_api_design/note_lesson_32_rest.ipynb){ .solutions-link } — ресурси, коди, пагінація, `PATCH`, GraphQL і клієнт з перевірками.
 - Наступний урок — 33, «Django intro: MVT, ORM, admin»: перший повноцінний вебфреймворк.
 - FastAPI зсередини — уроки 36–38 (Pydantic, FastAPI + OpenAPI + Postman, CRUD з базою даних). Автентифікація — урок 40, тестування API — урок 41, WebSocket-чат — урок 45, Telegram Bot API з webhook — урок 47.
 

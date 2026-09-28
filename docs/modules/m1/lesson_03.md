@@ -446,7 +446,7 @@ d
 
 На склад приїхала коробка без зворотної адреси. Склад відкриє її, лише коли кожен із чотирьох відділів перевірить свою частину даних і поставить **пломбу**. Якщо хоч один відділ помилиться, коробка лишиться закритою.
 
-**Ноутбук:** [`nova_poshta_parcel.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_03_variables_and_data_types/nova_poshta_parcel.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_03_variables_and_data_types/nova_poshta_parcel.ipynb)
+**Ноутбук:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_03_variables_and_data_types/nova_poshta_parcel_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_03_variables_and_data_types/nova_poshta_parcel.ipynb){ .solutions-link }
 
 | Група | Відділ | Про що задача |
 |---|---|---|
@@ -557,7 +557,7 @@ price = 45.5
 
 **Спробуйте самі — де практикуватись:** [`note_lesson_variables.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_03_variables_and_data_types/note_lesson_variables.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_03_variables_and_data_types/note_lesson_variables.ipynb) — передбачення з перевіркою на кожному кроці, тест на розуміння перетворення типів і міні-проєкт «Нова Пошта».
 
-**Довідник-практикум методів:** [`str_int_float_methods.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_03_variables_and_data_types/str_int_float_methods.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_03_variables_and_data_types/str_int_float_methods.ipynb) — f-рядки й форматування чисел (`f"{x:.2f}"`, ширина, вирівнювання), індекси й зрізи, найуживаніші методи `str`, операції й функції для `int` і `float`, безпечне перетворення типів; 7 вправ з перевірками.
+**Довідник-практикум методів:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_03_variables_and_data_types/str_int_float_methods_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_03_variables_and_data_types/str_int_float_methods.ipynb){ .solutions-link } — f-рядки й форматування чисел (`f"{x:.2f}"`, ширина, вирівнювання), індекси й зрізи, найуживаніші методи `str`, операції й функції для `int` і `float`, безпечне перетворення типів; 7 вправ з перевірками.
 
 ## Документація
 

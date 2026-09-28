@@ -19,7 +19,7 @@
 
 **Задача розділу.** Сайт нотаток `hello_project` з адмін-панеллю, а в практиці — «закріплені» нотатки. Повний приклад — у розділі [«Практика»](#practice).
 
-**Ноутбук заняття:** [`note_lesson_33_django.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_33_django_intro/note_lesson_33_django.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_33_django_intro/note_lesson_33_django.ipynb) — Django, ORM і адмінка прямо в ноутбуці.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_33_django_intro/note_lesson_33_django_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_33_django_intro/note_lesson_33_django.ipynb){ .solutions-link } — Django, ORM і адмінка прямо в ноутбуці.
 
 !!! info "Книга Django"
     Цей урок — стислий вхід у тему. Кожен розділ має посилання **«Поглиблено»** на [Django-книгу викладача](https://nikoriakviktot.github.io/notes_chat_app/): там той самий проєкт розібрано детальніше, а маршрут [Zero to Hero](https://nikoriakviktot.github.io/notes_chat_app/tutorials/) веде від цього уроку до готового застосунку з чатом. Урок 33 — це кроки 1–2 цього маршруту.
@@ -914,7 +914,7 @@ print(Note.objects.first().get_priority_display())
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_33_django.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_33_django_intro/note_lesson_33_django.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_33_django_intro/note_lesson_33_django.ipynb) — ORM, view, шаблон і адмінка з перевірками.
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_33_django_intro/note_lesson_33_django_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_33_django_intro/note_lesson_33_django.ipynb){ .solutions-link } — ORM, view, шаблон і адмінка з перевірками.
 - Готовий проєкт уроку — [`hello_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_33_django_intro/hello_project) у папці уроку.
 - Наступний урок — 34, «Django: forms, HTML practice»: base-шаблон, Bootstrap, `ModelForm` і повний CRUD нотаток — крок 4 маршруту Zero to Hero.
 - Книга: контрольні точки [кроку 1](https://nikoriakviktot.github.io/notes_chat_app/tutorials/01_hello_django/checkpoint/) і [кроку 2](https://nikoriakviktot.github.io/notes_chat_app/tutorials/02_first_model/checkpoint/) — чеклисти й типові помилки.

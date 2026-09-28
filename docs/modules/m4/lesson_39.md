@@ -31,7 +31,7 @@
 - винести довгу роботу у фон (`202 Accepted` + статус задачі) і не загубити дані;
 - відрізнити фіксоване вікно rate limit від ковзного.
 
-**Ноутбук заняття:** [`note_lesson_39_redis.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_39_middleware_redis/note_lesson_39_redis.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_39_middleware_redis/note_lesson_39_redis.ipynb) — без сервера Redis: `fakeredis` у пам'яті.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_39_middleware_redis/note_lesson_39_redis_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_39_middleware_redis/note_lesson_39_redis.ipynb){ .solutions-link } — без сервера Redis: `fakeredis` у пам'яті.
 
 ## Пригадай
 
@@ -619,7 +619,7 @@ with TestClient(app) as client:
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_39_redis.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_39_middleware_redis/note_lesson_39_redis.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_39_middleware_redis/note_lesson_39_redis.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_39_middleware_redis/note_lesson_39_redis_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_39_middleware_redis/note_lesson_39_redis.ipynb){ .solutions-link }.
 - Урок 40 — автентифікація й безпека (Django-гілка, нотатки). Агрегатор повернеться в уроці 41: тести API на тестовій базі й з підміною мережі.
 
 ## Документація і джерела

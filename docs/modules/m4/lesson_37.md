@@ -28,7 +28,7 @@
 - прочитати `/docs` і `/openapi.json`, зібрати колекцію Postman з перевірками й запустити її з консолі;
 - відрізнити ендпоінт, що блокує сервер, від того, що не блокує, — і довести це вимірами.
 
-**Ноутбук заняття:** [`note_lesson_37_fastapi.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_37_fastapi_basics/note_lesson_37_fastapi.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_37_fastapi_basics/note_lesson_37_fastapi.ipynb) — API агрегатора через `TestClient`, без запуску сервера.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_37_fastapi_basics/note_lesson_37_fastapi_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_37_fastapi_basics/note_lesson_37_fastapi.ipynb){ .solutions-link } — API агрегатора через `TestClient`, без запуску сервера.
 
 **Довідник:** [FastAPI: архітектура, async і production-патерни](fastapi/fastapi_documentation.md): розділи 1–5 — до цього уроку.
 
@@ -708,7 +708,7 @@ async def scrape_page(url: str, store: StoreDep) -> dict[str, int]:
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_37_fastapi.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_37_fastapi_basics/note_lesson_37_fastapi.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_37_fastapi_basics/note_lesson_37_fastapi.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_37_fastapi_basics/note_lesson_37_fastapi_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_37_fastapi_basics/note_lesson_37_fastapi.ipynb){ .solutions-link }.
 - Урок 38 — `NewsStore` → SQLAlchemy: новини переживають перезапуск сервера, унікальний `url` — обмеження бази, `GET /api/news` — SQL-запит з фільтрами. Довідник: розділи 6–8 (пул з'єднань, Repository, Unit of Work).
 
 ## Документація і джерела

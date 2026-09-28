@@ -30,7 +30,7 @@ Django-гілка курсу веде той самий застосунок н�
 - видати й перевірити JWT, пояснити, з чого складається токен і чому його не можна «підправити»;
 - прочитати `manage.py check --deploy` і зв'язати знахідки з OWASP Top 10.
 
-**Ноутбук заняття:** [`note_lesson_40_auth.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_40_auth_security/note_lesson_40_auth.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_40_auth_security/note_lesson_40_auth.ipynb) — хеші паролів, JWT по частинах, групи й права в API.
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_40_auth_security/note_lesson_40_auth_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_40_auth_security/note_lesson_40_auth.ipynb){ .solutions-link } — хеші паролів, JWT по частинах, групи й права в API.
 
 ## Пригадай
 
@@ -660,7 +660,7 @@ print("підроблений токен →", response.status_code, [note["titl
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_40_auth.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_40_auth_security/note_lesson_40_auth.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_40_auth_security/note_lesson_40_auth.ipynb).
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_40_auth_security/note_lesson_40_auth_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_40_auth_security/note_lesson_40_auth.ipynb){ .solutions-link }.
 - Урок 41 — тестування API на агрегаторі новин: тестова база, підміна мережі, моки.
 - Урок 46 — security advanced: SSRF, секрети, заголовки, JWT для адмін-ендпоінтів агрегатора.
 

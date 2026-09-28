@@ -19,7 +19,7 @@
 
 **Задача розділу.** `Order`, у якого сума змінюється лише через знижку з перевіркою, а статус — лише за дозволеними переходами, з історією змін. Повний код — у розділі [«Практика»](#practice).
 
-**Ноутбук заняття:** [`note_lesson_21_encapsulation.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_21_encapsulation_scope/note_lesson_21_encapsulation.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_21_encapsulation_scope/note_lesson_21_encapsulation.ipynb)
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_21_encapsulation_scope/note_lesson_21_encapsulation_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_21_encapsulation_scope/note_lesson_21_encapsulation.ipynb){ .solutions-link }
 
 ## Пригадай
 
@@ -707,7 +707,7 @@ order._Order__status = "delivered"
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_21_encapsulation.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_21_encapsulation_scope/note_lesson_21_encapsulation.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_21_encapsulation_scope/note_lesson_21_encapsulation.ipynb) — сервіс доставки: прогнози, вправи з перевірками, автомат статусів.
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_21_encapsulation_scope/note_lesson_21_encapsulation_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_21_encapsulation_scope/note_lesson_21_encapsulation.ipynb){ .solutions-link } — сервіс доставки: прогнози, вправи з перевірками, автомат статусів.
 - Практикум на реальних даних: [`lab_lesson_21_cars_oop.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_21_encapsulation_scope/lab_lesson_21_cars_oop.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_2/lessons/lesson_21_encapsulation_scope/lab_lesson_21_cars_oop.ipynb) — «Автомобілі як об'єкти»: інкапсуляція на даних про авто, а заодно поліморфізм (урок 20) і dunder-методи (урок 23).
 - Наступне заняття — урок 22, практикум П4: рекурсія, «розділяй і володарюй», перебір з поверненням.
 - Урок 23 — `@property`, декоратори класів і dunder-методи докладно.

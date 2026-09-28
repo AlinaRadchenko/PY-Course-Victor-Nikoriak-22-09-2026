@@ -17,7 +17,7 @@
 
 **Задача розділу.** Прочитати `kasa_2024_07.txt`, зберегти звіт у `report_2024_07.json`, зіпсовані рядки — в `errors_2024_07.txt`, а запуск — у журнал `runs.log`. Повний код — у розділі [«Практика»](#practice).
 
-**Ноутбук заняття:** [`note_lesson_14_file_io_json.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_14_file_io_json/note_lesson_14_file_io_json.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_14_file_io_json/note_lesson_14_file_io_json.ipynb)
+**Ноутбук заняття:** [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_14_file_io_json/note_lesson_14_file_io_json_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_14_file_io_json/note_lesson_14_file_io_json.ipynb){ .solutions-link }
 
 ## Пригадай
 
@@ -762,7 +762,7 @@ with open("report_2024_07.json", encoding="utf-8") as file:
 
 ### Що далі
 
-- Ноутбук заняття: [`note_lesson_14_file_io_json.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_14_file_io_json/note_lesson_14_file_io_json.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_14_file_io_json/note_lesson_14_file_io_json.ipynb) — той самий місяць каси: ноутбук сам створює файл каси й конфіг, далі прогнози, вправи й перевірки.
+- Ноутбук заняття: [Відкрити вправи в Colab](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_14_file_io_json/note_lesson_14_file_io_json_student.ipynb){ .md-button .md-button--primary } [Переглянути розв’язки](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_14_file_io_json/note_lesson_14_file_io_json.ipynb){ .solutions-link } — той самий місяць каси: ноутбук сам створює файл каси й конфіг, далі прогнози, вправи й перевірки.
 - Довідник: [`notes_file_io_json.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_14_file_io_json/notes_file_io_json.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_1/lessons/lesson_14_file_io_json/notes_file_io_json.ipynb) — курсор файлу (`tell`, `seek`), типи JSON докладно, форматування таблиць, телефонна книга. Стислий повтор — [File I/O та JSON](../../reference/python_core/file_io_json.md).
 - Наступне заняття: [Урок 15. Git + GitHub](lesson_15.md). Файли проєкту кафе вже є — час зберігати їхню історію і показувати код іншим.
 
