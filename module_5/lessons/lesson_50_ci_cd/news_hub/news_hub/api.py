@@ -1,6 +1,6 @@
 """HTTP API агрегатора: FastAPI поверх парсера й моделі з уроку 36.
 
-Урок 37: ядро `news_dashboard/app/main.py` старого курсу (`/api/news`, `/stats`, `POST /api/scrape`),
+Урок 37: ядро `app/main.py` прототипу `news_dashboard` (`/api/news`, `/stats`, `POST /api/scrape`),
 сховище `NewsStore` через `Depends`.
 Урок 38 — рефакторинг сховища:
 - `NewsStore` у пам'яті → `NewsRepository` над SQLAlchemy (PostgreSQL або SQLite); сесія на запит — `get_db`;

@@ -1,4 +1,4 @@
-"""Урок 45: чат групи — правила, які не покривають тести старого курсу (tests_consumers.py).
+"""Урок 45: чат групи — правила, які не покривають тести стартового проєкту (tests_consumers.py).
 
     python manage.py test hello_app.tests_chat
     REDIS_URL=redis://localhost:6379/0 python manage.py test hello_app.tests_chat   # з RedisChannelLayer

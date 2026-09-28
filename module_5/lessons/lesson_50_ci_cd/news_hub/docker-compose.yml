@@ -1,5 +1,5 @@
 # news_hub повністю: nginx → api → PostgreSQL + Redis; міграції — окремим кроком перед API. Урок 49.
-# Основа — docker-compose.yml production_bot старого курсу (bot, nginx, postgres, redis, migrate).
+# Основа — docker-compose.yml стартового production_bot (bot, nginx, postgres, redis, migrate).
 #
 #   cp .env.example .env            # і заповнити
 #   docker compose up -d --build --wait

@@ -1,8 +1,7 @@
 """
 selectors.py — SELECT queries only (no mutations).
 
-Скопійовано з notes_project. Детальна документація ORM оптимізацій:
-lesson_Django_ORM_Database/notes_project/hello_app/selectors.py
+Скопійовано з notes_project (там — детальна документація ORM оптимізацій, hello_app/selectors.py).
 """
 from django.db.models import Count, Q, Prefetch
 from django.utils import timezone

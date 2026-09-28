@@ -66,7 +66,7 @@ def main(html_file: str, output_pdf: str) -> None:
 
 if __name__ == "__main__":
     # Курс, М6: свої файли — аргументами (python generate_cv_pdf.py cv_template.html CV_My_Name.pdf);
-    # без аргументів — як у старому курсі, CV викладача.
+    # без аргументів — як у стартовому скрипті, CV викладача.
     import sys
 
     if len(sys.argv) == 3:

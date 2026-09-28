@@ -2,7 +2,7 @@
 
 Модуль написав Claude Code (`claude -p`) за специфікацією tests/unit/test_pravda.py і правилами CLAUDE.md;
 виправлення після рецензії позначено «Рецензія» (тести — tests/unit/test_pravda_review.py).
-Основа ідеї — task_11/analysis_tonality_2.py з Data_Science_Course_SSWU (feedparser); тут — лише stdlib.
+Основа ідеї — скрипт аналізу тональності `analysis_tonality_2.py` (feedparser); тут — лише stdlib.
 
 RSS 2.0 (https://www.pravda.com.ua/rss/view_news/): <rss><channel><item> з title, link,
 description (іноді в CDATA й з тегом <p>), category, pubDate (RFC 2822, +0300 або GMT).

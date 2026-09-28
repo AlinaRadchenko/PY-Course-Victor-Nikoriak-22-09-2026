@@ -5,7 +5,7 @@
 ззовні не дістатись. URL «http://169.254.169.254/latest/meta-data/» — прохання до сервера сходити туди
 від свого імені (OWASP Top 10, A10).
 
-Основа — розділ A10 `OWASP_TOP_10.md` старого курсу (lesson_Django_authentication_and_security):
+Основа — розділ A10 `OWASP_TOP_10.md`:
 перевірка `urlparse(url).hostname in ALLOWED_HOSTS_FOR_FETCH`, потім `requests.get(url)`.
 Рефакторинг уроку 46 — перевіряється не **рядок** URL, а **адреса, куди йде з'єднання**:
 - схема лише http/https, порт лише 80/443, без логіна й пароля в URL;

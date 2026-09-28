@@ -1,6 +1,6 @@
 """Репозиторій новин: увесь SQL агрегатора в одному місці.
 
-`BaseRepository` — `backend/repositories/base.py` з `production_bot` старого курсу (загальний CRUD
+`BaseRepository` — `backend/repositories/base.py` зі стартового `production_bot` (загальний CRUD
 для будь-якої моделі). `NewsRepository` має **ті самі методи, що `NewsStore` з уроку 37**
 (`add_many`, `find`, `count`, `stats`, `clear`) — тому ендпоінти майже не змінились:
 лише `store.find(...)` → `await repo.find(...)`.

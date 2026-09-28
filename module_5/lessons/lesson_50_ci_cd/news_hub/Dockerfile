@@ -1,5 +1,5 @@
 # news_hub в контейнері. Урок 48.
-# Основа — Dockerfile production_bot старого курсу (module_5/lesson_46_Telegram_API/production_bot):
+# Основа — Dockerfile стартового production_bot:
 # python:3.12-slim, залежності окремим шаром, користувач без root. Що додано і чому — docs/modules/m5/lesson_48.md.
 #
 #   docker build -t news_hub:48 .

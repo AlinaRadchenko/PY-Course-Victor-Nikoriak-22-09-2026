@@ -2,8 +2,8 @@
 views.py — HTTP шар (тільки request/response).
 
 Урок 44 (крок 3 Django-книги: CRUD і архітектура) — рефакторинг views уроку 40:
-  - нотатки, записники й теги — class-based views з `notes_project_cbv` старого курсу
-    (lesson_Django_ORM_Database/notes_project_cbv/hello_app/views.py), адаптовані до цього проєкту:
+  - нотатки, записники й теги — class-based views зі стартового `notes_project_cbv`
+    (hello_app/views.py), адаптовані до цього проєкту:
     групи, `is_pinned`, «змінює лише автор»;
   - списки справ, покупок, нагадування й групи лишаються функціями — CBV не обов'язкові, обов'язкові тонкі views;
   - жодного `Model.objects` і жодного `Q(...)` у цьому файлі: «хто що бачить» і «хто що змінює» —
@@ -36,7 +36,7 @@ from . import selectors, services
 # ─────────────────────────────────────────────────────────────────────────────
 
 class SelectorQuerySetMixin:
-    """QuerySet для Detail/Update/Delete бере функція selectors — `UserQuerySetMixin` старого курсу.
+    """QuerySet для Detail/Update/Delete бере функція selectors — `UserQuerySetMixin` стартового `notes_project_cbv`.
 
     Старий міксин робив `super().get_queryset().filter(user=self.request.user)` — правило доступу
     жило у view. Тут view лише каже, ЯКЕ правило: `selector = selectors.notes_visible_to`.

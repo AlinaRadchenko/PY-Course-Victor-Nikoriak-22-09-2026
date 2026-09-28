@@ -1,6 +1,6 @@
 """Клієнти LLM за одним інтерфейсом: Gemini (основний), Anthropic (другий), FakeLLM (тести й ноутбук).
 
-Основа — `app/services/ai_service.py` з `ai_bot` старого курсу (module_5/lesson_46_Telegram_API):
+Основа — `app/services/ai_service.py` зі стартового `ai_bot`:
 пул моделей Gemini з переходом на наступну при збої й circuit breaker у Redis.
 Рефакторинг уроку 43:
 - один інтерфейс `LLMClient` — решта коду (analysis.py, api.py) не знає, який провайдер відповідає;

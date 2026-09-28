@@ -1,5 +1,5 @@
 /**
- * static/hello_app/js/group_chat.js — з notes_chat_app старого курсу (notes_app/static/notes_app/js/).
+ * static/hello_app/js/group_chat.js — з notes_chat_app (notes_app/static/notes_app/js/).
  * Урок 45: не перепідключатись після відмови (коди 4000–4999) і після 5 невдалих спроб поспіль.
  *
  * group_chat.js — WebSocket чат клієнт (vanilla JavaScript)

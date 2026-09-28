@@ -1,6 +1,6 @@
 """Redis для агрегатора: клієнт і кеш стрічки (cache-aside з уроку 30).
 
-Клієнт — `backend/core/redis.py` з `production_bot` старого курсу (module_5/lesson_46_Telegram_API).
+Клієнт — `backend/core/redis.py` зі стартового `production_bot`.
 Рефакторинг уроку 39:
 - замість глобальної змінної `_redis_pool` — клієнт у `app.state`, створюється в `lifespan`, дістається
   через `Depends(get_redis)` (так його можна підмінити в тестах);
