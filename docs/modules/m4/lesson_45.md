@@ -4,7 +4,7 @@
 
 HTTP так не вміє: розмову завжди починає браузер — «запитав → отримав». Щоб дізнатися про нове повідомлення, довелося б питати сервер щосекунди. **WebSocket** — постійний двосторонній канал: відкривається одним HTTP-запитом і лишається відкритим, писати в нього може і браузер, і сервер (урок 32, «WebSocket і SSE»).
 
-Код чату — зі старого курсу, це крок 7B [Django-книги](https://nikoriakviktot.github.io/notes_chat_app/tutorials/07_async_django/): Django Channels, consumer, channel layer, JS-клієнт. Переносячи його в проєкт уроку 44, перевіряємо тим самим правилом: **consumer — ще один транспорт** над тими самими selectors і services. Дві знахідки дорогою:
+Стартовий код чату — це крок 7B [Django-книги](https://nikoriakviktot.github.io/notes_chat_app/tutorials/07_async_django/): Django Channels, consumer, channel layer, JS-клієнт. Переносячи його в проєкт уроку 44, перевіряємо тим самим правилом: **consumer — ще один транспорт** над тими самими selectors і services. Дві знахідки дорогою:
 
 - учасник, якого вилучили з групи, з відкритою вкладкою далі **читає й пише** в чат;
 - будь-який сайт, відкритий у браузері учасника, може під'єднатися до чату від його імені.
@@ -44,9 +44,9 @@ HTTP так не вміє: розмову завжди починає брауз
     2. Selector (`groups_of(user)`, `get_group_with_members`): правило доступу живе в одному місці, views і API лише його викликають.
     3. Cookie `sessionid`: браузер надсилає його з кожним запитом до нашого сайту, Django за ним знаходить сесію й користувача. Сьогодні важливо: браузер надсилає цей cookie і тоді, коли запит ініціює **чужа** сторінка.
 
-## Старт: що дає старий курс
+## Старт: з якого коду починаємо
 
-| Звідки (`module_5/lesson_Django_Async/notes_chat_app/`) | Що там | Куди в проєкті |
+| Звідки (`notes_chat_app/`) | Що там | Куди в проєкті |
 |---|---|---|
 | `notes_app/consumers.py` | `GroupChatConsumer`: `connect` / `receive` / `disconnect`, розсилка через channel layer | `hello_app/consumers.py` |
 | `notes_project/asgi.py`, `routing.py` | `ProtocolTypeRouter`: HTTP → Django, WebSocket → `AuthMiddlewareStack` → `URLRouter` | `hello_project/asgi.py`, `routing.py` |
@@ -150,9 +150,9 @@ else:
 
 ## Рефакторинг 2. Consumer — ще один транспорт { #refactor-2 }
 
-Consumer — «view для WebSocket»: view обробляє один запит і завершується, consumer живе, поки відкрите з'єднання. У старому курсі він сам ходив у базу — три власні ORM-хелпери:
+Consumer — «view для WebSocket»: view обробляє один запит і завершується, consumer живе, поки відкрите з'єднання. До рефакторингу він сам ходив у базу — три власні ORM-хелпери:
 
-```python title="notes_app/consumers.py (старий курс, скорочено)"
+```python title="notes_app/consumers.py (до рефакторингу, скорочено)"
     @database_sync_to_async
     def check_membership(self, group_pk, user):
         try:
@@ -171,7 +171,7 @@ Consumer — «view для WebSocket»: view обробляє один запи�
 
 Правило «хто учасник групи» — вже вчетверте в проєкті (сторінки групи, нотатки групи, списки групи… і чат), і знову власною копією. За правилом уроку 44 consumer лише **вибирає** правило:
 
-| Було (consumer старого курсу) | Стало | Де |
+| Було (consumer до рефакторингу) | Стало | Де |
 |---|---|---|
 | `check_membership` — `Group.objects.get` + `user_set…exists()` | `selectors.is_group_member(user, group_pk)` | те саме правило, що `groups_of(user)` для сторінок |
 | `load_history` — ORM у consumer | `selectors.recent_chat_messages(group_pk)` | повертає **список**, не QuerySet |
@@ -295,7 +295,7 @@ flowchart TD
 
 ## Рефакторинг 3. Права — на кожне повідомлення { #refactor-3 }
 
-Consumer старого курсу перевіряв членство **один раз** — у `connect()`. Далі з'єднання живе годинами. Що, якщо Анну вилучили з групи, а її вкладка лишилась відкритою? Справжній запуск коду старого курсу (`WebsocketCommunicator`, про нього — у розділі «Тести»):
+Consumer до рефакторингу перевіряв членство **один раз** — у `connect()`. Далі з'єднання живе годинами. Що, якщо Анну вилучили з групи, а її вкладка лишилась відкритою? Справжній запуск стартового коду (`WebsocketCommunicator`, про нього — у розділі «Тести»):
 
 ```text
 Анна в групі: False
@@ -374,7 +374,7 @@ flowchart TD
 
 Подія йде **після COMMIT** з тієї ж причини, що інвалідація кешу в уроці 39: якби consumer отримав її до COMMIT і щось перевірив у базі, він побачив би старе членство.
 
-Клієнт теж має знати про відмову. JS старого курсу при будь-якому закритті, крім 1000/1001, перепідключався з backoff до 30 секунд — безкінечно. Відмову в handshake (не учасник) браузер бачить як `1006`, так само як обрив мережі. Тепер коди `4000–4999` («застосунок відмовив») — без перепідключення, а після 5 невдалих спроб поспіль — повідомлення замість нових спроб:
+Клієнт теж має знати про відмову. Стартовий JS при будь-якому закритті, крім 1000/1001, перепідключався з backoff до 30 секунд — безкінечно. Відмову в handshake (не учасник) браузер бачить як `1006`, так само як обрив мережі. Тепер коди `4000–4999` («застосунок відмовив») — без перепідключення, а після 5 невдалих спроб поспіль — повідомлення замість нових спроб:
 
 ```javascript title="hello_app/static/hello_app/js/group_chat.js (фрагмент)"
             if (event.code >= 4000 && event.code < 5000) {
@@ -405,7 +405,7 @@ HTML-форми захищає CSRF-токен (урок 34). У WebSocket-ру�
 new WebSocket("wss://notes.example/ws/groups/7/chat/")   // cookie Олени піде разом із запитом
 ```
 
-…і отримає історію чату від імені Олени. Це **Cross-Site WebSocket Hijacking**. Справжній запуск стеку старого курсу (`AuthMiddlewareStack(URLRouter(...))`) з cookie Олени і заголовком `Origin: https://evil.example`:
+…і отримає історію чату від імені Олени. Це **Cross-Site WebSocket Hijacking**. Справжній запуск стартового стеку (`AuthMiddlewareStack(URLRouter(...))`) з cookie Олени і заголовком `Origin: https://evil.example`:
 
 ```text
 з evil.example: (True, None)
@@ -479,7 +479,7 @@ graph LR
 
 | Файл | Що перевіряє | Скільки |
 |---|---|---|
-| `tests_consumers.py` | тести старого курсу без змін: підключення, відмова анонімові й чужому, розсилка, збереження, історія, ізоляція груп | 9 |
+| `tests_consumers.py` | тести стартового проєкту без змін: підключення, відмова анонімові й чужому, розсилка, збереження, історія, ізоляція груп | 9 |
 | `tests_chat.py` | service (межі тексту, членство, історія 50 з 55), сторінка чату, вилучення під час з'єднання, видалення групи, `Origin`, `escapeHtml` у Node.js | 18 |
 | `tests_architecture.py` та інші з уроків 34–44 | + `consumers.py` без ORM | 49 |
 
@@ -514,7 +514,7 @@ Ran 76 tests in 92.025s
 OK
 ```
 
-`tests_chat.py` на коді старого курсу дає 9 червоних тестів: консюмер не реагує на вилучення з групи (два тести), вилученому дозволено писати, `Origin` не перевіряється (три тести), ORM у consumer, JS перепідключається після відмови, багаторядковий `{# … #}` у шаблоні потрапляє на сторінку. 14 навмисних поломок нового коду — кожну ловить хоча б один тест.
+`tests_chat.py` на стартовому коді дає 9 червоних тестів: консюмер не реагує на вилучення з групи (два тести), вилученому дозволено писати, `Origin` не перевіряється (три тести), ORM у consumer, JS перепідключається після відмови, багаторядковий `{# … #}` у шаблоні потрапляє на сторінку. 14 навмисних поломок нового коду — кожну ловить хоча б один тест.
 
 Наживо — `runserver` (daphne) і два браузери (Playwright): повідомлення Анни з'являється в Олени без оновлення сторінки. `<b>Хліб</b>` показується як текст, а не жирним — `escapeHtml` працює. Боб (не в групі): сторінка чату — `404`, WebSocket — закрито в рукостисканні. Олена вилучає Анну на сторінці групи — у вкладці Анни статус «Немає доступу до чату цієї групи».
 
@@ -683,7 +683,7 @@ async def test_non_member_rejected(self):
 
 ## Документація і джерела
 
-- Код: [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_45_websocket_chat/crispy_notes_project) — проєкт уроку 44 + чат з `module_5/lesson_Django_Async/notes_chat_app/` старого курсу `PY-Course-Victor-Nikoriak-23_02`.
+- Код: [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_45_websocket_chat/crispy_notes_project) — проєкт уроку 44 + чат зі стартового `notes_chat_app`.
 - Django-книга, крок 7B: [огляд кроку](https://nikoriakviktot.github.io/notes_chat_app/tutorials/07_async_django/), [WebSocket-протокол](https://nikoriakviktot.github.io/notes_chat_app/tutorials/07_async_django/7b_websocket_protocol/), [ASGI-стек](https://nikoriakviktot.github.io/notes_chat_app/tutorials/07_async_django/7b_asgi_stack/), [налаштування Channels](https://nikoriakviktot.github.io/notes_chat_app/tutorials/07_async_django/7b_channels_settings/), [consumer](https://nikoriakviktot.github.io/notes_chat_app/tutorials/07_async_django/7b_consumer/), [JS-клієнт](https://nikoriakviktot.github.io/notes_chat_app/tutorials/07_async_django/7b_websocket_client/), [чекпоінт](https://nikoriakviktot.github.io/notes_chat_app/tutorials/07_async_django/checkpoint/); [тести consumers](https://nikoriakviktot.github.io/notes_chat_app/tutorials/06_testing/test_consumers/); [Redis і Channel Layer](https://nikoriakviktot.github.io/notes_chat_app/tutorials/09_deployment/redis/).
 - Django Channels: [tutorial](https://channels.readthedocs.io/en/latest/tutorial/index.html), [consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html), [channel layers](https://channels.readthedocs.io/en/latest/topics/channel_layers.html), [security — `AllowedHostsOriginValidator`](https://channels.readthedocs.io/en/latest/topics/security.html), [testing — `WebsocketCommunicator`](https://channels.readthedocs.io/en/latest/topics/testing.html), [database access](https://channels.readthedocs.io/en/latest/topics/databases.html).
 - Протокол: [RFC 6455 — The WebSocket Protocol](https://www.rfc-editor.org/rfc/rfc6455) (коди закриття — §7.4; 4000–4999 — для застосунків); [MDN — WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket); [OWASP — Cross-Site WebSocket Hijacking](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/11-Client-side_Testing/10-Testing_WebSockets).

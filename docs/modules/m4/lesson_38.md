@@ -2,7 +2,7 @@
 
 В уроці 37 агрегатор став HTTP-сервісом, але новини лежать у `NewsStore` — словнику в пам'яті процесу. Зупинили сервер — новин немає; запустили два процеси uvicorn — у кожного свої новини. Сьогодні агрегатор отримує **базу даних**: новини переживають перезапуск, унікальність `url` гарантує сама база, а API вміє повний CRUD окремої новини.
 
-Знову не з нуля: у старому курсі є готовий шар бази — `production_bot` з уроку про Telegram (`module_5/lesson_46_Telegram_API`): async SQLAlchemy 2.0, репозиторії, Alembic-міграції. Беремо його і робимо три рефакторинги `news_hub` з уроку 37.
+Знову не з нуля: є готовий шар бази — стартовий `production_bot` (Telegram-бот з адмін-API): async SQLAlchemy 2.0, репозиторії, Alembic-міграції. Беремо його і робимо три рефакторинги `news_hub` з уроку 37.
 
 | Урок | Крок агрегатора |
 |---|---|
@@ -44,7 +44,7 @@
     2. `ROLLBACK` скасує всі зміни транзакції: або все, або нічого.
     3. Щоб замінити реалізацію, не чіпаючи ендпоінтів. Сьогодні саме це й зробимо: `NewsStore` → `NewsRepository`.
 
-## Старт: що дає `production_bot` старого курсу
+## Старт: з якого коду починаємо
 
 `production_bot` — Telegram-бот з адмін-API на FastAPI. Нам потрібен його **шар бази**, а не бот:
 
@@ -264,7 +264,7 @@ print("нова новина: id =", created["id"])
 
 ## Сесія на запит і COMMIT до відповіді { #session }
 
-`get_db` — зі старого `database.py` майже без змін:
+`get_db` — зі стартового `database.py` майже без змін:
 
 ```python title="news_hub/db.py"
 async def get_db() -> AsyncIterator[AsyncSession]:
@@ -529,7 +529,7 @@ Success: no issues found in 9 source files
 
 ### Розібраний приклад: пошук `GET /api/news/search?q=`
 
-В уроці 37 пошук був завданням «спробуй самостійно». Зі старого `news_dashboard` він виглядав так: `{"title": {"$regex": keyword, "$options": "i"}}` — рядок користувача ставав **регулярним виразом** у MongoDB. Тепер — SQL:
+В уроці 37 пошук був завданням «спробуй самостійно». У прототипі `news_dashboard` він виглядав так: `{"title": {"$regex": keyword, "$options": "i"}}` — рядок користувача ставав **регулярним виразом** у MongoDB. Тепер — SQL:
 
 1. **Репозиторій.** `NewsRow.title.icontains(q, autoescape=True)` → `title ILIKE '%' || :q || '%'` у PostgreSQL. `q` — параметр; `autoescape=True` — символи `%` і `_` у запиті шукаються буквально, а не як «будь-що».
 2. **Ендпоінт.** `q: str = Query(min_length=2, max_length=60)` — порожній чи надто довгий пошук відсічено до SQL.
@@ -662,7 +662,7 @@ IntegrityError duplicate key value violates unique constraint "news_url_key"
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_38_fastapi_sqlalchemy/news_hub) — шар бази з `production_bot` старого курсу (`module_5/lesson_46_Telegram_API`: `backend/core/database.py`, `backend/repositories/base.py`, `migrations/`, `docker-compose.yml`), API — з уроку 37.
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_38_fastapi_sqlalchemy/news_hub) — шар бази зі стартового `production_bot` (`backend/core/database.py`, `backend/repositories/base.py`, `migrations/`, `docker-compose.yml`), API — з уроку 37.
 - Довідник курсу: [FastAPI: архітектура, async і production-патерни](fastapi/fastapi_documentation.md), розділи 6–8.
 - SQLAlchemy 2.0: [ORM Quick Start](https://docs.sqlalchemy.org/en/20/orm/quickstart.html), [Declarative Mapping](https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html), [Asynchronous I/O](https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html), [Session Basics](https://docs.sqlalchemy.org/en/20/orm/session_basics.html), [INSERT…ON CONFLICT (PostgreSQL)](https://docs.sqlalchemy.org/en/20/dialects/postgresql.html#insert-on-conflict-upsert)
 - FastAPI: [SQL (Relational) Databases](https://fastapi.tiangolo.com/tutorial/sql-databases/), [Dependencies with yield](https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/)

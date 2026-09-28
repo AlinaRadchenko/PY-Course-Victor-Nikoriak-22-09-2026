@@ -14,4 +14,4 @@
 | М6. Капстоун | 51–52 | [m6_capstone.md](m6_capstone.md) |
 | Self-paced. AI для розробників (бонус) | поза наскрізною нумерацією | [bonus_ai.md](bonus_ai.md) |
 
-Номери уроків — номери з навігаційної таблиці v5.0. Папки уроків мають ту саму нумерацію: `module_N/lessons/lesson_NN_<тема>/`, де `NN` — номер уроку v5.0 (наприклад, урок 5 → `module_1/lessons/lesson_05_lists_tuples_sets/`). Матеріали зі старого курсу (23_02) лежать у папці того уроку v5.0, до якого вони належать. Як відкривати ноутбуки — [Ноутбуки в Google Colab](../00_getting_started/colab.md).
+Номери уроків — номери з навігаційної таблиці v5.0. Папки уроків мають ту саму нумерацію: `module_N/lessons/lesson_NN_<тема>/`, де `NN` — номер уроку v5.0 (наприклад, урок 5 → `module_1/lessons/lesson_05_lists_tuples_sets/`). Як відкривати ноутбуки — [Ноутбуки в Google Colab](../00_getting_started/colab.md).

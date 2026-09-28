@@ -5,7 +5,7 @@
 - як налаштувати проєкт, щоб агент працював за його правилами, а не за своїми здогадками;
 - як перевірити те, що агент написав, — навіть коли всі його тести зелені.
 
-Відповіді — на двох справжніх експериментах. Перший: Claude Code **двічі** додає в `news_hub` нове джерело новин — з голим запитом і з налаштованим проєктом та тестами-специфікацією; обидва результати перевіряємо. Другий: проєкт `depression_dashboard`, який AI згенерував у старому курсі, рецензуємо тестами — і знаходимо десять вад у застосунку, що «працював».
+Відповіді — на двох справжніх експериментах. Перший: Claude Code **двічі** додає в `news_hub` нове джерело новин — з голим запитом і з налаштованим проєктом та тестами-специфікацією; обидва результати перевіряємо. Другий: проєкт `depression_dashboard`, який згенерував AI, рецензуємо тестами — і знаходимо десять вад у застосунку, що «працював».
 
 | Урок | Крок агрегатора |
 |---|---|
@@ -40,13 +40,13 @@
     2. Кожен перевіряв свою половину на своїх даних. Контракт між ними (формат часу) перевіряє лише тест конвеєра на спільній фікстурі.
     3. Що `requirements.txt` каже правду: проєкт працює з найстарішими версіями, які він дозволяє. В уроці 41 так знайшли падіння парсера з beautifulsoup4 4.12.
 
-## Старт: що дає старий курс
+## Старт: з якого коду починаємо
 
-| Звідки | Що там | Куди |
+| Що є | Що там | Куди |
 |---|---|---|
-| `module_5/lesson_53_claude_code/CLAUDE_DOC.md` | довідник Claude Code (2025-05, 1153 рядки) | [довідник книги](ai/claude_code.md): звірено з документацією |
-| той самий урок: `IDEA.md`, `ROADMAP.md`, `Prompts_Roadmap.md` + `depression_dashboard/` | промпти й проєкт Flask + Streamlit + scikit-learn, який AI за ними згенерував | `lesson_42_ai_dev_tools/depression_dashboard/` — кейс рецензії (рефакторинг 3) |
-| `Data_Science_Course_SSWU/task_11/analysis_tonality_2.py` | розбір RSS «Української правди» через `feedparser` | нове джерело `news_hub` — його пише AI (рефакторинг 2) |
+| `CLAUDE_DOC.md` | довідник Claude Code (2025-05, 1153 рядки) | [довідник книги](ai/claude_code.md): звірено з документацією |
+| `IDEA.md`, `ROADMAP.md`, `Prompts_Roadmap.md` + `depression_dashboard/` | промпти й проєкт Flask + Streamlit + scikit-learn, який AI за ними згенерував | `lesson_42_ai_dev_tools/depression_dashboard/` — кейс рецензії (рефакторинг 3) |
+| скрипт аналізу тональності `analysis_tonality_2.py` | розбір RSS «Української правди» через `feedparser` | нове джерело `news_hub` — його пише AI (рефакторинг 2) |
 | урок 25 курсу | чекліст валідації AI-коду | розширюємо для агентів |
 
 ## Рефакторинг 1. Проєкт, у якому AI може працювати { #refactor-1 }
@@ -55,9 +55,9 @@
 
 ### CLAUDE.md
 
-Старий довідник мав приклад `CLAUDE.md` саме для нашого агрегатора — ще з тих часів, коли проєкт був `news_dashboard`:
+Довідник `CLAUDE_DOC.md` мав приклад `CLAUDE.md` саме для нашого агрегатора — ще з тих часів, коли проєкт був `news_dashboard`:
 
-```diff title="CLAUDE.md: приклад старого курсу → news_hub (урок 42)"
+```diff title="CLAUDE.md: стартовий приклад → news_hub (урок 42)"
 -# Проект: News Dashboard API
 -## Технологічний стек
 -- Python 3.12, FastAPI 0.115, MongoDB (motor 3.7)
@@ -84,7 +84,7 @@
 +- Нових залежностей не додавай; якщо без неї ніяк — зупинись і поясни.
 ```
 
-Старий приклад описує MongoDB, `app/nlp.py` і Streamlit — нічого з цього в `news_hub` немає. Застарілий `CLAUDE.md` гірший за відсутній: агент упевнено піде шукати `motor`. Новий файл містить **команди перевірки** і **правила, яких не видно з коду**: кожне з них — урок попередніх занять (`endswith` — урок 41, мережа в тестах — урок 41, «не змінюй тести» — урок 25). Повний файл — [`news_hub/CLAUDE.md`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/news_hub/CLAUDE.md).
+Цей приклад описує MongoDB, `app/nlp.py` і Streamlit — нічого з цього в `news_hub` немає. Застарілий `CLAUDE.md` гірший за відсутній: агент упевнено піде шукати `motor`. Новий файл містить **команди перевірки** і **правила, яких не видно з коду**: кожне з них — урок попередніх занять (`endswith` — урок 41, мережа в тестах — урок 41, «не змінюй тести» — урок 25). Повний файл — [`news_hub/CLAUDE.md`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_42_ai_dev_tools/news_hub/CLAUDE.md).
 
 ### Дозволи, hook, skill
 
@@ -164,7 +164,7 @@ Run Claude Code interactively here once and accept the trust dialog, …
 
 ## Рефакторинг 2. Експеримент: одне завдання — два запити { #refactor-2 }
 
-Задача: додати друге джерело — RSS «Української правди». Ідея — зі скрипта `task_11` курсу SSWU (`feedparser`). Сама стрічка з середовища, де писався урок, недоступна (мережева політика). Тому зразок — `tests/fixtures/pravda_rss.xml`, **навчальний знімок у форматі RSS 2.0** з вигаданими заголовками. У ньому навмисно є те, що буває в справжніх стрічках: `pubDate` з `+0300` і в GMT, `&quot;` у заголовку, `<p>` в описі, дубль, закороткий заголовок, новина з сестринського сайту `epravda.com.ua`.
+Задача: додати друге джерело — RSS «Української правди». Ідея — зі скрипта аналізу тональності `analysis_tonality_2.py` (`feedparser`). Сама стрічка з середовища, де писався урок, недоступна (мережева політика). Тому зразок — `tests/fixtures/pravda_rss.xml`, **навчальний знімок у форматі RSS 2.0** з вигаданими заголовками. У ньому навмисно є те, що буває в справжніх стрічках: `pubDate` з `+0300` і в GMT, `&quot;` у заголовку, `<p>` в описі, дубль, закороткий заголовок, новина з сестринського сайту `epravda.com.ua`.
 
 Два запуски Claude Code в режимі `claude -p` на двох копіях проєкту зі станом уроку 41:
 
@@ -331,12 +331,12 @@ flowchart TD
 
 ## Рефакторинг 3. Рецензія AI-проєкту тестами: `depression_dashboard` { #refactor-3 }
 
-У старому курсі AI отримав рольові промпти («You are a Senior Python Architect and Data Scientist…», 12 етапів від EDA до Docker) і згенерував **Depression Analytics Platform**: Flask API, Streamlit-дашборд, RandomForest, KMeans, IsolationForest, 57-мегабайтний pickle моделі. Застосунок запускався, усі ендпоінти відповідали `200`, дашборд малював графіки. У промптах жодного разу не попрошено тестів чи критеріїв прийняття; про витік даних сказано одним рядком — і він у коді є.
+AI отримав рольові промпти («You are a Senior Python Architect and Data Scientist…», 12 етапів від EDA до Docker) і згенерував **Depression Analytics Platform**: Flask API, Streamlit-дашборд, RandomForest, KMeans, IsolationForest, 57-мегабайтний pickle моделі. Застосунок запускався, усі ендпоінти відповідали `200`, дашборд малював графіки. У промптах жодного разу не попрошено тестів чи критеріїв прийняття; про витік даних сказано одним рядком — і він у коді є.
 
 !!! warning "Чутлива тема"
     Застосунок оцінює ризик депресії й питає про суїцидальні думки. У курсі це **кейс рецензії коду**, а не інструмент. Застосунок показує застереження й номер лінії підтримки. Модель на відкритому датасеті не є діагнозом.
 
-Рецензія — тестами на синтетичних даних з колонками справжнього датасету (сам датасет у репозиторій не входить). Кожен тест — одна знахідка. На коді старого курсу:
+Рецензія — тестами на синтетичних даних з колонками справжнього датасету (сам датасет у репозиторій не входить). Кожен тест — одна знахідка. На згенерованому коді:
 
 ```text
 FAILED tests/test_review.py::test_feature_importance_keeps_descending_order
@@ -394,7 +394,7 @@ sort_keys = False:      {"Suicidal_enc":0.27,"Risk_Score":0.14,"Academic Pressur
 | # | Знахідка | Як доведено | Як правильно |
 |---|---|---|---|
 | 1 | «топ-ознаки» й «найсильніші предиктори» — за абеткою | тест порядку після `jsonify` | `StrictJSONProvider(sort_keys=False)`, сортування в UI |
-| 2 | назви кластерів вшиті в UI: «Sleep Deprived» — кластер, що спить **найбільше** (8,15 год), «Financially Stressed» — кластер з 2 людей | центроїди моделі старого курсу; тест «назва відповідає профілю» | назву дає профіль кластера порівняно з середнім |
+| 2 | назви кластерів вшиті в UI: «Sleep Deprived» — кластер, що спить **найбільше** (8,15 год), «Financially Stressed» — кластер з 2 людей | центроїди згенерованої моделі; тест «назва відповідає профілю» | назву дає профіль кластера порівняно з середнім |
 | 3 | `/api/predict` приймав похідні ознаки від клієнта: `Risk_Score=-100` змінював прогноз; `Age=-500` → `200`; пропущене поле → `500` з текстом pandas | тести з поганими даними | `StudentProfile` (Pydantic, `extra="forbid"`) → `422`; похідні ознаки — `add_features` на сервері, одна функція для навчання й прогнозу |
 | 4 | повзунок CGPA ні на що не впливав: CGPA немає в ознаках моделі | прогноз з CGPA 0,1 і 10 однаковий | повзунок прибрано; невідоме поле → `422` |
 | 5 | `POST /api/train` без захисту перезаписував модель | тест: без токена → `403` | `X-Admin-Token` = `ADMIN_TOKEN` (`hmac.compare_digest`); без змінної — вимкнено |
@@ -553,8 +553,8 @@ def test_pravda_rss_broken_xml_is_empty_list() -> None:
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_42_ai_dev_tools/news_hub) — `rss.py` і зміни `models.py` написав Claude Code за специфікацією, правки рецензента позначено; ідея RSS-джерела — `task_11/analysis_tonality_2.py` з `Data_Science_Course_SSWU`. [`depression_dashboard`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_42_ai_dev_tools/depression_dashboard) — з `module_5/lesson_53_claude_code/` старого курсу, разом з промптами (`prompts/`).
-- [Довідник: Claude Code](ai/claude_code.md) — з `CLAUDE_DOC.md` старого курсу, звірений з документацією.
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_42_ai_dev_tools/news_hub) — `rss.py` і зміни `models.py` написав Claude Code за специфікацією, правки рецензента позначено; ідея RSS-джерела — скрипт аналізу тональності `analysis_tonality_2.py`. [`depression_dashboard`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_42_ai_dev_tools/depression_dashboard) — проєкт, який згенерував AI, разом з промптами (`prompts/`).
+- [Довідник: Claude Code](ai/claude_code.md) — звірений з установленим `claude` і з документацією.
 - Урок 25 — [валідація AI-коду](../m2/lesson_25.md); урок 41 — [тест конвеєра, мок і фейк, мінімальні версії](lesson_41.md).
 - Claude Code: [Best practices](https://code.claude.com/docs/en/best-practices), [Memory (CLAUDE.md)](https://code.claude.com/docs/en/memory), [Permissions](https://code.claude.com/docs/en/permissions), [Hooks](https://code.claude.com/docs/en/hooks), [Headless (`-p`)](https://code.claude.com/docs/en/headless), [Security](https://code.claude.com/docs/en/security).
 - Flask: [JSON provider, `sort_keys`](https://flask.palletsprojects.com/en/stable/api/#flask.json.provider.DefaultJSONProvider.sort_keys); scikit-learn: [Common pitfalls — data leakage](https://scikit-learn.org/stable/common_pitfalls.html#data-leakage); Python: [`zoneinfo` і пакет `tzdata`](https://docs.python.org/3/library/zoneinfo.html#data-sources); Streamlit: [AppTest](https://docs.streamlit.io/develop/api-reference/app-testing).

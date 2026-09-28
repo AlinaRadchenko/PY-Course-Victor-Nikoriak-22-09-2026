@@ -49,14 +49,14 @@
     2. `C.run` → `A.run` → `B.run` → далі по MRO. `super()` — це «наступний клас у MRO цього об'єкта», а не «батько класу, де написано `super()`».
     3. `app.dependency_overrides[get_llm_client] = lambda: fake` — ендпоінт отримує клієнт через `Depends` і не знає, який саме.
 
-## Старт: що дає старий курс
+## Старт: з якого коду починаємо
 
 | Звідки | Що там | Куди в проєкті |
 |---|---|---|
-| `lesson_Django_ORM_Database/notes_project_cbv/hello_app/views.py` | ті самі сторінки нотаток, записників і тегів як class-based views; `UserQuerySetMixin` | `views.py`: `NoteListView` … `TagCreateView` |
-| `lesson_Django_ORM_Database/notes_project/README.md` | «03 Application layers»: тонкі views, selectors читають, services пишуть; крок 10 — PostgreSQL | правила доступу в `selectors.py`, `hello_project/database.py` |
-| `lesson_Django_Network_Architecture/DJANGO_PROJECT_STRUCTURE.md` | пари «погано / добре»: ORM у view проти selector, логіка в моделі проти service | «Куди класти код» нижче |
-| `module_4/lessons/lesson_34_asyncio/lesson_34_fastapi_documentation.md` | §5 Dependency Injection, §7 Repository, §8 Unit of Work | каталог патернів |
+| `notes_project_cbv/hello_app/views.py` | ті самі сторінки нотаток, записників і тегів як class-based views; `UserQuerySetMixin` | `views.py`: `NoteListView` … `TagCreateView` |
+| `notes_project/README.md` | «03 Application layers»: тонкі views, selectors читають, services пишуть; крок 10 — PostgreSQL | правила доступу в `selectors.py`, `hello_project/database.py` |
+| `DJANGO_PROJECT_STRUCTURE.md` | пари «погано / добре»: ORM у view проти selector, логіка в моделі проти service | «Куди класти код» нижче |
+| довідник FastAPI до прототипу `news_dashboard` | §5 Dependency Injection, §7 Repository, §8 Unit of Work | каталог патернів |
 | урок 40 курсу | `crispy_notes_project`: 29 тестів, групи, JWT | основа; жоден тест не змінено |
 
 ## Де жили правила доступу { #access-rules }
@@ -246,7 +246,7 @@ class ThinTransportLayerTests(TestCase):
 
 ## Рефакторинг 2. Class-based views { #refactor-2 }
 
-Нотатки, записники й теги — class-based views з `notes_project_cbv` старого курсу. Порівняй редагування нотатки:
+Нотатки, записники й теги — class-based views зі стартового `notes_project_cbv`. Порівняй редагування нотатки:
 
 ```python title="FBV (урок 40) — 30 рядків"
 @login_required
@@ -299,7 +299,7 @@ class NoteUpdateView(LoginRequiredMixin, OwnerRequiredMixin, NoteFormMixin, Upda
 
 ```python title="hello_app/views.py (фрагмент)"
 class SelectorQuerySetMixin:
-    """QuerySet для Detail/Update/Delete бере функція selectors — `UserQuerySetMixin` старого курсу."""
+    """QuerySet для Detail/Update/Delete бере функція selectors — `UserQuerySetMixin` стартового коду."""
     selector = None
 
     def get_queryset(self):
@@ -372,7 +372,7 @@ flowchart TD
     class d1,d2 success
 ```
 
-Перший крок — пастка, на яку ми самі натрапили, переносячи `NoteListView`. У старому коді фільтри (`?tag=`, `?notebook=`) розбирав допоміжний метод; зручне місце, щоб зробити це «один раз на запит», здається `setup()`. Але `setup()` виконується **до** `dispatch()`, тобто до `LoginRequiredMixin`: анонім з `/notes/?tag=1` дійшов би до запиту `Tag.objects.get(user=AnonymousUser)` і отримав `TypeError`. Правильно — у `get()`, після всіх перевірок `dispatch()`:
+Перший крок — пастка, на яку ми самі натрапили, переносячи `NoteListView`. У стартовому коді фільтри (`?tag=`, `?notebook=`) розбирав допоміжний метод; зручне місце, щоб зробити це «один раз на запит», здається `setup()`. Але `setup()` виконується **до** `dispatch()`, тобто до `LoginRequiredMixin`: анонім з `/notes/?tag=1` дійшов би до запиту `Tag.objects.get(user=AnonymousUser)` і отримав `TypeError`. Правильно — у `get()`, після всіх перевірок `dispatch()`:
 
 ```python title="hello_app/views.py — NoteListView (фрагмент)"
     def get(self, request, *args, **kwargs):
@@ -805,7 +805,7 @@ MultipleObjectsReturned: get() returned more than one TodoList -- it returned 2!
 
 ## Документація і джерела
 
-- Код: [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_44_architecture_patterns/crispy_notes_project) — проєкт уроку 40 + CBV з `module_5/lesson_Django_ORM_Database/notes_project_cbv/` старого курсу `PY-Course-Victor-Nikoriak-23_02`; [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_43_llm_api/news_hub) уроку 43.
+- Код: [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_44_architecture_patterns/crispy_notes_project) — проєкт уроку 40 + CBV зі стартового `notes_project_cbv`; [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_43_llm_api/news_hub) уроку 43.
 - Django-книга, крок 3: [огляд](https://nikoriakviktot.github.io/notes_chat_app/tutorials/03_crud_and_architecture/), [services і selectors](https://nikoriakviktot.github.io/notes_chat_app/tutorials/03_crud_and_architecture/services_and_selectors/), [CBV](https://nikoriakviktot.github.io/notes_chat_app/tutorials/03_crud_and_architecture/cbv/), [QuerySet глибше](https://nikoriakviktot.github.io/notes_chat_app/tutorials/03_crud_and_architecture/queryset_deep/), [PostgreSQL](https://nikoriakviktot.github.io/notes_chat_app/tutorials/03_crud_and_architecture/postgresql/), [типові помилки](https://nikoriakviktot.github.io/notes_chat_app/tutorials/03_crud_and_architecture/checkpoint/); частина VI — [архітектура застосунку](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/).
 - Django: [class-based views](https://docs.djangoproject.com/en/5.2/topics/class-based-views/), [generic editing views](https://docs.djangoproject.com/en/5.2/ref/class-based-views/generic-editing/), [`LoginRequiredMixin`](https://docs.djangoproject.com/en/5.2/topics/auth/default/#the-loginrequiredmixin-mixin), [`distinct()`](https://docs.djangoproject.com/en/5.2/ref/models/querysets/#distinct), [`assertNumQueries`](https://docs.djangoproject.com/en/5.2/topics/testing/tools/#django.test.TransactionTestCase.assertNumQueries), [PostgreSQL notes](https://docs.djangoproject.com/en/5.2/ref/databases/#postgresql-notes); [`url_has_allowed_host_and_scheme`](https://github.com/django/django/blob/stable/5.2.x/django/utils/http.py).
 - Python: [`ast`](https://docs.python.org/3/library/ast.html), [`urllib.parse.urlsplit`](https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlsplit), [MRO](https://docs.python.org/3/howto/mro.html).

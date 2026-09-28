@@ -8,7 +8,7 @@
 
 Бот — ще один **вхід** у той самий застосунок. Він читає ту саму базу через той самий `NewsRepository`, аналізує тим самим `analyze_news`, а його webhook захищений так само, як webhook уроку 46.
 
-Код — зі старого курсу: `echo_bot` і `ai_bot` (aiogram 3: роутери, middleware, фабрики бота), `production_bot` (webhook у FastAPI, розсилка). Переносячи його, запускаємо старий код без змін проти «Telegram» і дивимось, що той відповідає.
+Стартовий код: `echo_bot` і `ai_bot` (aiogram 3: роутери, middleware, фабрики бота), `production_bot` (webhook у FastAPI, розсилка). Переносячи його, запускаємо стартовий код без змін проти «Telegram» і дивимось, що той відповідає.
 
 | Урок | Крок агрегатора |
 |---|---|
@@ -45,9 +45,9 @@
     2. Щоб не тримати клієнта: відповідь іде одразу, задача виконується після неї, у тому ж процесі.
     3. `==` зупиняється на першому неспівпадінні, тож за часом відповіді секрет можна підбирати по символу. `compare_digest` порівнює за сталий час.
 
-## Старт: що дає старий курс
+## Старт: з якого коду починаємо
 
-| Звідки (`module_5/lesson_46_Telegram_API/`) | Що там | Куди в `news_hub` |
+| Звідки | Що там | Куди в `news_hub` |
 |---|---|---|
 | `ai_bot/app/bot.py` | `create_bot`, `create_dispatcher`: outer / inner middleware, порядок роутерів, `set_my_commands` | `news_hub/bot/factory.py` |
 | `ai_bot/app/handlers/commands.py`, `echo_bot/app/handlers/` | `Router`, `CommandStart()`, `Command("help")`, залежності в параметрах handler | `news_hub/bot/handlers.py` |
@@ -56,7 +56,7 @@
 | `production_bot/backend/api/webhook.py`, `app.py` | webhook у FastAPI, `setWebhook` у lifespan, `dp.feed_update` | `POST /api/telegram/webhook`, `start_bot` в `api.py` |
 | `production_bot/backend/workers/notifications.py` | розсилка `bot.send_message` у циклі | `news_hub/notify.py` |
 
-Як Telegram спілкується з ботом — книжкова частина старого курсу (`lesson_documentation.md`, `lesson_mermaid.md`) і [документація Bot API](https://core.telegram.org/bots/api). Коротко: бот — це програма, яка отримує від Telegram **update** (JSON з повідомленням користувача) і відповідає викликами HTTP API: `https://api.telegram.org/bot<TOKEN>/sendMessage`.
+Як Telegram спілкується з ботом — довідники стартового проєкту (`lesson_documentation.md`, `lesson_mermaid.md`) і [документація Bot API](https://core.telegram.org/bots/api). Коротко: бот — це програма, яка отримує від Telegram **update** (JSON з повідомленням користувача) і відповідає викликами HTTP API: `https://api.telegram.org/bot<TOKEN>/sendMessage`.
 
 ### «Telegram» без Telegram: двійник Bot API
 
@@ -103,7 +103,7 @@ def create_dispatcher(session_factory: async_sessionmaker[AsyncSession], redis: 
 | `InjectMiddleware` кладе в `data` один спільний `HistoryRepository` над Redis | на кожен update — **своя** сесія бази, COMMIT після handler | як `get_db` у FastAPI: сесію SQLAlchemy не ділять між одночасними update |
 | `RateLimitMiddleware` на своєму `RateLimitRepository` | той самий `RateLimiter` (`INCR` + `EXPIRE NX`), що й rate limit API в уроці 39 | одна реалізація на весь застосунок; про ліміт — одна відповідь за вікно, далі бот мовчить |
 
-Чому не змінна модуля. Справжній вивід старого `ai_bot`, коли в процесі створюють другий диспетчер (а API, тести й ноутбук створюють):
+Чому не змінна модуля. Справжній вивід стартового `ai_bot`, коли в процесі створюють другий диспетчер (а API, тести й ноутбук створюють):
 
 ```text
 другий create_dispatcher: Router is already attached to <Dispatcher '0x7f3ed1ce2a50'>
@@ -168,13 +168,13 @@ flowchart TD
 
 Старий `/start`:
 
-```python title="ai_bot/app/handlers/commands.py (старий курс)"
+```python title="ai_bot/app/handlers/commands.py (стартовий код)"
     await message.answer(
         f"Привіт, <b>{user.first_name}</b>! 🤖\n\n"
         ...
 ```
 
-`first_name` — те, що користувач написав у профілі. Справжній вивід старого коду без змін (aiogram 3.15.0 з його `requirements.txt`) проти двійника:
+`first_name` — те, що користувач написав у профілі. Справжній вивід стартового коду без змін (aiogram 3.15.0 з його `requirements.txt`) проти двійника:
 
 ```text
 /start від 'Олена': надіслано
@@ -205,7 +205,7 @@ POST /_twin/say {"text": "/start", "first_name": "<Олена & Ко>"}
 
 Telegram приймає до 4096 символів. Старий `split_long_message` різав кожні 4000:
 
-```python title="ai_bot/app/utils/formatter.py (старий курс)"
+```python title="ai_bot/app/utils/formatter.py (стартовий код)"
     return [text[i: i + MAX_MESSAGE_LEN] for i in range(0, len(text), MAX_MESSAGE_LEN)]
 ```
 
@@ -494,7 +494,7 @@ Success: no issues found in 26 source files
 ## Мінімальні версії залежностей { #min-versions }
 
 ```text title="requirements.txt (нове)"
-aiogram>=3.15           # урок 47: Telegram-бот (у старому курсі — 3.15.0)
+aiogram>=3.15           # урок 47: Telegram-бот (у стартовому коді — 3.15.0)
 ```
 
 Усі тести проходять на трьох наборах:
@@ -564,7 +564,7 @@ async def test_search(telegram: BotHarness) -> None:
 
 ### Знайди помилку { #find-bug }
 
-Handler зі старого курсу і його тест (тест зелений):
+Handler зі стартового коду і його тест (тест зелений):
 
 ```python
 @router.message(CommandStart())
@@ -635,7 +635,7 @@ async def test_start_greets_user():
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_47_telegram_bot/news_hub) — `bot/` з `ai_bot/app/` і `echo_bot/`, `notify.py` з `production_bot/backend/workers/notifications.py`, webhook — з `production_bot/backend/api/webhook.py` старого курсу `PY-Course-Victor-Nikoriak-23_02`.
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_47_telegram_bot/news_hub) — `bot/` з `ai_bot/app/` і `echo_bot/`, `notify.py` з `production_bot/backend/workers/notifications.py`, webhook — з `production_bot/backend/api/webhook.py`.
 - Telegram: [Bot API](https://core.telegram.org/bots/api), [HTML style](https://core.telegram.org/bots/api#html-style), [setWebhook](https://core.telegram.org/bots/api#setwebhook), [webhooks](https://core.telegram.org/bots/webhooks), [Bots FAQ: ліміти](https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this), [локальний Bot API server](https://github.com/tdlib/telegram-bot-api), [@BotFather](https://core.telegram.org/bots/features#botfather).
 - aiogram 3: [документація](https://docs.aiogram.dev/en/latest/), [Router](https://docs.aiogram.dev/en/latest/dispatcher/router.html), [Middlewares](https://docs.aiogram.dev/en/latest/dispatcher/middlewares.html), [Dependency injection](https://docs.aiogram.dev/en/latest/dispatcher/dependency_injection.html), [webhook](https://docs.aiogram.dev/en/latest/dispatcher/webhook.html).
 - Уроки курсу: [39 — Redis і rate limit](lesson_39.md), [43 — LLM API](lesson_43.md), [46 — Security advanced](lesson_46.md).

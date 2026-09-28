@@ -10,7 +10,7 @@
 | 2 | ця сторінка | ментальна модель і все, що знадобиться в уроках 48–50 |
 | 3 | [довідник у 18 розділах](linux/index.md) | від «навіщо Linux» до Kubernetes: термінал, файли, права, процеси, пакети, SSH, секрети, bash, Makefile, деплой Django, nginx, журнали, Docker, Compose, DevOps |
 
-Довідник перенесено зі старого курсу (`module_5/lesson_Linux_DevOps_Basics/`) і перевірено: команди запущено в контейнерах Ubuntu, Debian і `python:3.12-slim`, конфігурації nginx і Compose — перевірені інструментами.
+Довідник перевірено: команди запущено в контейнерах Ubuntu, Debian і `python:3.12-slim`, конфігурації nginx і Compose — перевірені інструментами.
 
 **Що потрібно з попередніх уроків:** запуск Python-скриптів і `pip` (М1), `subprocess` і процеси (урок 27), HTTP і порти (31), змінні середовища й секрети (43, 46).
 
@@ -322,7 +322,7 @@ flowchart TD
 
 ## Документація і джерела
 
-- Довідник — зі старого курсу `PY-Course-Victor-Nikoriak-23_02`, `module_5/lesson_Linux_DevOps_Basics/` (18 розділів + `INDEX.md`).
+- Довідник — 18 розділів + зміст ([Linux для розробника](linux/index.md)).
 - Bash: [GNU Bash manual](https://www.gnu.org/software/bash/manual/bash.html) — [The Set Builtin](https://www.gnu.org/software/bash/manual/bash.html#The-Set-Builtin) (`-e`, `-u`, `pipefail`), [Quoting](https://www.gnu.org/software/bash/manual/bash.html#Quoting), [Exit Status](https://www.gnu.org/software/bash/manual/bash.html#Exit-Status).
 - Сигнали: `man 7 signal` ([man7.org](https://man7.org/linux/man-pages/man7/signal.7.html)); права: `man 1 chmod`; порти: `man 8 ss`.
 - Docker: [docker stop](https://docs.docker.com/reference/cli/docker/container/stop/) (SIGTERM, потім SIGKILL).

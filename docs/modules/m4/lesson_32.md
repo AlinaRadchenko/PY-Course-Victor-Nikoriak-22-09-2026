@@ -765,7 +765,7 @@ docker compose up --build
 
 ### Розібраний приклад: середньодобова температура через API
 
-У курсі Data Science викладача клієнт `TelegramDataLoader` завантажував спостереження з API і рахував середньодобові значення в pandas. Зробимо те саме через `MeteoClient` — з пагінацією і лише потрібними полями:
+Клієнт викладача `TelegramDataLoader` завантажував спостереження з API і рахував середньодобові значення в pandas. Зробимо те саме через `MeteoClient` — з пагінацією і лише потрібними полями:
 
 ```python
 import sys
@@ -913,4 +913,4 @@ print(response.status_code, response.json())
 - Інші типи: [JSON-RPC 2.0](https://www.jsonrpc.org/specification), [GraphQL](https://graphql.org/learn/), [gRPC](https://grpc.io/docs/what-is-grpc/introduction/) і [Protocol Buffers](https://protobuf.dev/), [WebSocket — RFC 6455](https://www.rfc-editor.org/rfc/rfc6455), [Server-Sent Events — стандарт HTML](https://html.spec.whatwg.org/multipage/server-sent-events.html)
 - Бібліотеки: [FastAPI](https://fastapi.tiangolo.com/), [Strawberry GraphQL](https://strawberry.rocks/docs), [grpcio](https://grpc.io/docs/languages/python/quickstart/), [websockets](https://websockets.readthedocs.io/), [pymetdecoder](https://pypi.org/project/pymetdecoder/), [Streamlit](https://docs.streamlit.io/), [OpenAPI](https://spec.openapis.org/oas/latest.html)
 - Дані: [ogimet.com](https://www.ogimet.com/) — телеграми SYNOP; код КН-01 / WMO FM 12 SYNOP
-- Проєкт викладача: [`NikoriakViktot/ogimet`](https://github.com/NikoriakViktot/ogimet) (перша версія API) і його розвиток — `ogimet-main` у старому курсі та клієнт у курсі Data Science
+- Проєкт викладача: [`NikoriakViktot/ogimet`](https://github.com/NikoriakViktot/ogimet) (перша версія API) і його розвиток — `ogimet-main` та клієнт `meteo_parser/telegram_filter.py`

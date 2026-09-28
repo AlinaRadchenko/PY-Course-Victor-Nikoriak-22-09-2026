@@ -450,7 +450,7 @@ flowchart TD
     class E warning
 ```
 
-**Куди далі.** Django-гілка курсу продовжує нотатки: вхід і спільний доступ (урок 40), тести (41), архітектура services/selectors (44), чат на WebSocket (45). FastAPI-гілка з уроку 36 будує **новинний агрегатор** — парсер новин зі старого курсу, який крок за кроком обростає Pydantic-моделями, FastAPI, базою, кешем, підсумками від Gemini і Telegram-ботом.
+**Куди далі.** Django-гілка курсу продовжує нотатки: вхід і спільний доступ (урок 40), тести (41), архітектура services/selectors (44), чат на WebSocket (45). FastAPI-гілка з уроку 36 будує **новинний агрегатор** — стартовий парсер новин, який крок за кроком обростає Pydantic-моделями, FastAPI, базою, кешем, підсумками від Gemini і Telegram-ботом.
 
 ## Практика { #practice }
 
@@ -590,7 +590,7 @@ title + updated_at → змінився updated_at? True
 
 ## Документація і джерела
 
-- Код: [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_35_drf_fastapi/crispy_notes_project) — проєкт уроку 34 (старий курс, `module_5/lesson_HTML_CSS_Bootstrap`) + `api.py` з Django-книги ([`notes_app/api.py`](https://github.com/NikoriakViktot/notes_chat_app/blob/main/notes_app/api.py)), доповнений до CRUD. Порівняльний [`fastapi_notes.py`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/fastapi_notes.py).
+- Код: [`crispy_notes_project`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_35_drf_fastapi/crispy_notes_project) — проєкт уроку 34 + `api.py` з Django-книги ([`notes_app/api.py`](https://github.com/NikoriakViktot/notes_chat_app/blob/main/notes_app/api.py)), доповнений до CRUD. Порівняльний [`fastapi_notes.py`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_4/lessons/lesson_35_drf_fastapi/fastapi_notes.py).
 - Django-книга: [REST API: Django REST Framework](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/drf_rest_api_full/), [Serializers — Transport Layer](https://nikoriakviktot.github.io/notes_chat_app/06_application_architecture/django_serializers_full/)
 - DRF: [Quickstart](https://www.django-rest-framework.org/tutorial/quickstart/), [Serializers](https://www.django-rest-framework.org/api-guide/serializers/), [ViewSets](https://www.django-rest-framework.org/api-guide/viewsets/), [Routers](https://www.django-rest-framework.org/api-guide/routers/), [Authentication](https://www.django-rest-framework.org/api-guide/authentication/), [Permissions](https://www.django-rest-framework.org/api-guide/permissions/), [Testing](https://www.django-rest-framework.org/api-guide/testing/), [Browsable API](https://www.django-rest-framework.org/topics/browsable-api/)
 - Django: [`Model.save(update_fields=…)`](https://docs.djangoproject.com/en/5.2/ref/models/instances/#specifying-which-fields-to-save), [`DateField.auto_now`](https://docs.djangoproject.com/en/5.2/ref/models/fields/#django.db.models.DateField.auto_now)

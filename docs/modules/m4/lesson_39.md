@@ -45,7 +45,7 @@
     2. Спершу шукаємо в кеші (hit — віддаємо), немає (miss) — рахуємо, кладемо з TTL, віддаємо. Кеш — копія, вона застаріває; TTL обмежує, наскільки.
     3. До відповіді — завдяки `Depends(get_db, scope="function")`. Сьогодні це знадобиться для кешу.
 
-## Старт: що дає старий курс
+## Старт: з якого коду починаємо
 
 | Звідки | Що там | Куди в `news_hub` |
 |---|---|---|
@@ -368,7 +368,7 @@ asyncio.run(window_edge())
 
 ## Рефакторинг 4. Фоновий збір: 202 і статус задачі { #refactor-4 }
 
-Живий збір — сім сторінок rbc.ua з тайм-аутом 15 с кожна (урок 37). Тримати HTTP-запит відкритим стільки часу погано: клієнт може відвалитись за тайм-аутом, проксі — обірвати з'єднання. Рішення зі старого `news_dashboard` (`/api/scrape/archive`): відповісти **одразу** і працювати у фоні.
+Живий збір — сім сторінок rbc.ua з тайм-аутом 15 с кожна (урок 37). Тримати HTTP-запит відкритим стільки часу погано: клієнт може відвалитись за тайм-аутом, проксі — обірвати з'єднання. Рішення з прототипу `news_dashboard` (`/api/scrape/archive`): відповісти **одразу** і працювати у фоні.
 
 ```python title="news_hub/api.py (фрагмент)"
 @app.post("/api/scrape/jobs", response_model=JobStatus, status_code=status.HTTP_202_ACCEPTED, ...)
@@ -536,7 +536,7 @@ async def get_news(news_id: int, repo: RepoDep, cache: CacheDep) -> Response:
 
 ### Знайди помилку { #find-bug }
 
-Колега вирішив, що окрема `session_factory` для фону — зайве ускладнення, і передав у задачу **репозиторій запиту**, як старий `news_dashboard` передавав `db`. Перевіримо в процесі, через `TestClient`:
+Колега вирішив, що окрема `session_factory` для фону — зайве ускладнення, і передав у задачу **репозиторій запиту**, як прототип `news_dashboard` передавав `db`. Перевіримо в процесі, через `TestClient`:
 
 ```python
 from fastapi import BackgroundTasks
@@ -624,7 +624,7 @@ with TestClient(app) as client:
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_39_middleware_redis/news_hub) — Redis-клієнт з `production_bot/backend/core/redis.py`, rate limit з `ai_bot/app/middlewares/rate_limit.py` і `repositories/rate_limit_repo.py` (старий курс, `module_5/lesson_46_Telegram_API`), фоновий збір — з `news_dashboard/app/main.py` (`module_4/lessons/lesson_34_asyncio`).
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_39_middleware_redis/news_hub) — Redis-клієнт з `production_bot/backend/core/redis.py`, rate limit з `ai_bot/app/middlewares/rate_limit.py` і `repositories/rate_limit_repo.py` (стартовий код), фоновий збір — з `news_dashboard/app/main.py`.
 - Урок 30 курсу — [Redis overview](../m3/lesson_30.md): cache-aside, `INCR`/`EXPIRE`, pipeline, sorted set.
 - FastAPI: [Middleware](https://fastapi.tiangolo.com/tutorial/middleware/), [Background Tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/), [Custom Response](https://fastapi.tiangolo.com/advanced/custom-response/)
 - Redis: [INCR — pattern: rate limiter](https://redis.io/docs/latest/commands/incr/), [EXPIRE (опції NX/XX/GT/LT)](https://redis.io/docs/latest/commands/expire/), [Transactions](https://redis.io/docs/latest/develop/interact/transactions/), [KEYS — не для продакшену](https://redis.io/docs/latest/commands/keys/)

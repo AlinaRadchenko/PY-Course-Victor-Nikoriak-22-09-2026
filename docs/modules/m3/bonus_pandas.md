@@ -2,7 +2,7 @@
 
 Python сьогодні — насамперед **data science**: більшість вакансій і задач, де його обирають, — це аналіз даних, графіки, дашборди й машинне навчання. Тому модуль 3 відкривається бонусним уроком (поза нумерацією 1–52): до того як класти дані в базу (уроки 29–30), навчимося їх **розуміти**.
 
-Урок — на справжніх даних про Україну: ціни на продукти WFP за 2014–2026 роки (112 тис. записів по 27 ринках — обласних центрах і Києву), курс гривні, зовнішній борг, показники Світового банку, зарплати Держстату, щоденна робота портів і ціни у 71 країні. Код — зі старого курсу: три ноутбуки й Dash-застосунок; до них — четвертий ноутбук на додаткових датасетах.
+Урок — на справжніх даних про Україну: ціни на продукти WFP за 2014–2026 роки (112 тис. записів по 27 ринках — обласних центрах і Києву), курс гривні, зовнішній борг, показники Світового банку, зарплати Держстату, щоденна робота портів і ціни у 71 країні. Стартовий код: три ноутбуки й Dash-застосунок; до них — четвертий ноутбук на додаткових датасетах.
 
 | Крок | Матеріал | Що вчимо |
 |---|---|---|
@@ -12,7 +12,7 @@ Python сьогодні — насамперед **data science**: більші�
 | 4 | [`note_bonus_extra_datasets.ipynb`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/bonus/pandas_data_analysis/note_bonus_extra_datasets.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/blob/main/module_3/bonus/pandas_data_analysis/note_bonus_extra_datasets.ipynb) | «брудний» CSV Держстату, зарплата проти хліба, `pivot`, порти й `resample`, ціни у світі |
 | 5 | [`dash_API/`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_3/bonus/pandas_data_analysis/dash_API) | дашборд на Dash: 7 вкладок, фільтри, карта ринків, кореляції |
 
-Теорія — у двох довідниках, перенесених зі старого курсу: [**аналіз даних: патерни й мислення**](pandas/data_analytics.md) (рівні аналітики, «дані = інформація + шум», вісім патернів — агрегація, фільтрація, групування, порівняння, час, простір, зв'язки, розподіл — повний цикл, типові помилки, метрики) і [**архітектура Dash**](pandas/dash_architecture.md). На цій сторінці — маршрут уроку й ключові результати на справжніх даних.
+Теорія — у двох довідниках: [**аналіз даних: патерни й мислення**](pandas/data_analytics.md) (рівні аналітики, «дані = інформація + шум», вісім патернів — агрегація, фільтрація, групування, порівняння, час, простір, зв'язки, розподіл — повний цикл, типові помилки, метрики) і [**архітектура Dash**](pandas/dash_architecture.md). На цій сторінці — маршрут уроку й ключові результати на справжніх даних.
 
 **Що потрібно з попередніх уроків:** списки й словники (М1), функції та `lambda` (уроки 7, 18), класи й методи (19–23), файли й CSV (14), модулі й pip (12).
 
@@ -531,7 +531,7 @@ KeyError: "['Bread (wheat)'] not in index"
 
 ## Документація і джерела
 
-- Код: [`module_3/bonus/pandas_data_analysis`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_3/bonus/pandas_data_analysis) — ноутбуки 1–3 і `dash_API` зі старого курсу (`module_5/lesson_52_pandas_dash`); ноутбук 4 — новий.
+- Код: [`module_3/bonus/pandas_data_analysis`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_3/bonus/pandas_data_analysis) — ноутбуки 1–3 і `dash_API` — стартовий код; ноутбук 4 — новий.
 - pandas: [10 minutes to pandas](https://pandas.pydata.org/docs/user_guide/10min.html), [Group by: split-apply-combine](https://pandas.pydata.org/docs/user_guide/groupby.html), [Reshaping and pivot tables](https://pandas.pydata.org/docs/user_guide/reshaping.html), [Time series](https://pandas.pydata.org/docs/user_guide/timeseries.html), [Merge, join, concatenate](https://pandas.pydata.org/docs/user_guide/merging.html)
 - [Matplotlib](https://matplotlib.org/stable/users/index.html), [seaborn](https://seaborn.pydata.org/tutorial.html), [Plotly Express](https://plotly.com/python/plotly-express/), [Dash](https://dash.plotly.com/)
 - Дані: [HDX — Ukraine Food Prices (WFP)](https://data.humdata.org/dataset/wfp-food-prices-for-ukraine), [HDX — Ukraine](https://data.humdata.org/group/ukr), [data.gov.ua — середньомісячна заробітна плата за регіонами](https://data.gov.ua/)

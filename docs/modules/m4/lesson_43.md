@@ -6,7 +6,7 @@
 {"total": 168, "category": {"Новини": 168}, "lang": {"ru": 138, "uk": 30}, "source": {"rbc.ua": 167, "auto.rbc.ua": 1}}
 ```
 
-Усі 168 новин — у категорії «Новини». Це розділ сайту з URL (`/rus/news/…`), а не тема: політика, економіка й погода лежать в одному кошику. У старому курсі тему, тональність і ключові слова рахував `nlp.py` — за списками основ слів. Сьогодні це робить **мовна модель** (LLM) через API.
+Усі 168 новин — у категорії «Новини». Це розділ сайту з URL (`/rus/news/…`), а не тема: політика, економіка й погода лежать в одному кошику. У прототипі `news_dashboard` тему, тональність і ключові слова рахував `nlp.py` — за списками основ слів. Сьогодні це робить **мовна модель** (LLM) через API.
 
 Модель розуміє заголовок цілком, але має чотири властивості, яких немає у звичайної функції:
 
@@ -53,13 +53,13 @@
     2. `INCR` атомарний: сервер Redis сам збільшує число, одночасні запити не перезаписують одне одного. `GET` + `SET` — два кроки з паузою між ними: два запити прочитають те саме число й запишуть те саме «+1».
     3. `app.dependency_overrides[залежність] = підміна` — FastAPI викликає підміну замість оригіналу. Мережу підмінюють на зовнішній межі, а код між межею й відповіддю виконується справжній.
 
-## Старт: що дає старий курс
+## Старт: з якого коду починаємо
 
-| Звідки | Що там | Куди в `news_hub` |
+| Що є | Що там | Куди в `news_hub` |
 |---|---|---|
-| `module_5/lesson_46_Telegram_API/ai_bot/app/services/ai_service.py` | Gemini через `google-genai`: `MODEL_POOL` з переходом на наступну модель, circuit breaker у Redis, тайм-аут | `news_hub/llm.py` |
+| стартовий `ai_bot`: `app/services/ai_service.py` | Gemini через `google-genai`: `MODEL_POOL` з переходом на наступну модель, circuit breaker у Redis, тайм-аут | `news_hub/llm.py` |
 | `ai_bot/app/config/settings.py` | `GEMINI_API_KEY`, `GEMINI_MAX_TOKENS` — зі змінних середовища | `LLM_*`, `GEMINI_*` у `llm.py` |
-| `module_4/lessons/lesson_34_asyncio/news_dashboard/app/nlp.py` | тональність за основами слів, ключові слова за частотою | `news_hub/analysis.py` — `NewsAnalysis` від моделі |
+| прототип `news_dashboard`: `app/nlp.py` | тональність за основами слів, ключові слова за частотою | `news_hub/analysis.py` — `NewsAnalysis` від моделі |
 | уроки 36–42 курсу | `NewsItem`, база, Redis, middleware, фонові задачі, тести | нові колонки, ендпоінти, тести |
 
 Чому не правила. `nlp.py` рахує тональність словами: `+1` за кожне слово з «позитивною» основою, `−1` — з «негативною». Справжній вивід на заголовках знімка:
@@ -171,9 +171,9 @@ def make_llm(provider: str | None = None) -> LLMClient | None:
 
 ## Рефакторинг 2. Асинхронний клієнт і пул моделей { #refactor-2 }
 
-Старий код запускав синхронний виклик SDK у потоці й щоразу створював новий клієнт:
+Стартовий код запускав синхронний виклик SDK у потоці й щоразу створював новий клієнт:
 
-```python title="ai_service.py (старий курс, скорочено)"
+```python title="ai_service.py (стартовий код, скорочено)"
 text = await asyncio.to_thread(_call_gemini_sync, model, conversation, sys_prompt)
 
 def _call_gemini_sync(model: str, prompt: str, system_prompt: str) -> str:
@@ -1026,7 +1026,7 @@ E   news_hub.llm.LLMUnavailable: gemini відхилив запит (400): Inval
 
 ## Документація і джерела
 
-- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_43_llm_api/news_hub) — `llm.py` з `ai_bot/app/services/ai_service.py`, `analysis.py` замість `news_dashboard/app/nlp.py` старого курсу `PY-Course-Victor-Nikoriak-23_02`.
+- Код: [`news_hub`](https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026/tree/main/module_4/lessons/lesson_43_llm_api/news_hub) — `llm.py` з `ai_bot/app/services/ai_service.py`, `analysis.py` замість `news_dashboard/app/nlp.py` (прототип).
 - Gemini API: [генерація тексту](https://ai.google.dev/gemini-api/docs/text-generation), [structured output](https://ai.google.dev/gemini-api/docs/structured-output), [моделі](https://ai.google.dev/gemini-api/docs/models), [ліміти](https://ai.google.dev/gemini-api/docs/rate-limits), [ціни](https://ai.google.dev/gemini-api/docs/pricing), [помилки](https://ai.google.dev/gemini-api/docs/troubleshooting); SDK [google-genai](https://googleapis.github.io/python-genai/); ключ — [Google AI Studio](https://aistudio.google.com/apikey).
 - Anthropic: [structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs), [помилки](https://platform.claude.com/docs/en/api/errors), [ціни](https://platform.claude.com/docs/en/about-claude/pricing); SDK [anthropic-sdk-python](https://github.com/anthropics/anthropic-sdk-python).
 - Безпека: [OWASP Top 10 for LLM Applications](https://genai.owasp.org/llm-top-10/), [LLM01 Prompt Injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/).
