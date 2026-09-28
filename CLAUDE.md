@@ -78,6 +78,8 @@ PY-Course-Victor-Nikoriak-22-09-2026/
 │
 ├── tools/
 │   ├── sync_notebook_metadata.py ← generates the Colab badge + metadata.lms of every notebook
+│   ├── generate_student.py     ← master notebook → `<name>_student.ipynb` next to it (solutions and `instructor` cells removed); `--check` in CI
+│   ├── test_generate_student.py ← its tests (`cd tools && python -m pytest`)
 │   └── lessons_v5.json         ← v5.0 lesson titles (1–52), stream slug
 │
 ├── assignments/                ← empty — homework not migrated yet
@@ -95,7 +97,7 @@ PY-Course-Victor-Nikoriak-22-09-2026/
     └── crispy_notes.yml        ← lesson 50: CI/CD for module_5/lessons/lesson_50_ci_cd/crispy_notes_project
 ```
 
-**Not yet migrated from the old repo** (planned, not present): `SETUP.md`, `install_course.*`/`start_course.*`, `dashboard.ipynb`, the old `tools/` scripts (`generate_student.py`, `qa_suite.py`, `client.py`, `config.json` — `tools/` currently holds only the notebook-metadata sync), `generator/`, `run_data/`, `docker-compose.yml`. The old `module_5` (Django/DevOps content) is not migrated as a module — it isn't part of the v5.0 navigation table (see `.claude/plan_md/migration_plan.md` §0), but it is the **source material** for М4 lessons: `lesson_Django_Network_Architecture/network_foundation.md` + `network_mermaid.md` (URL/DNS/ports/TCP/TLS → lesson 31, REST → 32). Lesson 32 is built on the instructor's meteo API: repo `NikoriakViktot/ogimet` → `ogimet-main/` in the old course (`module_4/lessons/lesson_31_http_requests/`) → client `meteo_parser/telegram_filter.py` in `NikoriakViktot/Data_Science_Course_SSWU`; its data snapshot comes from ogimet.com via `meteo_api/fetch_snapshot.py`, the `Django_*` / `DJANGO_*` files (→ 33–35), `lesson_Django_Async/` (async HTTP → 31, async views → later), `lesson_Django_Testing/` (→ 41), `lesson_46_Telegram_API/` (→ 47) — see `.claude/plan_md/module_4_audit.md`. **Django lessons (33+) follow the instructor's Django book** — repo `NikoriakViktot/notes_chat_app`, published at https://nikoriakviktot.github.io/notes_chat_app/ (MkDocs, «Zero to Hero» steps 0–9 ending in Notes Chat App). Mapping: 33 = steps 1–2 (`hello_project`, `Note`), 34 = steps 2 + 4 (`django_bootstrap_project` → `crispy_notes_project`), 35 = API for notes, 38/44 = step 3, 40 = step 5, 41 = step 6, 45 = step 7, 48–49 = steps 8–9. **Instructor's rule (2026-09-27): don't rewrite what exists.** Each Django lesson takes the code from the old course (`module_5/...` projects, copied into the lesson folder with their README) and is written as a **refactoring** of the previous lesson's project: a table «what changed / why», diffs of key files, architecture before/after, real output, and «Поглиблено» links to the book — no retelling of the book's theory. Fixes to old code (bugs found while verifying) are made in the course copy and logged in `instructor_notes/old_course_fixes.md` (instructor-only, outside the book) — **never** on book pages or project READMEs: no «Що виправлено» sections, no «виправлено в копії курсу» wording (instructor's rule 2026-09-27); pages show the correct code and why it is correct. **Instructor's rule (2026-09-28): never mention the old course on student-facing material** — book pages (`docs/`), notebooks and project READMEs don't say «старий курс», «23_02» or give paths into the old repo; the starting code is called «стартовий код» / «прототип `news_dashboard`» etc. Provenance lives only here, in `.claude/plan_md/` and in `instructor_notes/`. **FastAPI track (36–39, 41–43, 46–50) = one «news aggregator» project** grown lesson by lesson from the old course's `module_4/lessons/lesson_34_asyncio/news_dashboard/` (rbc.ua parser) + Telegram bots from `module_5/lesson_46_Telegram_API/` (LLM = Gemini, `ai_bot`). **Linux** goes into the book as a bonus lesson in М5 before 48 (from `module_5/lesson_Linux_DevOps_Basics/`). Full lesson-by-lesson plan: `.claude/plan_md/module_4_audit.md`. Keep model/field names aligned with the final `notes_app` (`is_pinned`, `priority` 1–4, `Notebook`). Do not assume any of these exist without checking.
+**Not yet migrated from the old repo** (planned, not present): `SETUP.md`, `install_course.*`/`start_course.*`, `dashboard.ipynb`, the old `tools/` scripts (`qa_suite.py`, `client.py`, `config.json` — `tools/` holds the notebook-metadata sync and the student-notebook generator), `generator/`, `run_data/`, `docker-compose.yml`. The old `module_5` (Django/DevOps content) is not migrated as a module — it isn't part of the v5.0 navigation table (see `.claude/plan_md/migration_plan.md` §0), but it is the **source material** for М4 lessons: `lesson_Django_Network_Architecture/network_foundation.md` + `network_mermaid.md` (URL/DNS/ports/TCP/TLS → lesson 31, REST → 32). Lesson 32 is built on the instructor's meteo API: repo `NikoriakViktot/ogimet` → `ogimet-main/` in the old course (`module_4/lessons/lesson_31_http_requests/`) → client `meteo_parser/telegram_filter.py` in `NikoriakViktot/Data_Science_Course_SSWU`; its data snapshot comes from ogimet.com via `meteo_api/fetch_snapshot.py`, the `Django_*` / `DJANGO_*` files (→ 33–35), `lesson_Django_Async/` (async HTTP → 31, async views → later), `lesson_Django_Testing/` (→ 41), `lesson_46_Telegram_API/` (→ 47) — see `.claude/plan_md/module_4_audit.md`. **Django lessons (33+) follow the instructor's Django book** — repo `NikoriakViktot/notes_chat_app`, published at https://nikoriakviktot.github.io/notes_chat_app/ (MkDocs, «Zero to Hero» steps 0–9 ending in Notes Chat App). Mapping: 33 = steps 1–2 (`hello_project`, `Note`), 34 = steps 2 + 4 (`django_bootstrap_project` → `crispy_notes_project`), 35 = API for notes, 38/44 = step 3, 40 = step 5, 41 = step 6, 45 = step 7, 48–49 = steps 8–9. **Instructor's rule (2026-09-27): don't rewrite what exists.** Each Django lesson takes the code from the old course (`module_5/...` projects, copied into the lesson folder with their README) and is written as a **refactoring** of the previous lesson's project: a table «what changed / why», diffs of key files, architecture before/after, real output, and «Поглиблено» links to the book — no retelling of the book's theory. Fixes to old code (bugs found while verifying) are made in the course copy and logged in `instructor_notes/old_course_fixes.md` (instructor-only, outside the book) — **never** on book pages or project READMEs: no «Що виправлено» sections, no «виправлено в копії курсу» wording (instructor's rule 2026-09-27); pages show the correct code and why it is correct. **Instructor's rule (2026-09-28): never mention the old course on student-facing material** — book pages (`docs/`), notebooks and project READMEs don't say «старий курс», «23_02» or give paths into the old repo; the starting code is called «стартовий код» / «прототип `news_dashboard`» etc. Provenance lives only here, in `.claude/plan_md/` and in `instructor_notes/`. **FastAPI track (36–39, 41–43, 46–50) = one «news aggregator» project** grown lesson by lesson from the old course's `module_4/lessons/lesson_34_asyncio/news_dashboard/` (rbc.ua parser) + Telegram bots from `module_5/lesson_46_Telegram_API/` (LLM = Gemini, `ai_bot`). **Linux** goes into the book as a bonus lesson in М5 before 48 (from `module_5/lesson_Linux_DevOps_Basics/`). Full lesson-by-lesson plan: `.claude/plan_md/module_4_audit.md`. Keep model/field names aligned with the final `notes_app` (`is_pinned`, `priority` 1–4, `Notebook`). Do not assume any of these exist without checking.
 
 ---
 
@@ -191,19 +193,19 @@ Why this exists: notebooks copied from 23_02 kept badges pointing at `PY-Course-
 
 ## Tools & Automation
 
-> ⚠️ Apart from `tools/sync_notebook_metadata.py` (above), none of the old `tools/` scripts, `generator/` or `dashboard.ipynb` have been migrated into this repo yet — this section documents the intended tooling from the old repo for when that migration phase happens. Don't reference these paths as if they exist here.
+> ⚠️ Apart from `tools/sync_notebook_metadata.py` (above) and `tools/generate_student.py` (below), none of the old `tools/` scripts, `generator/` or `dashboard.ipynb` have been migrated into this repo yet — the rest of this section documents the intended tooling from the old repo for when that migration phase happens. Don't reference those paths as if they exist here.
 
 ### generate_student.py — Create student notebooks
 ```bash
-# Strip solutions from all master notebooks
-python tools/generate_student.py --all
-
-# Strip a specific notebook
-python tools/generate_student.py module_1/lessons/lesson_04_conditions_and_control/notes_bool_logic.ipynb
+python tools/generate_student.py                      # every master notebook (has solution markers or `instructor` cells)
+python tools/generate_student.py path/to/note.ipynb   # one or more notebooks
+python tools/generate_student.py --check              # CI (notebooks.yml): exit 1 if a student copy is missing/outdated or a cell doesn't compile
 ```
-- Removes all `# BEGIN SOLUTION … # END SOLUTION` blocks
-- Removes cells tagged `"instructor"`
-- Output: `*_student.ipynb` in same folder
+- Removes `# BEGIN SOLUTION … # END SOLUTION` blocks in **every** code cell — no `solution` tag needed (the old script stripped only tagged cells, and none of the course notebooks are tagged, so it leaked every solution). The block becomes `# YOUR CODE HERE` with the same indent; inside a `def`/loop it also gets `pass` so the cell still compiles (a solution inside `{…}` gets no `pass` — the variant that compiles is chosen per cell). Students see the exercise's AssertionError/NameError, not a SyntaxError.
+- Removes cells tagged `"instructor"`; clears all outputs and execution counts.
+- Output: `<name>_student.ipynb` in the same folder, with its own Colab badge and `metadata.lms` (`notebook_path` = student path) via the logic of `sync_notebook_metadata.py`.
+- After editing a master notebook: run `sync_notebook_metadata.py`, then `generate_student.py`, commit both. Markdown `<details>` answers and worked examples stay in the student copy on purpose.
+- `module_1/lessons/lesson_04_conditions_and_control/python_lesson_bool_logic_student.ipynb` has no master in this repo (legacy file); the generator leaves it alone.
 
 ### qa_suite.py — QA & load testing
 ```bash
@@ -472,7 +474,7 @@ If `sync_exams` says "Lesson not found for lesson_id":
 5. Add protected system cell with `SYSTEM_READY`, `COMPLETED_TASKS`, `require_system()`, `require_student()`
 6. Wrap solutions in `# BEGIN SOLUTION … # END SOLUTION`
 7. Tag instructor-only cells with `"tags": ["instructor"]`
-8. Run `python tools/generate_student.py module_N/lessons/lesson_NN_topic_slug/` to produce `*_student.ipynb`
+8. Run `python tools/generate_student.py module_N/lessons/lesson_NN_topic_slug/<notebook>.ipynb` (or without arguments for all) to produce `*_student.ipynb`; CI checks it with `--check`
 9. Add lesson config to `tools/config.json`
 10. `course.yaml` / `course.json` already list all v5.0 lesson numbers per module — change them only for a lesson outside the v5.0 table
 11. Run `python tools/qa_suite.py --unit` to verify API integration
