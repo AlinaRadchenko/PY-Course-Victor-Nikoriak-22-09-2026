@@ -174,7 +174,11 @@ nav:
       - "48. Docker": modules/m5/lesson_48.md
       - "49. Docker Compose + деплой": modules/m5/lesson_49.md
       - "50. CI/CD (GitHub Actions)": modules/m5/lesson_50.md
-    - "М6. Капстоун": modules/m6_capstone.md
+    - "М6. Капстоун":
+      - Огляд модуля: modules/m6_capstone.md
+      - "Бонус. CV розробника":
+          - "Урок": modules/m6/bonus_cv.md
+          - "Довідник: сильне CV": modules/m6/cv/cv_tutorial.md
     - "Self-paced. AI для розробників (бонус)": modules/bonus_ai.md
 
   - Довідник:

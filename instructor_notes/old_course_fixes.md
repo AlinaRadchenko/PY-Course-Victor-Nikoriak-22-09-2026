@@ -1,7 +1,7 @@
 # Виправлення старого коду — нотатки викладача
 
 > Файл для викладача, у книгу курсу (`docs/`) не входить. Тут — усе, що довелося змінити в коді й
-> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–50, бонус Linux,
+> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–50, бонуси Linux і CV,
 > бонус-урок pandas, довідники. На сторінках уроків цих списків немає — студенти бачать лише
 > правильний код і пояснення «чому так».
 
@@ -374,6 +374,21 @@ pip у збірці ходить через проксі з власним CA, �
 
 Прогін на PR #64 (коміт `5c6f1b3`): news_hub — 6 jobs ✅, publish skipped; crispy_notes — 5 jobs ✅, publish skipped; перший же прогін зелений.
 `publish` (push у `main`) не запускався — перевірено лише `actionlint`.
+
+## Бонус М6. CV розробника (`module_5/CV_maker/`)
+
+Перенесено як є: `README.md`, `CV_mini_tutorial_UA.md` (і сторінка довідника в книзі), `cv_viktor_nikoriak_GeoAI.html` і PDF
+(особисте CV викладача з контактами — як у старому курсі), `generate_cv_pdf.py`.
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `generate_cv_pdf.py` | — | справжній `pdfkit` 1.0 + `wkhtmltopdf 0.12.6 (with patched qt)` (образ `surnet/alpine-wkhtmltopdf`, apt у пісочниці недоступний) → `PDF created`, 5 сторінок, як PDF старого курсу | без змін; додано необов'язкові аргументи `html pdf` (без них — як було) |
+| `README.md`, структура проєкту | `cv_viktor_nikoriak.html` (5 згадок) | такого файлу немає; справжній — `cv_viktor_nikoriak_GeoAI.html` | назву виправлено |
+| `CV_mini_tutorial_UA.md` | `##  **Навчальна вправа для студентів` — незакритий `**` | рендер MkDocs | `## Навчальна вправа для студентів` |
+| — | студентам лишалось редагувати CV викладача | — | `cv_template.html` (той самий CSS, поля в дужках): 1 сторінка в wkhtmltopdf |
+| — | wkhtmltopdf архівований, на новому Linux може не встановитись | Chromium (Playwright) з `CHROMIUM_PATH`: CV викладача 6 сторінок, шаблон 2; `wkhtmltopdf --disable-smart-shrinking` — ті самі 6 і 2 | `generate_cv_pdf_chromium.py`; різниця сторінок пояснена на сторінці (smart shrinking) |
+
+Не перевірено: `sudo apt install wkhtmltopdf` на Ubuntu (apt у пісочниці — 403), встановлення на Windows/macOS з README.
 
 ## Довідник Claude Code (`CLAUDE_DOC.md` старого курсу)
 
