@@ -1,7 +1,7 @@
 # Виправлення старого коду — нотатки викладача
 
 > Файл для викладача, у книгу курсу (`docs/`) не входить. Тут — усе, що довелося змінити в коді й
-> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–45,
+> матеріалах старого курсу `PY-Course-Victor-Nikoriak-23_02` під час перенесення: уроки 34–46,
 > бонус-урок pandas, довідники. На сторінках уроків цих списків немає — студенти бачать лише
 > правильний код і пояснення «чому так».
 
@@ -173,6 +173,34 @@
 Знахідка в новому коді уроку (до коміту): `AllowedHostsOriginValidator` читає `ALLOWED_HOSTS`/`DEBUG` один раз при імпорті `asgi.py` — у тестах (`DEBUG=False`, порожній `ALLOWED_HOSTS`) відхиляв і власні сторінки; стек винесено у `websocket_application()`, тест збирає його з `override_settings(ALLOWED_HOSTS=['localhost'])`. На сервері треба `DJANGO_ALLOWED_HOSTS` — інакше чат не підключиться (сказано на сторінці уроку).
 
 «Знайди помилку» уроку побудовано на перевірці членства лише в `connect()`.
+
+## Урок 46. Security advanced
+
+Джерела:
+- `module_5/lesson_46_Telegram_API/production_bot/backend/`:
+  - `core/security.py`, `core/config.py`;
+  - `api/deps.py`, `api/admin/auth.py`;
+  - `api/webhook.py`;
+- `module_5/lesson_Django_authentication_and_security/OWASP_TOP_10.md`, розділ A10 (SSRF).
+
+У `news_hub` уроку 43 не було жодної автентифікації: `DELETE /api/news`, збір і платний аналіз LLM міг запустити будь-хто.
+
+| Де | Було | Як перевірено | Стало |
+|---|---|---|---|
+| `core/security.py` + `api/admin/auth.py` | `passlib` `CryptContext(schemes=["bcrypt"])`; `auth.py` хешує пароль **при імпорті** (`_ADMIN_PASSWORD_HASH = hash_password(...)`) | чиста установка (`passlib 1.7.4`, `bcrypt 5.0.0`): `(trapped) error reading bcrypt version`, потім `ValueError: password cannot be longer than 72 bytes` — застосунок не стартує | `bcrypt` напряму; пароль > 72 байт — «не той пароль» (bcrypt 5 кидає `ValueError` і в `checkpw` → було б 500); тест |
+| `core/config.py` | `JWT_SECRET` за замовчуванням `"change-me-in-production"`, `ADMIN_PASSWORD="change-me"`; `validate()` перевіряє лише «не порожній» | `validate()` пропускає; токен, підписаний `"change-me-in-production"`, приймається (`{'sub': 'admin', 'role': 'admin', …}`); PyJWT сам попереджає: ключ 23 байти < 32 | без значень за замовчуванням: нічого не задано → 503; секрет < 32 символів → застосунок не стартує; у env — хеш пароля, не пароль |
+| `core/config.py` | `JWT_ALGORITHM` з env | — | алгоритм у коді (HS256); `decode` вимагає `exp`, `sub`, `role`; тести `alg: none`, HS512 тим самим секретом, без `role` |
+| `api/admin/auth.py` | ім'я — `!=`, при чужому імені пароль не перевіряється (відповідь швидша — видно, що ім'я не те); без ліміту спроб | читання коду | `hmac.compare_digest` для імені, bcrypt завжди; 5 спроб за 5 хв з адреси → 429 |
+| `api/webhook.py` | секрет у **шляху** `/webhook/{SECRET}` + заголовок, порівняння `!=` | uvicorn пише шлях у журнал: `"POST /webhook/s3cr3t-from-env HTTP/1.1" 200 OK` | для власних webhook — підпис HMAC(час + тіло), вікно 5 хв, повтор → 409 (Redis `SET NX`), `compare_digest`; для Telegram (урок 47) — `verify_secret_token` з `compare_digest`, секрет не в URL |
+| `OWASP_TOP_10.md`, A10 | захист SSRF: `urlparse(url).hostname in ALLOWED_HOSTS_FOR_FETCH`, потім `requests.get(url)` — `requests` сам іде за перенаправленням | локальний демо-сервер: дозволений хост відповідає `302 → http://localhost:<порт>/latest/meta-data/`; `is_safe_url: True`, фінальна адреса — внутрішня, відповідь `INTERNAL: aws_secret_access_key=...` | `safe_fetch`: перевірка IP **після DNS** у resolver з'єднання, кожне перенаправлення вручну через ті самі перевірки, порти 80/443, розмір, тип; тест `test_redirect_is_checked_again` (внутрішній сервер не отримує жодного запиту) |
+
+Знахідки в новому коді уроку (до коміту):
+- `POST /api/webhooks/scrape` з підписаним, але не-JSON тілом відповідав 500: `error.errors()` містить сирі `bytes`, а JSONResponse їх не серіалізує. Виправлено: `include_input=False`, тест `test_signature_is_checked_before_json`.
+- Тест з другим `TestClient(app)` проходив на новому Starlette й падав на мінімальних версіях. Причина: `Queue is bound to a different event loop` — база тесту живе в циклі першого клієнта. Тепер тест використовує той самий клієнт.
+
+Обмеження середовища: `www.pravda.com.ua` заблоковано мережевою політикою (`connect_rejected`). Справжню стрічку через `POST /api/sources/{id}/fetch` не завантажено — відповідь `HTTP 403` від проксі середовища. Позитивний шлях перевірено на локальному aiohttp-сервері з фікстурою `pravda_rss.xml`.
+
+«Знайди помилку» уроку побудовано на SSRF-захисті з `OWASP_TOP_10.md` (перенаправлення).
 
 ## Довідник Claude Code (`CLAUDE_DOC.md` старого курсу)
 
