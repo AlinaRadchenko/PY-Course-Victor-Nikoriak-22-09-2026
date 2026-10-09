@@ -10,6 +10,8 @@
 
 - оголошувати функцію через `def` і викликати її з позиційними та іменованими аргументами;
 - задавати параметрам значення за замовчуванням і уникати пастки зі змінюваним значенням;
+- приймати довільну кількість аргументів через `*args` і `**kwargs`, розпаковувати списки, кортежі, множини й словники зірочками `*` і `**`;
+- пояснювати порядок шести категорій параметрів у `def`, зокрема `/` і `*`;
 - розрізняти `return` і `print()` та пояснювати, звідки береться `None`;
 - пояснювати, чому змінні всередині функції не видно ззовні;
 - писати чисті функції трьох ролей — перевірка (predicate), перетворення (transformer), згортка (reducer);
@@ -197,7 +199,7 @@ SyntaxError: positional argument follows keyword argument
 
 Логіка проста: коли з'явився перший аргумент з іменем, Python уже не може сказати, в який за порядком параметр має потрапити наступний аргумент без імені.
 
-### Значення за замовчуванням
+### Значення за замовчуванням { #default-values }
 
 Параметр може мати значення, яке використовується, якщо аргумент не передали. Наприклад, плата за обслуговування зазвичай 10 %:
 
@@ -275,6 +277,423 @@ TypeError: price_with_service() takes from 1 to 2 positional arguments but 3 wer
     ['кава']
     ['чай']
     ```
+
+### Довільна кількість аргументів: `*args`
+
+Іноді заздалегідь невідомо, скільки значень передадуть: за столиком може бути один чек, а може й п'ять. Зірочка перед параметром означає «збери всі зайві позиційні аргументи в один **кортеж**»:
+
+```python
+def order_total(*bills):
+    print("  bills =", bills, type(bills).__name__, len(bills))
+    return sum(bills)
+
+
+print(order_total(540.0))
+print(order_total(540.0, 980.0, 760.0))
+print(order_total())
+```
+
+```text
+  bills = (540.0,) tuple 1
+540.0
+  bills = (540.0, 980.0, 760.0) tuple 3
+2280.0
+  bills = () tuple 0
+0
+```
+
+Без аргументів `bills` — порожній кортеж, а не помилка. Звичайні параметри перед `*` забирають свої значення **першими**, решта йде в кортеж:
+
+```python
+def split_bill(guests, *bills):
+    print("  guests =", guests, "| bills =", bills)
+    return round(sum(bills) / guests, 2)
+
+
+print(split_bill(3, 540.0, 980.0))
+```
+
+```text
+  guests = 3 | bills = (540.0, 980.0)
+506.67
+```
+
+### Іменовані «про запас»: `**kwargs`
+
+Дві зірочки збирають усі **зайві іменовані** аргументи (`ключ=значення`) у **словник**:
+
+```python
+def make_order(dish, **options):
+    print("  dish =", dish)
+    print("  options =", options, type(options).__name__)
+    for key, value in options.items():
+        print("   ", key, "->", value)
+
+
+make_order("кава", size="L", milk=True, sugar=2)
+make_order("чай")
+```
+
+```text
+  dish = кава
+  options = {'size': 'L', 'milk': True, 'sugar': 2} dict
+    size -> L
+    milk -> True
+    sugar -> 2
+  dish = чай
+  options = {} dict
+```
+
+| | `*args` | `**kwargs` |
+|---|---|---|
+| що збирає | зайві **позиційні** аргументи | зайві **іменовані** аргументи |
+| тип усередині | `tuple` | `dict` |
+| коли нічого не передали | `()` | `{}` |
+
+Порядок ключів у словнику збігається з порядком, у якому аргументи передали. Імена `args` і `kwargs` — лише домовленість: працюють самі `*` і `**`, тому `*bills` і `**options` у прикладах вище — те саме.
+
+### Розпаковка колекцій: `*` і `**`
+
+Ті самі зірочки **у виклику** працюють навпаки: розкладають одну колекцію на окремі аргументи.
+
+```text
+def f(*args)     в оголошенні:  багато аргументів  →  один кортеж   (пакування)
+f(*collection)   у виклику:     одна колекція      →  багато аргументів (розпаковка)
+```
+
+`*` приймає будь-яку колекцію, по якій можна пройти циклом `for`:
+
+```python
+def receive(a, b, c):
+    print("  a =", a, "| b =", b, "| c =", c)
+
+
+receive(*[1, 2, 3])                   # список
+receive(*(10, 20, 30))                # кортеж
+receive(*{3, 1, 2})                   # множина — порядок не гарантований!
+receive(*"abc")                       # рядок — послідовність символів
+receive(*range(100, 103))             # range
+receive(*{"x": 1, "y": 2, "z": 3})    # словник віддає лише КЛЮЧІ
+```
+
+```text
+  a = 1 | b = 2 | c = 3
+  a = 10 | b = 20 | c = 30
+  a = 1 | b = 2 | c = 3
+  a = a | b = b | c = c
+  a = 100 | b = 101 | c = 102
+  a = x | b = y | c = z
+```
+
+!!! warning "Множина не має порядку"
+    Для невеликих цілих чисел множина часто «випадково» віддає їх по зростанню, але для рядків порядок може змінюватися від запуску до запуску. Не розпаковуй `set` у функцію, де важливо, яке значення в який параметр потрапить.
+
+Без зірочки функція отримує **один** аргумент — сам список:
+
+```python
+bills = [540.0, 980.0, 760.0]
+print(order_total(*bills))
+print(order_total(bills))
+```
+
+```text
+  bills = (540.0, 980.0, 760.0) tuple 3
+2280.0
+  bills = ([540.0, 980.0, 760.0],) tuple 1
+```
+
+```text
+TypeError: unsupported operand type(s) for +: 'int' and 'list'
+```
+
+`**` розкладає словник на іменовані аргументи. Ключі мають збігатися з іменами параметрів:
+
+```python
+def price_with_service(bill, service=10):
+    return bill + bill * service / 100
+
+
+settings = {"service": 5}
+print(price_with_service(500.0, **settings))      # те саме, що service=5
+print(price_with_service(**{"bill": 500.0, "service": 0}))
+```
+
+```text
+525.0
+500.0
+```
+
+Зайвий ключ або ключ, який дублює вже переданий аргумент, — помилка:
+
+```python
+price_with_service(500.0, **{"tip": 50})
+```
+
+```text
+TypeError: price_with_service() got an unexpected keyword argument 'tip'
+```
+
+```python
+price_with_service(500.0, **{"bill": 300.0})
+```
+
+```text
+TypeError: price_with_service() got multiple values for argument 'bill'
+```
+
+Зірочки працюють і поза викликами функцій: у присвоєнні та при складанні нових колекцій.
+
+```python
+week = [540.0, 980.0, 760.0, 1200.0, 610.0]
+
+first, *rest = week
+print("first =", first, "| rest =", rest)
+
+first, *_, last = week
+print("first =", first, "| last =", last)
+
+lunch = [320.0, 450.0]
+dinner = (1200.0,)
+print([*lunch, *dinner])               # новий список з двох колекцій
+print({*lunch, *lunch})                # множина: дублікати зникли
+
+base = {"size": "M", "milk": False}
+custom = {"milk": True, "syrup": "карамель"}
+print({**base, **custom})              # злиття: правий ключ перемагає
+print(*lunch, sep=" | ")               # кожен елемент — окремий аргумент print
+```
+
+```text
+first = 540.0 | rest = [980.0, 760.0, 1200.0, 610.0]
+first = 540.0 | last = 610.0
+[320.0, 450.0, 1200.0]
+{320.0, 450.0}
+{'size': 'M', 'milk': True, 'syrup': 'карамель'}
+320.0 | 450.0
+```
+
+`rest` після `first, *rest = ...` — завжди **список**, навіть якщо справа стояв кортеж чи рядок.
+
+!!! tip "Прокидання аргументів далі"
+    Пакування й розпаковка разом дають функцію-посередника, яка приймає **будь-які** аргументи й передає їх іншій функції без змін:
+
+    ```python
+    def logged(func, *args, **kwargs):
+        print("  виклик", func.__name__, "args =", args, "kwargs =", kwargs)
+        return func(*args, **kwargs)
+
+
+    print(logged(price_with_service, 500.0, service=5))
+    ```
+
+    ```text
+      виклик price_with_service args = (500.0,) kwargs = {'service': 5}
+    525.0
+    ```
+
+    На цьому прийомі побудовані декоратори з [уроку 10](lesson_10.md).
+
+### Порядок параметрів: шість категорій
+
+У `def` параметри можуть бути шести видів, і їхній порядок жорстко заданий. Повна схема:
+
+```python
+def example(pos_only, /, pos_or_kw, default_pos=10, *args, kw_only, **kwargs):
+    pass
+```
+
+| # | Категорія | Де стоїть | Як передавати | Що всередині |
+|---|---|---|---|---|
+| 1 | тільки позиційні | ліворуч від `/` | лише за порядком | значення |
+| 2 | позиційні або іменовані | після `/` | за порядком **або** за іменем | значення |
+| 3 | зі значенням за замовчуванням | `param=value`, до `*args` | можна пропустити | значення |
+| 4 | `*args` або поодинока `*` | після позиційних | збирає зайві позиційні | кортеж |
+| 5 | тільки іменовані | після `*args` або `*` | лише `ключ=значення` | значення |
+| 6 | `**kwargs` | завжди останній | збирає зайві іменовані | словник |
+
+Жодна категорія не обов'язкова, але ті, що є, мусять іти саме в цьому порядку. Порушення Python помічає ще до запуску:
+
+```python
+def make_coffee(sugar=1, size):
+    pass
+```
+
+```text
+SyntaxError: parameter without a default follows parameter with a default
+```
+
+```python
+def f(**options, *args):
+    pass
+```
+
+```text
+SyntaxError: arguments cannot follow var-keyword argument
+```
+
+Подивимось, як Python розкладає **один** виклик по всіх шести категоріях:
+
+```python
+def example(pos_only, /, pos_or_kw, default_pos=10, *args, kw_only, **kwargs):
+    print("  1 pos_only    =", pos_only)
+    print("  2 pos_or_kw   =", pos_or_kw)
+    print("  3 default_pos =", default_pos)
+    print("  4 args        =", args)
+    print("  5 kw_only     =", kw_only)
+    print("  6 kwargs      =", kwargs)
+
+
+example(1, 2, 3, 4, 5, kw_only="K", x=100, y=200)
+```
+
+```text
+  1 pos_only    = 1
+  2 pos_or_kw   = 2
+  3 default_pos = 3
+  4 args        = (4, 5)
+  5 kw_only     = K
+  6 kwargs      = {'x': 100, 'y': 200}
+```
+
+Категорії 2, 3, 4 і 6 уже знайомі з цього уроку. Нові тут дві.
+
+**Тільки позиційні (`/`, Python 3.8+).** Усе ліворуч від `/` передається лише за порядком. Автор функції може згодом перейменувати такі параметри, і нічий код не зламається, бо за іменем до них ніхто не звертався. Так влаштовані `len()`, `abs()` та багато інших вбудованих функцій.
+
+```python
+def calculate_speed(distance, time, /):
+    return distance / time
+
+
+print(calculate_speed(100, 2))
+calculate_speed(distance=100, time=2)
+```
+
+```text
+50.0
+TypeError: calculate_speed() got some positional-only arguments passed as keyword arguments: 'distance, time'
+```
+
+**Тільки іменовані (після `*` або `*args`).** Їх неможливо передати за порядком, тільки `ключ=значення`. Це зручно для прапорців: `send_receipt(order, email=True)` читається однозначно, а `send_receipt(order, True)` — ні. Поодинока `*` нічого не збирає, вона лише відділяє позиційні параметри від іменованих:
+
+```python
+def send_receipt(order_id, *, email=False, print_copy=True):
+    print("  order", order_id, "| email =", email, "| print_copy =", print_copy)
+
+
+send_receipt(17, email=True)
+send_receipt(17, True)
+```
+
+```text
+  order 17 | email = True | print_copy = True
+TypeError: send_receipt() takes 1 positional argument but 2 were given
+```
+
+Параметр після `*args` без значення за замовчуванням — **обов'язковий** іменований:
+
+```python
+def report(*bills, currency):
+    return f"{sum(bills)} {currency}"
+
+
+print(report(540.0, 980.0, currency="грн"))
+report(540.0, 980.0)
+```
+
+```text
+1520.0 грн
+TypeError: report() missing 1 required keyword-only argument: 'currency'
+```
+
+Правила **виклику** короткі: спершу позиційні аргументи, потім іменовані (у будь-якому порядку), і кожен параметр отримує значення лише один раз:
+
+```python
+def foo(a, b):
+    pass
+
+
+foo(1, a=2)
+```
+
+```text
+TypeError: foo() got multiple values for argument 'a'
+```
+
+### Пастки з аргументами
+
+Пастку зі списком за замовчуванням ми вже розібрали [вище](#default-values). Python зберігає це значення в атрибуті функції `__defaults__`, тому «наростання» можна побачити:
+
+```python
+def add_item(item, items=[]):
+    items.append(item)
+    return items
+
+
+print(add_item.__defaults__)
+add_item("кава")
+add_item("чай")
+print(add_item.__defaults__)
+```
+
+```text
+([],)
+(['кава', 'чай'],)
+```
+
+!!! warning "Функція отримує той самий об'єкт, а не копію"
+    Коли передаєш список у функцію, параметр стає **ще одним іменем для того самого списку**. Нове присвоєння всередині функції зовнішній список не змінює, а зміна «на місці» — змінює:
+
+    ```python
+    def replace(bills):
+        print("  replace: той самий список?", bills is day)
+        bills = [0.0]                   # ім'я bills тепер вказує на НОВИЙ список
+        print("  replace: після присвоєння?", bills is day)
+
+
+    def append_tip(bills):
+        bills.append(50.0)              # змінюємо спільний список
+
+
+    day = [540.0, 980.0]
+    replace(day)
+    print("після replace:", day)
+    append_tip(day)
+    print("після append_tip:", day)
+    ```
+
+    ```text
+      replace: той самий список? True
+      replace: після присвоєння? False
+    після replace: [540.0, 980.0]
+    після append_tip: [540.0, 980.0, 50.0]
+    ```
+
+    Тому чисті функції з розділу [«Чисті функції»](#pure-functions) повертають **новий** список, а не змінюють переданий.
+
+!!! warning "`**kwargs` ковтає описки"
+    Якщо функція приймає `**kwargs`, неправильне ім'я аргументу не викличе помилки, а мовчки потрапить у словник:
+
+    ```python
+    def run_report(bills, **options):
+        debug = options.get("debug", False)
+        print("  options =", options, "| debug =", debug)
+
+
+    run_report([540.0], debyg=True)
+    ```
+
+    ```text
+      options = {'debyg': True} | debug = False
+    ```
+
+    Коли імена параметрів відомі, пиши їх явно: `def run_report(bills, *, debug=False)`. Тоді `debyg=True` одразу дасть `TypeError: run_report() got an unexpected keyword argument 'debyg'`. `**kwargs` потрібен там, де функція справді не знає, що їй передадуть, наприклад у посередника, який прокидає аргументи далі.
+
+??? info "Чому Python влаштований саме так"
+
+    - **Функція — це об'єкт.** `def` виконується один раз і створює об'єкт функції. Значення за замовчуванням обчислюються саме тоді й зберігаються в його атрибутах `__defaults__` і `__kwdefaults__`. Так не доводиться обчислювати їх при кожному виклику. Звідси й пастка зі списком.
+    - **Дані не копіюються.** У функцію передається посилання на об'єкт, тому список з мільйона елементів передається так само швидко, як число. Звідси пастка зі зміною «на місці».
+    - **`*args` і `**kwargs` дають гнучкість.** Функція може прийняти й передати далі будь-які аргументи, не знаючи сигнатури наперед. На цьому побудовані декоратори (урок 10) і `super().__init__(*args, **kwargs)` у класах.
+    - **`/` і `*` фіксують контракт.** `/` дозволяє автору перейменовувати внутрішні параметри, а `*` змушує писати прапорці явно: `recv(1024, block=False)` зрозуміліше, ніж `recv(1024, False)`.
 
 ## return і print
 
@@ -487,7 +906,7 @@ flowchart TD
 !!! note "А якщо функція читає змінну ззовні?"
     Прочитати змінну, створену поза функцією, Python дозволяє — він шукає ім'я спочатку серед локальних, потім у файлі. Але така функція непомітно залежить від решти програми: змінив змінну вгорі — змінився результат функції. Передавай дані параметрами. Як саме Python шукає імена, розібрано в довіднику [Простори імен / LEGB](../../reference/python_core/namespaces_legb.md).
 
-## Чисті функції
+## Чисті функції { #pure-functions }
 
 Функція може не лише повертати результат, а й змінювати щось поза собою — наприклад, список, який їй передали. Це називають **побічним ефектом**. Згадай урок 5: параметр отримує посилання на той самий список, а не копію.
 
@@ -877,6 +1296,13 @@ grades = [
 | значення за замовчуванням | `def f(bill, service=10):` |
 | іменований аргумент | `f(500.0, service=0)` — спершу позиційні, потім іменовані |
 | порожній список за замовчуванням | `items=None`, а в тілі `if items is None: items = []` |
+| будь-яка кількість позиційних | `def f(*args):` → `args` — кортеж |
+| будь-яка кількість іменованих | `def f(**kwargs):` → `kwargs` — словник |
+| розпакувати колекцію у виклик | `f(*bills)`, `f(**settings)` |
+| розпакувати в присвоєнні | `first, *rest = bills` |
+| склеїти / злити колекції | `[*a, *b]`, `{**d1, **d2}` (правий ключ перемагає) |
+| лише іменовані / лише позиційні | `def f(a, *, flag=False)` / `def f(a, b, /)` |
+| порядок у `def` | `pos_only, /, pos_or_kw, default=1, *args, kw_only, **kwargs` |
 | predicate | `def is_dinner(order): return order.time == "вечеря"` |
 | transformer | `[order_tip_percent(o) for o in orders]` |
 | reducer | функція, що зі списку повертає одне значення |
@@ -891,6 +1317,10 @@ grades = [
 5. Чи є функція `add_service_in_place` з цього уроку чистою? Чому?
 6. Навіщо у звіті кафе друкує лише одна функція `print_report`?
 7. Що поверне функція, якщо в неї є `return` лише в гілках `if` і `elif`, а жодна умова не виконалась?
+8. Що буде в `args` і `kwargs` після виклику `f(1, 2, size="L")`, якщо `def f(*args, **kwargs)`?
+9. Чим відрізняються `order_total(bills)` і `order_total(*bills)` для `def order_total(*bills)`?
+10. Чому `def f(**options, *args)` — це `SyntaxError`, а `def f(*args, **options)` — ні?
+11. Як змусити передавати параметр `email` лише за іменем?
 
 ??? success "Відповіді"
 
@@ -901,6 +1331,10 @@ grades = [
     5. Ні: вона змінює переданий їй список, тобто має побічний ефект, і нічого не повертає.
     6. Функції, що рахують, лишаються чистими: їх можна перевірити окремо й використати ще раз — наприклад, для звіту в файл чи на веб-сторінці, де `print()` не потрібен.
     7. `None`: функція дійшла до кінця тіла, не зустрівши `return`.
+    8. `args = (1, 2)` — кортеж, `kwargs = {'size': 'L'}` — словник.
+    9. Без зірочки функція отримує один аргумент — сам список, і `bills` стає `([...],)`. Із зірочкою кожен елемент списку стає окремим аргументом.
+    10. `**kwargs` завжди стоїть останнім: після нього не може бути жодного параметра.
+    11. Поставити його після `*` або `*args`: `def send_receipt(order_id, *, email=False)`.
 
 ### Що далі
 
@@ -912,7 +1346,8 @@ grades = [
 
 ## Документація
 
-- Туторіал: [оголошення функцій](https://docs.python.org/3/tutorial/controlflow.html#defining-functions), [значення за замовчуванням](https://docs.python.org/3/tutorial/controlflow.html#default-argument-values), [іменовані аргументи](https://docs.python.org/3/tutorial/controlflow.html#keyword-arguments), [рядки документації](https://docs.python.org/3/tutorial/controlflow.html#documentation-strings)
+- Туторіал: [оголошення функцій](https://docs.python.org/3/tutorial/controlflow.html#defining-functions), [значення за замовчуванням](https://docs.python.org/3/tutorial/controlflow.html#default-argument-values), [іменовані аргументи](https://docs.python.org/3/tutorial/controlflow.html#keyword-arguments), [спеціальні параметри `/` і `*`](https://docs.python.org/3/tutorial/controlflow.html#special-parameters), [довільна кількість аргументів](https://docs.python.org/3/tutorial/controlflow.html#arbitrary-argument-lists), [розпаковка аргументів](https://docs.python.org/3/tutorial/controlflow.html#unpacking-argument-lists), [рядки документації](https://docs.python.org/3/tutorial/controlflow.html#documentation-strings)
 - Довідник мови: [визначення функції](https://docs.python.org/3/reference/compound_stmts.html#function-definitions), [інструкція `return`](https://docs.python.org/3/reference/simple_stmts.html#the-return-statement)
-- Глосарій: [параметр](https://docs.python.org/3/glossary.html#term-parameter), [аргумент](https://docs.python.org/3/glossary.html#term-argument)
+- Глосарій: [параметр](https://docs.python.org/3/glossary.html#term-parameter) (тут описано всі п'ять видів параметрів), [аргумент](https://docs.python.org/3/glossary.html#term-argument)
+- PEP: [PEP 3102 — тільки іменовані параметри](https://peps.python.org/pep-3102/), [PEP 570 — тільки позиційні параметри](https://peps.python.org/pep-0570/), [PEP 448 — розширена розпаковка](https://peps.python.org/pep-0448/)
 - FAQ: [чому значення за замовчуванням спільні між викликами](https://docs.python.org/3/faq/programming.html#why-are-default-values-shared-between-objects), [різниця між аргументами й параметрами](https://docs.python.org/3/faq/programming.html#what-is-the-difference-between-arguments-and-parameters)
