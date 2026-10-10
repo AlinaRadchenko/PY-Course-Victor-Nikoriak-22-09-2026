@@ -776,6 +776,143 @@ python week.py 2024-07-15
 
 У звіті немає вівторка: за цей тиждень у згенерованих даних не було жодного вівторкового чека, і `print_report` пропускає такі дні.
 
+## Поглиблення: пакети { #packages }
+
+Для звіту кафе чотирьох файлів у одній теці достатньо, і цей розділ можна пропустити. Але кафе росте: з'являються модулі для кухні, складу, змін персоналу. Коли файлів стає два десятки, їх групують у **пакети**. І ти вже користувався пакетами, навіть не знаючи цього.
+
+### Пакет — це тека з модулями
+
+Перенесемо модулі кафе в теку `cafe/`, а `main.py` залишимо зовні:
+
+```text
+project/
+├── main.py
+└── cafe/             ← пакет
+    ├── __init__.py   ← позначає теку як пакет (може бути порожнім)
+    ├── rules.py      ← модуль cafe.rules
+    ├── orders.py     ← модуль cafe.orders
+    └── report.py     ← модуль cafe.report
+```
+
+**Пакет** — це тека з модулями, яку можна імпортувати. Ім'я модуля всередині пакета пишеться через крапку: `cafe.rules`. Ті самі три способи імпорту працюють і тут (запуск з теки `project/`):
+
+```python
+import cafe.rules
+print(cafe.rules.meal_type_from_hour(19))
+
+from cafe import rules
+print(rules.DAYS[4])
+
+from cafe.rules import meal_type_from_hour
+print(meal_type_from_hour(12))
+```
+
+```text
+вечеря
+пт
+обід
+```
+
+| | Модуль | Пакет |
+|---|---|---|
+| Що це на диску | один файл `.py` | тека з модулями і `__init__.py` |
+| Що містить | функції, класи, змінні | модулі та вкладені пакети |
+| Як імпортувати | `import rules` | `import cafe.rules`, `from cafe import rules` |
+
+**Перевір себе.** У теці `cafe/` з'явилася вкладена тека `kitchen/` зі своїм `__init__.py` і файлом `menu.py`. Як імпортувати з нього функцію `price`?
+
+??? success "Відповідь"
+    `from cafe.kitchen.menu import price`. Кожна крапка — крок на рівень глибше: пакет `cafe` → вкладений пакет `kitchen` → модуль `menu`.
+
+### Імпорти всередині пакета
+
+Після переїзду `main.py` падає, хоча `orders.py` не змінювався:
+
+```text
+  File ".../project/cafe/orders.py", line 6, in <module>
+    from rules import day_from_timestamp, meal_type_from_hour
+ModuleNotFoundError: No module named 'rules'
+```
+
+Причина — у `sys.path`. Запустили `python main.py`, отже перша тека пошуку — `project/`. Там лежить тека `cafe/`, але не файл `rules.py`. Модуль тепер називається `cafe.rules`, і так його й треба імпортувати. Є два способи:
+
+```python title="cafe/orders.py — абсолютний імпорт"
+from cafe.rules import day_from_timestamp, meal_type_from_hour
+```
+
+```python title="cafe/orders.py — відносний імпорт"
+from .rules import day_from_timestamp, meal_type_from_hour
+```
+
+Крапка у **відносному імпорті** означає «з того самого пакета, де лежить цей файл», дві крапки (`..`) — з батьківського пакета. Абсолютний імпорт явно показує повний шлях, і PEP 8 радить саме його. Відносний коротший і не ламається, якщо перейменувати пакет.
+
+Відносний імпорт має пастку. Спробуємо перевірити `report.py` окремо, як раніше:
+
+```bash
+python cafe/report.py
+```
+
+```text
+    from .rules import DAYS
+ImportError: attempted relative import with no known parent package
+```
+
+Запущений напряму файл — це `__main__`, а не `cafe.report`, тому Python не знає, від якого пакета рахувати крапку. Модуль пакета запускають через `-m` і ім'я модуля, з теки `project/`:
+
+```bash
+python -m cafe.report
+```
+
+Так `report.py` знає свій пакет, а `__name__` у ньому все одно дорівнює `"__main__"`, тож тестовий звіт спрацює. Лише імпорт під цією умовою теж треба оновити: `from .orders import Order`.
+
+### Що робить `__init__.py`
+
+`__init__.py` — звичайний модуль, який виконується при **першому** імпорті пакета, за тими самими правилами кешу з `sys.modules`. Найчастіше його залишають порожнім. Друге типове призначення — винести найважливіші імена на верхній рівень пакета:
+
+```python title="cafe/__init__.py"
+"""Пакет кафе: правила, чеки і звіт."""
+print("ініціалізація пакета cafe")
+
+from .rules import DAYS, meal_type_from_hour
+```
+
+```python
+import cafe
+import cafe.rules
+from cafe import meal_type_from_hour
+
+print(meal_type_from_hour(19))
+```
+
+```text
+ініціалізація пакета cafe
+вечеря
+```
+
+Пакет імпортувався тричі, а `__init__.py` виконався один раз. `print` тут лише для того, щоб це побачити: у справжньому пакеті діє те саме правило, що й для модулів, — без побічних ефектів на верхньому рівні.
+
+!!! note "А якщо `__init__.py` немає?"
+    З Python 3.3 тека без `__init__.py` теж імпортується. Це **пакет простору імен** (namespace package, [PEP 420](https://peps.python.org/pep-0420/)), механізм для пакетів, розкладених по кількох теках. Python і тут показує, що це інший вид пакета: `<module 'cafe' (namespace) ...>`. У звичайному проєкті `__init__.py` додають завжди: так одразу видно, що тека — пакет, а не просто тека з файлами.
+
+### Пакети стандартної бібліотеки
+
+`from collections import Counter` з цього уроку — це імпорт з пакета. Видно за `__file__`:
+
+```python
+import collections
+import random
+
+print(collections.__file__)
+print(random.__file__)
+```
+
+```text
+/usr/lib/python3.12/collections/__init__.py
+/usr/lib/python3.12/random.py
+```
+
+`random` — один файл, тобто модуль. `collections` — тека з `__init__.py`, тобто пакет (шлях у тебе буде інший, залежно від того, де встановлено Python). Так само влаштовані `json`, `email`, `urllib` і більшість сторонніх бібліотек, які ставлять через `pip install`.
+
 ## Підсумок
 
 | Поняття | Що запам'ятати |
@@ -787,6 +924,7 @@ python week.py 2024-07-15
 | `datetime` | `.year`, `.weekday()`, `strftime`/`strptime`, `timedelta`, порівняння |
 | `Counter` | `Counter(values)`, `most_common(k)`, відсутній ключ — `0` |
 | `sys.argv` | список рядків; `[0]` — ім'я скрипта |
+| Пакет (поглиблення) | тека з `__init__.py`; `cafe.rules`, `from .rules import ...`, запуск `python -m cafe.report` |
 
 ### Самоперевірка
 
