@@ -3,7 +3,7 @@ import random
 from datetime import datetime, timedelta
 from typing import NamedTuple
 
-from rules import day_from_timestamp, meal_type_from_hour
+from rules.rules import day_from_timestamp, meal_type_from_hour
 
 
 class RawOrder(NamedTuple):

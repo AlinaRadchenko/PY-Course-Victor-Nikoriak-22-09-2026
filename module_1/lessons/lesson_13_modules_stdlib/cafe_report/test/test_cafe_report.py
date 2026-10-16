@@ -5,9 +5,9 @@ import io
 from datetime import datetime
 
 import main
-import report
+from module_1.lessons.lesson_13_modules_stdlib.cafe_report.reports import report
 from orders import Order, RawOrder, generate_raw_orders, in_month, to_order
-from report import best_day, count_by_day, revenue_by_day
+from module_1.lessons.lesson_13_modules_stdlib.cafe_report.reports.report import best_day, count_by_day, revenue_by_day
 from rules import MONTHS, day_from_timestamp, meal_type_from_hour
 
 
