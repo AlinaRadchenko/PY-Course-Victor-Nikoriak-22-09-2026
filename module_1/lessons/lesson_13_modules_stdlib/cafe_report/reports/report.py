@@ -1,7 +1,8 @@
-"""Звіт кафе: функції з уроку 7, тепер в окремому модулі."""
+"""Звіт кафе: функції з уроку 8, тепер в окремому модулі."""
 from collections import Counter
 
 from rules.rules import DAYS
+
 
 def count_by_day(orders):
     """Кількість чеків у кожен день."""
@@ -38,7 +39,6 @@ def print_report(orders):
 
 
 if __name__ == "__main__":
-
     from orders.orders import Order
 
     demo = [
