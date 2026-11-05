@@ -1,8 +1,8 @@
 site_name: PY Course — Viktor Nikoriak
 site_description: Курс Python українською — від основ до просунутих тем, у форматі книги
-site_url: https://nikoriakviktot.github.io/PY-Course-Victor-Nikoriak-22-09-2026/
-repo_url: https://github.com/NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026
-repo_name: NikoriakViktot/PY-Course-Victor-Nikoriak-22-09-2026
+site_url: https://nikoriakviktor.github.io/PY-Course-Victor-Nikoriak-22-09-2026/
+repo_url: https://github.com/NikoriakViktor/PY-Course-Victor-Nikoriak-22-09-2026
+repo_name: NikoriakViktor/PY-Course-Victor-Nikoriak-22-09-2026
 docs_dir: docs
 site_dir: site
 
