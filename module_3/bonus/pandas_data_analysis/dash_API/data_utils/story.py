@@ -20,35 +20,19 @@ import pandas as pd
 # ─── «Кошик» історії ─────────────────────────────────────────────────────────
 # Базові продукти, які є в усіх областях і в усі роки (2014 → сьогодні).
 # Гречку не беремо: у даних WFP вона з'являється лише з 2018 року.
-# Ключ — назва товару в CSV (англійською), значення — підпис для людей.
+# Ключ — назва товару в даних (loader уже переклав її українською,
+# див. utils/translator.py), значення — короткий підпис для графіків.
 
 STORY_BASKET = {
-    "Sugar":                 "Цукор",
-    "Rice":                  "Рис",
-    "Pasta":                 "Макарони",
-    "Potatoes":              "Картопля",
-    "Oil (sunflower)":       "Олія",
-    "Eggs":                  "Яйця (10 шт)",
-    "Fat (salo)":            "Сало",
-    "Meat (pork)":           "Свинина",
-    "Meat (chicken, whole)": "Курка",
-}
-
-# Підписи областей українською (у CSV вони латиницею).
-OBLAST_UA = {
-    "Avtonomna Respublika Krym": "АР Крим", "Cherkaska": "Черкаська",
-    "Chernihivska": "Чернігівська", "Chernivetska": "Чернівецька",
-    "Dnipropetrovska": "Дніпропетровська", "Donetska": "Донецька",
-    "Ivano-Frankivska": "Івано-Франківська", "Kharkivska": "Харківська",
-    "Khersonska": "Херсонська", "Khmelnytska": "Хмельницька",
-    "Kirovohradska": "Кіровоградська", "Kyiv": "Київ",
-    "Luhanska": "Луганська", "Lvivska": "Львівська",
-    "Mykolaivska": "Миколаївська", "Odeska": "Одеська",
-    "Poltavska": "Полтавська", "Rivnenska": "Рівненська",
-    "Sevastopol": "Севастополь", "Sumska": "Сумська",
-    "Ternopilska": "Тернопільська", "Vinnytska": "Вінницька",
-    "Volynska": "Волинська", "Zakarpatska": "Закарпатська",
-    "Zaporizka": "Запорізька", "Zhytomyrska": "Житомирська",
+    "Цукор":            "Цукор",
+    "Рис":              "Рис",
+    "Макарони":         "Макарони",
+    "Картопля":         "Картопля",
+    "Олія соняшникова": "Олія",
+    "Яйця":             "Яйця (10 шт)",
+    "Сало":             "Сало",
+    "Свинина":          "Свинина",
+    "Курка (тушка)":    "Курка",
 }
 
 BASKET_LABEL = "Типовий продукт (медіана кошика)"
@@ -165,4 +149,4 @@ def get_basket_cost_by_oblast(food_df: pd.DataFrame, months: int = 12) -> pd.Ser
     recent = dff[dff["дата"] > dff["дата"].max() - pd.DateOffset(months=months)]
     by_oblast = recent.groupby(["область", "товар"])["ціна"].median().unstack("товар")
     cost = by_oblast.dropna().sum(axis=1).sort_values()
-    return cost.rename(index=OBLAST_UA)
+    return cost  # області вже українською (переклад у loader)
