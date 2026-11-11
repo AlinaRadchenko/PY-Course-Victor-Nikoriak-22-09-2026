@@ -19,6 +19,7 @@
 - [Як користуватися курсом](docs/00_getting_started/README.md)
 - [Ноутбуки в Google Colab](docs/00_getting_started/colab.md)
 - [SSH-ключі для GitHub](docs/00_getting_started/github/ssh_keys.md)
+- [Профіль GitHub: README-візитівка](docs/00_getting_started/github/profile_readme.md)
 - [Здача домашніх робіт](docs/00_getting_started/homework_workflow.md)
 - [Часті проблеми](docs/00_getting_started/troubleshooting.md)
 
